@@ -30,7 +30,7 @@ jobs:
               run: cd ./client
 
             - name: Install dependencies
-              run: npm ci
+              run: npm install
 
             - name: Run prettier
               run: npx prettier package.json "./src/**/*.ts" -c
@@ -53,7 +53,7 @@ jobs:
               run: cd ./client
 
             - name: Install dependencies
-              run: npm ci
+              run: npm install
 
             - name: Run eslint
               run: npm run lint
