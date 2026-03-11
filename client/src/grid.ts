@@ -1,4 +1,4 @@
-let gridSize = 64;
+export let gridSize = 64;
 
 export function setGridSize(newSize: number) {
   gridSize = newSize;
