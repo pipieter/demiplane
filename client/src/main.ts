@@ -13,6 +13,11 @@ socket.onmessage = function (event) {
     const r = data.create.r;
     const color = data.create.color;
     drawing.createCircle(id, color, x, y, r);
+  } else if (data.type === "move") {
+    const id = data.move.id;
+    const x = data.move.x;
+    const y = data.move.y;
+    drawing.move(id, x, y);
   }
 };
 

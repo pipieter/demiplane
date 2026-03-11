@@ -1,3 +1,5 @@
+import socket from "./socket";
+
 namespace drawing {
   let selected: SVGSVGElement | undefined;
 
@@ -36,7 +38,7 @@ namespace drawing {
     selectionBox.setAttribute("stroke-width", "5");
   }
 
-  function move(id: string, x: number, y: number) {
+  export function move(id: string, x: number, y: number) {
     const element = document.getElementById(id) as unknown as SVGSVGElement;
     element.setAttribute("cx", x.toString());
     element.setAttribute("cy", y.toString());
@@ -75,7 +77,17 @@ namespace drawing {
       // TODO find a cleaner way of doing this
       const x = evt.clientX;
       const y = evt.clientY;
-      move(id, x, y);
+
+      socket.send(
+        JSON.stringify({
+          type: "request_move",
+          move: {
+            id,
+            x,
+            y,
+          },
+        }),
+      );
     };
 
     collection.appendChild(circle);
