@@ -62,7 +62,7 @@ function createToken(token: Token) {
   let element: SVGSVGElement;
 
   if (token.type === "circle") {
-  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
+    // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
     element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
