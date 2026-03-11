@@ -15,13 +15,7 @@ namespace Server;
 public class Startup
 {
     private readonly ConcurrentDictionary<WebSocket, string> _clients = new();
-
-    /// <summary>
-    /// The list of all tokens. IMPORTANT: when changing or iterating over _tokens, encapsulate
-    /// the code block in a lock(_tokensLock) {...} environment, to prevent data races!
-    /// </summary>
-    private readonly List<Token> _tokens = [];
-    private readonly Lock _tokensLock = new();
+    private readonly ConcurrentBoardState _state = new();
 
     public void ConfigureServices(IServiceCollection services) { }
 
@@ -62,11 +56,11 @@ public class Startup
             int r = json.create.r;
 
             TokenCircle circle = new(id, color, x, y, r);
+
+            if (!_state.AddToken(circle))
+                return;
+
             CreateResponseMessage create = new(circle);
-            lock (_tokensLock)
-            {
-                _tokens.Add(circle);
-            }
             await BroadcastMessage(JsonConvert.SerializeObject(create));
         }
         else if (json.type == "request_move")
@@ -75,15 +69,9 @@ public class Startup
             int x = json.move.x;
             int y = json.move.y;
 
-            lock (_tokensLock)
-            {
-                var token = _tokens.Find(token => token.id == id);
-                if (token == null)
-                    return;
+            if (!_state.MoveToken(id, x, y))
+                return;
 
-                token.x = x;
-                token.y = y;
-            }
             MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
             await BroadcastMessage(JsonConvert.SerializeObject(move));
         }
@@ -92,14 +80,7 @@ public class Startup
     private async Task HandleWebSocket(WebSocket socket)
     {
         // Send the history to the socket
-        List<Token> tokens;
-        lock (_tokensLock)
-        {
-            // Duplicate current tokens
-            tokens = [.. _tokens];
-        }
-
-        foreach (var token in tokens)
+        foreach (var token in _state.Tokens())
         {
             CreateResponseMessage create = new(token);
             await SendMessage(socket, JsonConvert.SerializeObject(create));
