@@ -3,8 +3,8 @@ import type { Token } from "./token";
 
 let selected: SVGSVGElement | undefined;
 
-// @ts-ignore
-let selectionBox: SVGSVGElement = document.getElementById("drawing-selection-box");
+// @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
+const selectionBox: SVGSVGElement = document.getElementById("drawing-selection-box");
 
 function unselect() {
   selected = undefined;
@@ -19,7 +19,7 @@ function select(id: string) {
     return;
   }
 
-  // @ts-ignore
+  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   selected = document.getElementById(id);
   updateSelectionBox();
 }
@@ -46,12 +46,12 @@ function move(id: string, x: number, y: number) {
 }
 
 function getObjectsCollection(): SVGSVGElement {
-  // @ts-ignore
+  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   return document.getElementById("drawing-objects");
 }
 
 function initialize() {
-  // @ts-ignore
+  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
   background.onclick = unselect;
 }
@@ -59,9 +59,10 @@ function initialize() {
 function createToken(token: Token) {
   const collection = getObjectsCollection();
 
-  let element: any;
+  let element: SVGSVGElement;
 
   if (token.type === "circle") {
+  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
     element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
