@@ -15,7 +15,13 @@ namespace Server;
 public class Startup
 {
     private readonly ConcurrentDictionary<WebSocket, string> _clients = new();
-    private readonly ConcurrentDictionary<string, Token> _tokens = new();
+
+    /// <summary>
+    /// The list of all tokens. IMPORTANT: when changing or iterating over _tokens, encapsulate
+    /// the code block in a lock(_tokensLock) {...} environment, to prevent data races!
+    /// </summary>
+    private readonly List<Token> _tokens = [];
+    private readonly Lock _tokensLock = new();
 
     public void ConfigureServices(IServiceCollection services) { }
 
@@ -57,7 +63,10 @@ public class Startup
 
             TokenCircle circle = new(id, color, x, y, r);
             CreateResponseMessage create = new(circle);
-            _tokens.TryAdd(id, circle);
+            lock (_tokensLock)
+            {
+                _tokens.Add(circle);
+            }
             await BroadcastMessage(JsonConvert.SerializeObject(create));
         }
         else if (json.type == "request_move")
@@ -65,28 +74,32 @@ public class Startup
             string id = json.move.id;
             int x = json.move.x;
             int y = json.move.y;
-            if (_tokens.TryGetValue(id, out Token? token))
+
+            lock (_tokensLock)
             {
-                if (token is TokenCircle circle)
-                {
-                    TokenCircle newCircle = new(circle.id, circle.color, x, y, circle.r);
-                    _tokens.AddOrUpdate(id, newCircle, (_, _) => newCircle);
-                }
-                // Unable to match token with any token type, return
-                else
-                {
+                var token = _tokens.Find(token => token.id == id);
+                if (token == null)
                     return;
-                }
-                MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
-                await BroadcastMessage(JsonConvert.SerializeObject(move));
+
+                token.x = x;
+                token.y = y;
             }
+            MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
+            await BroadcastMessage(JsonConvert.SerializeObject(move));
         }
     }
 
     private async Task HandleWebSocket(WebSocket socket)
     {
         // Send the history to the socket
-        foreach (var token in _tokens.Values)
+        List<Token> tokens;
+        lock (_tokensLock)
+        {
+            // Duplicate current tokens
+            tokens = [.. _tokens];
+        }
+
+        foreach (var token in tokens)
         {
             CreateResponseMessage create = new(token);
             await SendMessage(socket, JsonConvert.SerializeObject(create));
