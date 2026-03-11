@@ -13,11 +13,13 @@ export function setGrid(newSize: number, offsetX: number = 0, offsetY: number = 
   if (gridSizeInput) gridSizeInput.value = gridSize.toString();
   if (gridOffsetXInput) {
     gridOffsetXInput.value = gridOffset.x.toString();
-    gridOffsetXInput.max = gridSize.toString();
+    gridOffsetXInput.min = (-gridSize / 2).toString();
+    gridOffsetXInput.max = (gridSize / 2).toString();
   }
   if (gridOffsetYInput) {
     gridOffsetYInput.value = gridOffset.y.toString();
-    gridOffsetYInput.max = gridSize.toString();
+    gridOffsetYInput.min = (-gridSize / 2).toString();
+    gridOffsetYInput.max = (gridSize / 2).toString();
   }
 
   const gridPatternElement = document.getElementById("grid-pattern");
@@ -36,10 +38,13 @@ export function setGrid(newSize: number, offsetX: number = 0, offsetY: number = 
 }
 
 export function getGridLockedCoordinates(x: number, y: number): { x: number, y: number } {
+  const localX = x - gridOffset.x;
+  const localY = y - gridOffset.y;
+
   return {
-    x: Math.floor(x / gridSize) * gridSize + gridSize / 2 + gridOffset.x,
-    y: Math.floor(y / gridSize) * gridSize + gridSize / 2 + gridOffset.y
-  }
+    x: Math.floor(localX / gridSize) * gridSize + gridSize / 2 + gridOffset.x,
+    y: Math.floor(localY / gridSize) * gridSize + gridSize / 2 + gridOffset.y
+  };
 }
 
 gridSizeInput?.addEventListener('input', () => {
