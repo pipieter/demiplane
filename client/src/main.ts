@@ -1,24 +1,19 @@
 import drawing from "./drawing";
-
-const BACKEND_URL = "http://localhost:5000"; // TODO store this in an env file
-
-let url;
-
-// Check if currently being hosted in discord as a discord activity
-// If so, we have to use the local /server proxy, as set-up by discord
-// (see the README on how to do this)
-if (location.host.includes(".discordsays.com")) {
-  url = "/server";
-} else {
-  // This is the URL to the backend server
-  url = BACKEND_URL;
-}
-const socket = new WebSocket(url);
+import socket from "./socket";
 
 socket.onmessage = function (event) {
-  const messagesDiv = document.getElementById("messages") as HTMLDivElement;
-  messagesDiv.innerHTML += `<div>${event.data}</div>`;
-  messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll
+  const data = JSON.parse(event.data);
+
+  if (data.type === "create") {
+    // For now, assume only circles are created
+    console.assert(data.create.type === "circle");
+    const id = data.create.id;
+    const x = data.create.x;
+    const y = data.create.y;
+    const r = data.create.r;
+    const color = data.create.color;
+    drawing.createCircle(id, color, x, y, r);
+  }
 };
 
 const sendButton = document.getElementById("sendButton") as HTMLButtonElement;
@@ -30,10 +25,8 @@ sendButton.onclick = function () {
 
 drawing.initialize();
 
-let nextId = 0;
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
 randomCircleButton.onclick = () => {
-  const id = `circle-${nextId++}`;
   const x = Math.floor(Math.random() * 1280);
   const y = Math.floor(Math.random() * 600);
   const r = Math.floor(Math.random() * 25) + 25;
@@ -41,5 +34,15 @@ randomCircleButton.onclick = () => {
   const colors = ["red", "blue", "orange", "yellow", "green", "purple", "pink", "black", "cyan", "lime"];
   const color = colors[Math.floor(Math.random() * colors.length)];
 
-  drawing.createCircle(id, color, x, y, r);
+  const message = {
+    type: "request_create",
+    create: {
+      type: "circle",
+      x,
+      y,
+      r,
+      color,
+    },
+  };
+  socket.send(JSON.stringify(message));
 };
