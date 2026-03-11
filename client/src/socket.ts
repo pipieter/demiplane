@@ -7,7 +7,6 @@ if (location.host.includes(".discordsays.com")) {
 } else {
   // This is the URL to the backend server
   url = import.meta.env.VITE_SERVER_URL;
-  console.log(url);
 }
 const socket = new WebSocket(url);
 
