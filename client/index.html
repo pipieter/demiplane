@@ -18,9 +18,29 @@
     </style>
   </head>
   <body>
-    <div id="messages"></div>
-    <input type="text" id="messageInput" placeholder="Type a message..." />
-    <button id="sendButton">Send</button>
+    <div id="drawing-container">
+      <svg id="drawing" width="1280px" height="600px">
+        <svg id="drawing-background">
+          <rect fill="aliceblue" width="1280px" height="600px" />
+        </svg>
+        <svg id="drawing-objects"></svg>
+        <svg id="drawing-selection">
+          <rect
+            id="drawing-selection-box"
+            width="0"
+            height="0"
+            x="0"
+            y="0"
+            rx="8"
+            ry="8"
+            fill="none"
+            stroke="red"
+            style="pointer-events: none"
+          />
+        </svg>
+      </svg>
+    </div>
+    <button id="random-circle-button">Add random circle</button>
 
     <script type="module" src="./src/main.ts"></script>
   </body>

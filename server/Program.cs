@@ -1,18 +1,21 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
+using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Server.Messages;
+using Server.Tokens;
 
 namespace Server;
 
 public class Startup
 {
     private readonly ConcurrentDictionary<WebSocket, string> _clients = new();
-    private readonly ConcurrentQueue<string> _messages = new();
-    private int _lastUserId = 0;
+    private readonly ConcurrentDictionary<string, Token> _tokens = new();
 
     public void ConfigureServices(IServiceCollection services) { }
 
@@ -37,69 +40,91 @@ public class Startup
         );
     }
 
+    private async Task ProcessMessage(WebSocket socket, string? message)
+    {
+        if (message == null)
+            return;
+
+        dynamic json = JsonConvert.DeserializeObject(message)!;
+        if (json.type == "request_create")
+        {
+            // For now, assume all objects will be circles
+            string id = $"object-{Guid.NewGuid()}";
+            string color = json.create.color;
+            int x = json.create.x;
+            int y = json.create.y;
+            int r = json.create.r;
+
+            TokenCircle circle = new(id, color, x, y, r);
+            CreateResponseMessage create = new(circle);
+            _tokens.TryAdd(id, circle);
+            await BroadcastMessage(JsonConvert.SerializeObject(create));
+        }
+        else if (json.type == "request_move")
+        {
+            string id = json.move.id;
+            int x = json.move.x;
+            int y = json.move.y;
+            if (_tokens.TryGetValue(id, out Token? token))
+            {
+                if (token is TokenCircle circle)
+                {
+                    TokenCircle newCircle = new(circle.id, circle.color, x, y, circle.r);
+                    _tokens.AddOrUpdate(id, newCircle, (_, _) => newCircle);
+                }
+                // Unable to match token with any token type, return
+                else
+                {
+                    return;
+                }
+                MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
+                await BroadcastMessage(JsonConvert.SerializeObject(move));
+            }
+        }
+    }
+
     private async Task HandleWebSocket(WebSocket socket)
     {
-        // Stored locally in the thread, in a more robust application
-        // this may be stored in a global dictionary.
-        int userId = Interlocked.Increment(ref _lastUserId);
-
         // Send the history to the socket
-        foreach (var message in _messages)
+        foreach (var token in _tokens.Values)
         {
-            await SendMessage(socket, message);
+            CreateResponseMessage create = new(token);
+            await SendMessage(socket, JsonConvert.SerializeObject(create));
         }
-
-        // Notify all clients that a new user has joined
-        await BroadcastMessage($"User {userId} has joined the chat!");
 
         var buffer = new byte[1024 * 4];
 
         while (socket.State == WebSocketState.Open)
         {
-            var result = await socket.ReceiveAsync(
-                new ArraySegment<byte>(buffer),
-                CancellationToken.None
-            );
+            var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
             if (result.MessageType == WebSocketMessageType.Close)
             {
                 // Close the message
-                await socket.CloseAsync(
-                    WebSocketCloseStatus.NormalClosure,
-                    "Closing",
-                    CancellationToken.None
-                );
+                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
                 _clients.TryRemove(socket, out _);
-                // Notify all clients that a user has left
-                await BroadcastMessage($"User {userId} has left the chat.");
             }
             else
             {
                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                await BroadcastMessage($"User {userId}: {message}");
+                await ProcessMessage(socket, message);
             }
         }
     }
 
     private static async Task SendMessage(WebSocket socket, string message)
     {
+        // TODO add a mutex here
         var buffer = Encoding.UTF8.GetBytes(message);
         var segment = new ArraySegment<byte>(buffer);
         if (socket.State == WebSocketState.Open)
         {
-            await socket.SendAsync(
-                segment,
-                WebSocketMessageType.Text,
-                true,
-                CancellationToken.None
-            );
+            await socket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 
     private async Task BroadcastMessage(string message)
     {
-        _messages.Enqueue(message);
-
         foreach (var client in _clients.Keys)
         {
             await SendMessage(client, message);
@@ -111,6 +136,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Env.Load(Path.Combine("..", ".env"));
         CreateHostBuilder(args).Build().Run();
     }
 
@@ -120,7 +146,7 @@ public class Program
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseUrls("http://localhost:5000"); // Set your desired port
+                webBuilder.UseUrls("http://localhost:5000");
             });
     }
 }
