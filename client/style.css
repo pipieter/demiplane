@@ -1,5 +1,50 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+header {
+    background-color: darkgray;
+    box-shadow: 0px 0px 4px black;
+
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 0rem;
+    z-index: 1000;
+}
+
+header > ul {
+    margin: 0;
+    display: flex;
+    justify-content: space-evenly;
+    
+    gap: 1rem;
+}
+
+header > ul > button {
+    min-width: 20%;
+}
+
+button {
+    background-color: darkgray;
+    color: black;
+    font-weight: bold;
+    transition: all 0.1s ease;
+    cursor: pointer;
+
+    border: 1px solid gray;
+    border-radius: 1rem;
+    font-size: 1rem;
+    padding: 0.6rem;
+
+    box-shadow: 0px -4px 4px gray inset;
+}
+
+button:hover {
+    background-color: lightcyan;
+    color: black;
 }
 
 #drawing-objects > * {
