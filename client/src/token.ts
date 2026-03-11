@@ -1,3 +1,7 @@
+export interface TokenId {
+  id: string;
+}
+
 export interface TokenDataCircle {
   type: "circle";
   color: string;
@@ -6,9 +10,7 @@ export interface TokenDataCircle {
   r: number;
 }
 
-export interface TokenCircle extends TokenDataCircle {
-  id: string;
-}
+export interface TokenCircle extends TokenDataCircle, TokenId {}
 
 export type TokenData = TokenDataCircle;
 export type Token = TokenCircle;
