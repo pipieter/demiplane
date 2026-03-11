@@ -74,8 +74,9 @@ function createToken(token: Token) {
     element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
-    element.setAttribute("cx", token.x.toString());
-    element.setAttribute("cy", token.y.toString());
+    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
+    element.setAttribute("cx", (token.x + token.r).toString());
+    element.setAttribute("cy", (token.y + token.r).toString());
     element.setAttribute("r", token.r.toString());
     element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "image") {
