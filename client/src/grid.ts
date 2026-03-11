@@ -13,5 +13,5 @@ export function setGridSize(newSize: number) {
 }
 
 export function getGridLockedCoordinate(x: number): number {
-  return Math.floor(x / gridSize) * gridSize + gridSize / 2;
+  return Math.floor(x / gridSize) * gridSize;
 }

@@ -20,8 +20,10 @@ function move(id: string, x: number, y: number) {
   const element = document.getElementById(id) as unknown as SVGElement;
 
   if (element.tagName === "circle") {
-    element.setAttribute("cx", x.toString());
-    element.setAttribute("cy", y.toString());
+    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
+    const r = parseInt(element.getAttribute("r") ?? "0");
+    element.setAttribute("cx", (x + r).toString());
+    element.setAttribute("cy", (y + r).toString());
   } else {
     element.setAttribute("x", x.toString());
     element.setAttribute("y", y.toString());
