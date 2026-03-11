@@ -1,5 +1,4 @@
 import { getGridLockedCoordinate, setGridSize } from "./grid";
-import { shift } from "./keys";
 import socket from "./socket";
 import type { Token } from "./token";
 
@@ -60,6 +59,7 @@ function initialize() {
   background.onclick = unselect;
   container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");
+    const shift = evt.shiftKey;
 
     // Move the selected token if the left mouse button is down
     if ((evt.buttons & 1) !== 1) return;
