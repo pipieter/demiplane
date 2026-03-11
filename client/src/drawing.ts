@@ -1,3 +1,4 @@
+import { setGridSize } from "./grid";
 import socket from "./socket";
 import type { Token } from "./token";
 
@@ -53,6 +54,7 @@ function getObjectsCollection(): SVGSVGElement {
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
+  setGridSize(64);
   background.onclick = unselect;
 }
 

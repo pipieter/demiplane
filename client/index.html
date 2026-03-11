@@ -3,25 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebSocket Chat</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
-      #messages {
-        border: 1px solid #ccc;
-        height: 300px;
-        overflow-y: auto;
-        margin-bottom: 10px;
-        padding: 5px;
-      }
-    </style>
+    <title>Demiplane</title>
   </head>
   <body>
     <div id="drawing-container">
       <svg id="drawing" width="1280px" height="600px">
         <svg id="drawing-background">
-          <rect fill="aliceblue" width="1280px" height="600px" />
+          <defs>
+            <pattern id="grid-pattern" width="40px" height="50" patternUnits="userSpaceOnUse">
+              <path d="M 50 0 L 0 0 0 50"
+                    fill="none"
+                    stroke="#666"
+                    stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect fill="url(#grid-pattern)" width="1280px" height="600px" />
+        </svg>
+
         </svg>
         <svg id="drawing-objects"></svg>
         <svg id="drawing-selection">
