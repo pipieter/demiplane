@@ -19,16 +19,29 @@ public record struct DrawingCircle(string id, string color, int x, int y, int r)
     public int r = r;
 }
 
-public class DrawingCircleCreation(DrawingCircle circle)
+public class DrawingCircleCreationMessage(DrawingCircle circle)
 {
     public string type = "create";
     public DrawingCircle create = circle;
 }
 
+public record struct Move(string id, int x, int y)
+{
+    public string id = id;
+    public int x = x;
+    public int y = y;
+}
+
+public class MoveMessage(Move move)
+{
+    public string type = "move";
+    public Move move = move;
+}
+
 public class Startup
 {
     private readonly ConcurrentDictionary<WebSocket, string> _clients = new();
-    private readonly ConcurrentQueue<DrawingCircle> _circles = new();
+    private readonly ConcurrentDictionary<string, DrawingCircle> _circles = new();
     private int _lastUserId = 0;
 
     public void ConfigureServices(IServiceCollection services) { }
@@ -70,18 +83,35 @@ public class Startup
             int r = json.create.r;
 
             DrawingCircle circle = new(id, color, x, y, r);
-            DrawingCircleCreation creation = new(circle);
-            _circles.Enqueue(circle);
+            DrawingCircleCreationMessage creation = new(circle);
+            _circles.TryAdd(id, circle);
             await BroadcastMessage(JsonConvert.SerializeObject(creation));
+        }
+        else if (json.type == "request_move")
+        {
+            string id = json.move.id;
+            int x = json.move.x;
+            int y = json.move.y;
+            if (_circles.TryGetValue(id, out DrawingCircle circle))
+            {
+                DrawingCircle newCircle = new(circle.id, circle.color, x, y, circle.r);
+                _circles.AddOrUpdate(
+                    id,
+                    newCircle,
+                    (key, oldValue) => new(oldValue.id, oldValue.color, x, y, oldValue.r)
+                );
+                MoveMessage move = new(new Move(id, x, y));
+                await BroadcastMessage(JsonConvert.SerializeObject(move));
+            }
         }
     }
 
     private async Task HandleWebSocket(WebSocket socket)
     {
         // Send the history to the socket
-        foreach (var circle in _circles)
+        foreach (var circle in _circles.Values)
         {
-            DrawingCircleCreation creation = new(circle);
+            DrawingCircleCreationMessage creation = new(circle);
             await SendMessage(socket, JsonConvert.SerializeObject(creation));
         }
 
