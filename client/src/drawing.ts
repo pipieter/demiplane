@@ -1,12 +1,11 @@
 import { getGridLockedCoordinate, setGridSize } from "./grid";
-import { shift } from "./keys";
 import socket from "./socket";
 import type { Token } from "./token";
 
-let selected: SVGSVGElement | undefined;
+const container = document.getElementById("drawing") as unknown as SVGSVGElement;
+const selectionBox = document.getElementById("drawing-selection-box") as unknown as SVGSVGElement;
 
-// @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-const selectionBox: SVGSVGElement = document.getElementById("drawing-selection-box");
+let selected: SVGSVGElement | undefined;
 
 function unselect() {
   selected = undefined;
@@ -58,6 +57,29 @@ function initialize() {
   const background = document.getElementById("drawing-background") as SVGSVGElement;
   setGridSize(64);
   background.onclick = unselect;
+  container.onmousemove = (evt) => {
+    const selectedId = selected?.getAttribute("id");
+    const shift = evt.shiftKey;
+
+    // Move the selected token if the left mouse button is down
+    if ((evt.buttons & 1) !== 1) return;
+    if (selectedId === null) return;
+
+    // TODO find a cleaner way of doing this
+    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
+    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
+
+    socket.send(
+      JSON.stringify({
+        type: "request_move",
+        move: {
+          id: selectedId,
+          x,
+          y,
+        },
+      }),
+    );
+  };
 }
 
 function createToken(token: Token) {
@@ -76,31 +98,9 @@ function createToken(token: Token) {
   } else {
     throw `Unsupported token type: ${token.type}`;
   }
-  // For now, assume only circles are created
+
   element.style.cursor = "pointer";
-  element.onclick = () => select(token.id);
-  element.onmousemove = (evt: MouseEvent) => {
-    // Only allow move if the item is selected
-    if (selected?.getAttribute("id") !== token.id) return;
-
-    // Only allow move if the left mouse button was pressed
-    if ((evt.buttons & 1) !== 1) return;
-
-    // TODO find a cleaner way of doing this
-    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
-    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
-
-    socket.send(
-      JSON.stringify({
-        type: "request_move",
-        move: {
-          id: token.id,
-          x,
-          y,
-        },
-      }),
-    );
-  };
+  element.addEventListener("click", () => select(token.id));
 
   collection.appendChild(element);
 }
