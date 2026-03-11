@@ -142,15 +142,11 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
-        string? url = Environment.GetEnvironmentVariable("VITE_SERVER_URL");
-        if (string.IsNullOrWhiteSpace(url))
-            throw new Exception("VITE_SERVER_URL is missing in .env");
-
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseUrls(url);
+                webBuilder.UseUrls("http://localhost:5000");
             });
     }
 }
