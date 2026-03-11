@@ -39,7 +39,8 @@ randomCircleButton.onclick = () => {
   socket.send(JSON.stringify(message));
 };
 
-uploadTokenInput.addEventListener("change", (evt: any) => {
+uploadTokenInput.addEventListener("change", (evt: Event) => {
+  // @ts-expect-error Files should be a valid field
   const file = evt.target?.files[0];
   if (!file) {
     console.error("Could not open file.");
