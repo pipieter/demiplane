@@ -1,4 +1,4 @@
-import { setGridSize } from "./grid";
+import { getGridLockedCoordinate, setGridSize } from "./grid";
 import socket from "./socket";
 import type { Token } from "./token";
 
@@ -41,6 +41,10 @@ function updateSelectionBox() {
 
 function move(id: string, x: number, y: number) {
   const element = document.getElementById(id) as unknown as SVGSVGElement;
+
+  x = getGridLockedCoordinate(x);
+  y = getGridLockedCoordinate(y);
+
   element.setAttribute("cx", x.toString());
   element.setAttribute("cy", y.toString());
   updateSelectionBox();

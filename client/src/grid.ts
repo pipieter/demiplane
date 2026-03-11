@@ -11,3 +11,7 @@ export function setGridSize(newSize: number) {
   gridPatternElement.setAttribute("height", `${gridSize}px`);
   path.setAttribute("d", `M ${gridSize} 0 L 0 0 0 ${gridSize}`);
 }
+
+export function getGridLockedCoordinate(x: number): number {
+  return (Math.floor(x / gridSize) * gridSize) + gridSize / 2;
+}
