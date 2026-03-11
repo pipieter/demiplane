@@ -4,8 +4,12 @@ using System.Text;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Server.Messages;
 using Server.Tokens;
@@ -38,6 +42,7 @@ public class Startup
                 }
             }
         );
+        app.UseStaticFiles();
     }
 
     private async Task ProcessMessage(WebSocket socket, string? message)
@@ -48,19 +53,14 @@ public class Startup
         dynamic json = JsonConvert.DeserializeObject(message)!;
         if (json.type == "request_create")
         {
-            // For now, assume all objects will be circles
-            string id = $"object-{Guid.NewGuid()}";
-            string color = json.create.color;
-            int x = json.create.x;
-            int y = json.create.y;
-            int r = json.create.r;
-
-            TokenCircle circle = new(id, color, x, y, r);
-
-            if (!_state.AddToken(circle))
+            Token? token = Token.Create(json.create);
+            if (token == null)
                 return;
 
-            CreateResponseMessage create = new(circle);
+            if (!_state.AddToken(token))
+                return;
+
+            CreateResponseMessage create = new(token);
             await BroadcastMessage(JsonConvert.SerializeObject(create));
         }
         else if (json.type == "request_move")
@@ -86,7 +86,8 @@ public class Startup
             await SendMessage(socket, JsonConvert.SerializeObject(create));
         }
 
-        var buffer = new byte[1024 * 4];
+        // A large buffer is required to upload image data
+        var buffer = new byte[1024 * 1024 * 100];
 
         while (socket.State == WebSocketState.Open)
         {

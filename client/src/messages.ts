@@ -1,9 +1,9 @@
-import type { Token, TokenData } from "./token";
+import type { Token, CreationData } from "./token";
 
 /** Request to create a token on the drawing board */
 export interface CreateRequestMessage {
   type: "request_create";
-  create: TokenData;
+  create: CreationData;
 }
 
 /** Create a token on the drawing board */

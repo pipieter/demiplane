@@ -16,6 +16,8 @@ socket.onmessage = function (event) {
 };
 
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
+const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
+
 randomCircleButton.onclick = () => {
   const x = Math.floor(Math.random() * 1280);
   const y = Math.floor(Math.random() * 600);
@@ -36,3 +38,40 @@ randomCircleButton.onclick = () => {
   };
   socket.send(JSON.stringify(message));
 };
+
+uploadTokenInput.addEventListener("change", (evt: any) => {
+  const file = evt.target?.files[0];
+  if (!file) {
+    console.error("Could not open file.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const base64 = evt.target?.result?.toString();
+    if (!base64) {
+      console.error("Could not read file.");
+      return;
+    }
+
+    const x = Math.floor(Math.random() * 1280);
+    const y = Math.floor(Math.random() * 600);
+    const w = gridSize;
+    const h = gridSize;
+
+    const message: CreateRequestMessage = {
+      type: "request_create",
+      create: {
+        type: "image",
+        data: base64,
+        x,
+        y,
+        w,
+        h,
+      },
+    };
+    socket.send(JSON.stringify(message));
+  };
+
+  reader.readAsDataURL(file);
+});
