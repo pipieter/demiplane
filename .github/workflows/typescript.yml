@@ -26,13 +26,12 @@ jobs:
               with:
                   node-version: '24'
 
-            - name: Change directory
-              run: cd ./client
-
             - name: Install dependencies
+              working-directory: ./client
               run: npm install
 
             - name: Run prettier
+              working-directory: ./client
               run: npx prettier package.json "./src/**/*.ts" -c
 
     eslint:
@@ -42,18 +41,17 @@ jobs:
             - name: Checkout repo and submodules
               uses: actions/checkout@v4
               with:
-                  submodules: true
+                  submodules: false
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '24'
-            
-            - name: Change directory
-              run: cd ./client
 
             - name: Install dependencies
+              working-directory: ./client
               run: npm install
 
             - name: Run eslint
+              working-directory: ./client
               run: npm run lint
