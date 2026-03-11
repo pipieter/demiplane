@@ -42,8 +42,8 @@ function initialize() {
     if (selectedId === null) return;
 
     // TODO find a cleaner way of doing this
-    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
-    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
+    const x = shift ? getGridLockedCoordinate(evt.offsetX) : evt.offsetX;
+    const y = shift ? getGridLockedCoordinate(evt.offsetY) : evt.offsetY;
 
     socket.send(
       JSON.stringify({
