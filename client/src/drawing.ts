@@ -58,6 +58,28 @@ function initialize() {
   const background = document.getElementById("drawing-background") as SVGSVGElement;
   setGridSize(64);
   background.onclick = unselect;
+  background.onmousemove = (evt) => {
+    const selectedId = selected?.getAttribute("id");
+
+    // Move the selected token if the left mouse button is down
+    if ((evt.buttons & 1) !== 1) return;
+    if (selectedId === null) return;
+
+    // TODO find a cleaner way of doing this
+    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
+    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
+
+    socket.send(
+      JSON.stringify({
+        type: "request_move",
+        move: {
+          id: selectedId,
+          x,
+          y,
+        },
+      }),
+    );
+  };
 }
 
 function createToken(token: Token) {
@@ -79,28 +101,6 @@ function createToken(token: Token) {
   // For now, assume only circles are created
   element.style.cursor = "pointer";
   element.onclick = () => select(token.id);
-  element.onmousemove = (evt: MouseEvent) => {
-    // Only allow move if the item is selected
-    if (selected?.getAttribute("id") !== token.id) return;
-
-    // Only allow move if the left mouse button was pressed
-    if ((evt.buttons & 1) !== 1) return;
-
-    // TODO find a cleaner way of doing this
-    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
-    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
-
-    socket.send(
-      JSON.stringify({
-        type: "request_move",
-        move: {
-          id: token.id,
-          x,
-          y,
-        },
-      }),
-    );
-  };
 
   collection.appendChild(element);
 }
