@@ -1,4 +1,5 @@
-import { setGridSize } from "./grid";
+import { getGridLockedCoordinate, setGridSize } from "./grid";
+import { shift } from "./keys";
 import socket from "./socket";
 import type { Token } from "./token";
 
@@ -41,6 +42,7 @@ function updateSelectionBox() {
 
 function move(id: string, x: number, y: number) {
   const element = document.getElementById(id) as unknown as SVGSVGElement;
+
   element.setAttribute("cx", x.toString());
   element.setAttribute("cy", y.toString());
   updateSelectionBox();
@@ -85,8 +87,8 @@ function createToken(token: Token) {
     if ((evt.buttons & 1) !== 1) return;
 
     // TODO find a cleaner way of doing this
-    const x = evt.clientX;
-    const y = evt.clientY;
+    const x = shift ? getGridLockedCoordinate(evt.clientX) : evt.clientX;
+    const y = shift ? getGridLockedCoordinate(evt.clientY) : evt.clientY;
 
     socket.send(
       JSON.stringify({

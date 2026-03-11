@@ -1,4 +1,5 @@
 import drawing from "./drawing";
+import { gridSize } from "./grid";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket from "./socket";
 
@@ -18,7 +19,7 @@ const randomCircleButton = document.getElementById("random-circle-button") as HT
 randomCircleButton.onclick = () => {
   const x = Math.floor(Math.random() * 1280);
   const y = Math.floor(Math.random() * 600);
-  const r = Math.floor(Math.random() * 25) + 25;
+  const r = gridSize / 2;
 
   const colors = ["red", "blue", "orange", "yellow", "green", "purple", "pink", "black", "cyan", "lime"];
   const color = colors[Math.floor(Math.random() * colors.length)];
