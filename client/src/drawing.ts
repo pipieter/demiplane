@@ -3,10 +3,10 @@ import { shift } from "./keys";
 import socket from "./socket";
 import type { Token } from "./token";
 
-let selected: SVGSVGElement | undefined;
+const container = document.getElementById("drawing") as unknown as SVGSVGElement;
+const selectionBox = document.getElementById("drawing-selection-box") as unknown as SVGSVGElement;
 
-// @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-const selectionBox: SVGSVGElement = document.getElementById("drawing-selection-box");
+let selected: SVGSVGElement | undefined;
 
 function unselect() {
   selected = undefined;
@@ -58,7 +58,7 @@ function initialize() {
   const background = document.getElementById("drawing-background") as SVGSVGElement;
   setGridSize(64);
   background.onclick = unselect;
-  background.onmousemove = (evt) => {
+  container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");
 
     // Move the selected token if the left mouse button is down
@@ -98,9 +98,9 @@ function createToken(token: Token) {
   } else {
     throw `Unsupported token type: ${token.type}`;
   }
-  // For now, assume only circles are created
+
   element.style.cursor = "pointer";
-  element.onclick = () => select(token.id);
+  element.addEventListener("click", () => select(token.id));
 
   collection.appendChild(element);
 }
