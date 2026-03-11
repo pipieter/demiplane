@@ -1,8 +1,9 @@
 import drawing from "./drawing";
+import type { ResponseMessage } from "./messages";
 import socket from "./socket";
 
 socket.onmessage = function (event) {
-  const data = JSON.parse(event.data);
+  const data = JSON.parse(event.data) as ResponseMessage;
 
   if (data.type === "create") {
     // For now, assume only circles are created
