@@ -1,4 +1,5 @@
 import socket from "./socket";
+import type { Token } from "./token";
 
 let selected: SVGSVGElement | undefined;
 
@@ -55,20 +56,27 @@ function initialize() {
   background.onclick = unselect;
 }
 
-function createCircle(id: string, color: string, x: number, y: number, radius: number) {
+function createToken(token: Token) {
   const collection = getObjectsCollection();
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
-  circle.setAttribute("id", id);
-  circle.setAttribute("fill", color);
-  circle.setAttribute("cx", x.toString());
-  circle.setAttribute("cy", y.toString());
-  circle.setAttribute("r", radius.toString());
-  circle.style.cursor = "pointer";
-  circle.onclick = () => select(id);
-  circle.onmousemove = (evt) => {
+  let element: any;
+
+  if (token.type === "circle") {
+    element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    element.setAttribute("id", token.id);
+    element.setAttribute("fill", token.color);
+    element.setAttribute("cx", token.x.toString());
+    element.setAttribute("cy", token.y.toString());
+    element.setAttribute("r", token.r.toString());
+  } else {
+    throw `Unsupported token type: ${token.type}`;
+  }
+  // For now, assume only circles are created
+  element.style.cursor = "pointer";
+  element.onclick = () => select(token.id);
+  element.onmousemove = (evt: MouseEvent) => {
     // Only allow move if the item is selected
-    if (selected?.getAttribute("id") !== id) return;
+    if (selected?.getAttribute("id") !== token.id) return;
 
     // Only allow move if the left mouse button was pressed
     if ((evt.buttons & 1) !== 1) return;
@@ -81,7 +89,7 @@ function createCircle(id: string, color: string, x: number, y: number, radius: n
       JSON.stringify({
         type: "request_move",
         move: {
-          id,
+          id: token.id,
           x,
           y,
         },
@@ -89,9 +97,9 @@ function createCircle(id: string, color: string, x: number, y: number, radius: n
     );
   };
 
-  collection.appendChild(circle);
+  collection.appendChild(element);
 }
 
-const drawing = { initialize, createCircle, move };
+const drawing = { initialize, createToken, move };
 
 export default drawing;

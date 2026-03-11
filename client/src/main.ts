@@ -6,14 +6,7 @@ socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   if (data.type === "create") {
-    // For now, assume only circles are created
-    console.assert(data.create.type === "circle");
-    const id = data.create.id;
-    const x = data.create.x;
-    const y = data.create.y;
-    const r = data.create.r;
-    const color = data.create.color;
-    drawing.createCircle(id, color, x, y, r);
+    drawing.createToken(data.create);
   } else if (data.type === "move") {
     const id = data.move.id;
     const x = data.move.x;
