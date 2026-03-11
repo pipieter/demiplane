@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using DotNetEnv;
 
 namespace Server;
 
@@ -171,16 +172,21 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Env.Load(Path.Combine("..", ".env"));
         CreateHostBuilder(args).Build().Run();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
+        string? url = Environment.GetEnvironmentVariable("VITE_SERVER_URL");
+        if (string.IsNullOrWhiteSpace(url))
+            throw new Exception("VITE_SERVER_URL is missing in .env");
+
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseUrls("http://localhost:5000"); // Set your desired port
+                webBuilder.UseUrls(url);
             });
     }
 }
