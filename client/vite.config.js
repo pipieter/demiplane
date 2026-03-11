@@ -6,6 +6,8 @@ configDotenv({ path: "../.env" });
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: "../",
+  /*
+// TODO temporarily disabled during development
   server: {
     allowedHosts: true,
     proxy: {
@@ -20,4 +22,5 @@ export default defineConfig({
       clientPort: 443,
     },
   },
+  */
 });
