@@ -3,40 +3,17 @@ import socket from "./socket";
 import type { Token } from "./token";
 
 const container = document.getElementById("drawing") as unknown as SVGSVGElement;
-const selectionBox = document.getElementById("drawing-selection-box") as unknown as SVGSVGElement;
 
 let selected: SVGSVGElement | undefined;
 
 function unselect() {
   selected = undefined;
-  updateSelectionBox();
 }
 
 function select(id: string) {
-  // If selecting the same object again, toggle its selection instead
-  // and de-select it
-  if (selected && selected.id === id) {
-    unselect();
-    return;
-  }
-
+  if (selected && selected.id === id) return;
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   selected = document.getElementById(id);
-  updateSelectionBox();
-}
-
-function updateSelectionBox() {
-  if (!selected) {
-    selectionBox.setAttribute("stroke-width", "0");
-    return;
-  }
-
-  const box = selected.getBBox();
-  selectionBox.setAttribute("x", box.x.toString());
-  selectionBox.setAttribute("y", box.y.toString());
-  selectionBox.setAttribute("width", box.width.toString());
-  selectionBox.setAttribute("height", box.height.toString());
-  selectionBox.setAttribute("stroke-width", "5");
 }
 
 function move(id: string, x: number, y: number) {
@@ -44,7 +21,6 @@ function move(id: string, x: number, y: number) {
 
   element.setAttribute("cx", x.toString());
   element.setAttribute("cy", y.toString());
-  updateSelectionBox();
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -95,12 +71,13 @@ function createToken(token: Token) {
     element.setAttribute("cx", token.x.toString());
     element.setAttribute("cy", token.y.toString());
     element.setAttribute("r", token.r.toString());
+    element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else {
     throw `Unsupported token type: ${token.type}`;
   }
 
-  element.style.cursor = "pointer";
   element.addEventListener("click", () => select(token.id));
+  element.addEventListener("focus", () => select(token.id));
 
   collection.appendChild(element);
 }
