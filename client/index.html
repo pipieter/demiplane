@@ -16,17 +16,18 @@
     </header>
 
     <div id="drawing-container">
-      <svg id="drawing" width="1280px" height="600px">
+      <svg id="drawing" width="100%" height="100vw">
         <svg id="drawing-background">
           <defs>
-            <pattern id="grid-pattern" width="40px" height="50" patternUnits="userSpaceOnUse">
+            <!-- Grid-size is declared through code -->
+            <pattern id="grid-pattern" width="50px" height="50px" patternUnits="userSpaceOnUse">
               <path d="M 50 0 L 0 0 0 50"
                     fill="none"
                     stroke="#666"
                     stroke-width="1"/>
             </pattern>
           </defs>
-          <rect fill="url(#grid-pattern)" width="1280px" height="600px" />
+          <rect fill="url(#grid-pattern)" width="100%" height="100%" />
         </svg>
 
         <svg id="drawing-objects"></svg>
