@@ -51,7 +51,6 @@ function createToken(token: Token) {
     element.setAttribute("cy", (token.y + token.r).toString());
     element.setAttribute("r", token.r.toString());
     element.setAttribute("tabindex", "-1"); // Makes object selectable
-
   } else if (token.type === "rectangle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     element.setAttribute("id", token.id);
@@ -61,7 +60,6 @@ function createToken(token: Token) {
     element.setAttribute("width", token.w.toString());
     element.setAttribute("height", token.h.toString());
     element.setAttribute("tabindex", "-1"); // Makes object selectable
-
   } else if (token.type === "image") {
     const href = BackendURL + token.href;
     element = document.createElementNS("http://www.w3.org/2000/svg", "image");
