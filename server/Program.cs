@@ -75,6 +75,17 @@ public class Startup
             MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
             await BroadcastMessage(JsonConvert.SerializeObject(move));
         }
+        else if (json.type == "request_grid")
+        {
+            _state.SetGrid(
+                    (int)json.grid.size, 
+                    (int)json.grid.offset.x, 
+                    (int)json.grid.offset.y
+                );
+
+            GridResponseMessage gridResponse = new(_state.GetGrid());
+            await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));
+        }
     }
 
     private async Task HandleWebSocket(WebSocket socket)

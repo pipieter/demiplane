@@ -1,4 +1,4 @@
-import { getGridLockedCoordinates, setGrid } from "./grid";
+import { getGridLockedCoordinates, grid, setGrid } from "./grid";
 import socket from "./socket";
 import type { Token } from "./token";
 
@@ -31,7 +31,7 @@ function getObjectsCollection(): SVGSVGElement {
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
-  setGrid(64);
+  setGrid(grid); // TODO Load grid from server on start (?)
   background.onclick = unselect;
   container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");

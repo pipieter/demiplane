@@ -1,3 +1,5 @@
+import socket from "./socket";
+
 export interface GridData {
   size: number;
   offset: {
@@ -12,10 +14,8 @@ const gridSizeInput = document.getElementById("grid-size") as HTMLInputElement |
 const gridOffsetXInput = document.getElementById("grid-offset-X") as HTMLInputElement | null;
 const gridOffsetYInput = document.getElementById("grid-offset-Y") as HTMLInputElement | null;
 
-export function setGrid(newSize: number, offsetX: number = 0, offsetY: number = 0) {
-  grid.size = newSize;
-  grid.offset.x = offsetX;
-  grid.offset.y = offsetY;
+export function setGrid(grid: GridData) {
+  grid = grid;
 
   if (gridSizeInput) gridSizeInput.value = grid.size.toString();
   if (gridOffsetXInput) {
@@ -51,17 +51,26 @@ export function getGridLockedCoordinates(x: number, y: number): { x: number; y: 
   };
 }
 
+function sendGridRequest() {
+  socket.send(
+    JSON.stringify({
+      type: "request_grid",
+      grid: grid
+    }),
+  );
+}
+
 gridSizeInput?.addEventListener("input", () => {
-  const size = Number(gridSizeInput.value);
-  setGrid(size, grid.offset.x, grid.offset.y);
+  grid.size = Number(gridSizeInput.value);
+  sendGridRequest()
 });
 
 gridOffsetXInput?.addEventListener("input", () => {
-  const offset = Number(gridOffsetXInput.value);
-  setGrid(grid.size, offset, grid.offset.y);
+  grid.offset.x = Number(gridOffsetXInput.value);
+  sendGridRequest()
 });
 
 gridOffsetYInput?.addEventListener("input", () => {
-  const offset = Number(gridOffsetYInput.value);
-  setGrid(grid.size, grid.offset.x, offset);
+  grid.offset.y = Number(gridOffsetYInput.value);
+  sendGridRequest()
 });
