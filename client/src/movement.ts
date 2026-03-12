@@ -29,9 +29,9 @@ export function makeElementDraggable(element: SVGElement) {
     const { x, y } = e.shiftKey
       ? getGridLockedCoordinates(e.offsetX, e.offsetY)
       : {
-        x: e.offsetX - element.getBoundingClientRect().width / 2,
-        y: e.offsetY - element.getBoundingClientRect().height / 2,
-      };
+          x: e.offsetX - element.getBoundingClientRect().width / 2,
+          y: e.offsetY - element.getBoundingClientRect().height / 2,
+        };
 
     if (!cursorWithinElement(e, container)) return;
 
