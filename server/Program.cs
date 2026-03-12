@@ -4,12 +4,8 @@ using System.Text;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Server.Messages;
 using Server.Tokens;
@@ -77,14 +73,23 @@ public class Startup
         }
         else if (json.type == "request_grid")
         {
-            _state.SetGrid(
-                    (int)json.grid.size, 
-                    (int)json.grid.offset.x, 
-                    (int)json.grid.offset.y
-                );
+            _state.SetGrid((int)json.grid.size, (int)json.grid.offset.x, (int)json.grid.offset.y);
 
             GridResponseMessage gridResponse = new(_state.GetGrid());
             await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));
+        }
+        else if (json.type == "request_background")
+        {
+            string base64 = json.data;
+            string filename = $"background-${Guid.NewGuid()}";
+            string? href = Util.Image.SaveBase64Image(filename, base64);
+
+            if (href == null)
+                return;
+
+            _state.SetBackgroundHref(href);
+            BackgroundResponseMessage background = new(_state.GetBackgroundHref());
+            await BroadcastMessage(JsonConvert.SerializeObject(background));
         }
     }
 
