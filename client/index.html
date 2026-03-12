@@ -7,22 +7,27 @@
   </head>
   <body>
     <header>
-      <ul>
+      <nav class="tabs">
+        <button class="tab-button" data-tab="draw">Draw</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
+      </nav>
+      
+      <section id="tab-draw" class="tab-panel">
         <button id="random-circle-button">Add circle</button>
         <button id="random-rect-button">Add rectangle</button>
         <button>
           <input id="upload-token-button" type="file" accept="image/*">Upload a token</button>
         </button>
-        <button>Placeholder</button>
-      </ul>
-      <div>
+      </section>
+      
+      <section id="tab-settings" class="tab-panel" hidden>
         <label for="grid-size">size</label>
         <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64">
         <label for="grid-offset-X">offset X</label>
         <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0">
         <label for="grid-offset-Y">offset Y</label>
         <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0">
-      </div>
+      </section>
     </header>
 
     <div id="drawing-container">

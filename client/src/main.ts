@@ -1,11 +1,13 @@
 import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
+import { header } from "./header";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket from "./socket";
-import { initViewport } from "./viewport";
+import { viewport } from "./viewport";
 
 drawing.initialize();
-initViewport();
+header.initialize();
+viewport.initialize();
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
