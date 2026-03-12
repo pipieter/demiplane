@@ -102,7 +102,7 @@ public class Startup
             CreateResponseMessage create = new(token);
             await SendMessage(socket, JsonConvert.SerializeObject(create));
         }
-        // Send teh background
+        // Send the background
         BackgroundResponseMessage background = new(_state.GetBackground());
         await BroadcastMessage(JsonConvert.SerializeObject(background));
 
