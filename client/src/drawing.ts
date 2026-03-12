@@ -1,19 +1,16 @@
-import { getGridLockedCoordinates } from "./grid";
-import socket, { BackendURL } from "./socket";
+import { makeElementDraggable } from "./movement";
+import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
-const container = document.getElementById("drawing") as unknown as SVGSVGElement;
+export const container = document.getElementById("drawing-container")!;
+export let selected: SVGElement[] = [];
 
-let selected: SVGSVGElement | undefined;
-
-function unselect() {
-  selected = undefined;
-}
-
-function select(id: string) {
-  if (selected && selected.id === id) return;
-  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  selected = document.getElementById(id);
+export function clearSelection() {
+  for (const element of selected) {
+    if (element.classList.contains('selected'))
+      element.classList.remove('selected');
+  }
+  selected = [];
 }
 
 function move(id: string, x: number, y: number) {
@@ -35,46 +32,10 @@ function getObjectsCollection(): SVGSVGElement {
   return document.getElementById("drawing-objects");
 }
 
-function cursorOnSelected(event: MouseEvent, detectBoxScaling: number = 2): boolean {
-  if (!selected) return false;
-
-  const bbox = selected.getBBox();
-  const dx = event.offsetX - bbox.x - bbox.width / 2;
-  const dy = event.offsetY - bbox.y - bbox.height / 2;
-
-  // Applying a scaling on the detection box makes drag movement more reliable.
-  return Math.abs(dx) < bbox.width * detectBoxScaling && Math.abs(dy) < bbox.height * detectBoxScaling;
-}
-
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
-  background.onclick = unselect;
-  container.onmousemove = (evt) => {
-    const selectedId = selected?.getAttribute("id");
-    const shift = evt.shiftKey;
-
-    // Move the selected token if the left mouse button is down
-    if ((evt.buttons & 1) !== 1) return;
-    if (selectedId === null) return;
-    if (!cursorOnSelected(evt)) {
-      unselect();
-      return;
-    }
-
-    const { x, y } = shift ? getGridLockedCoordinates(evt.offsetX, evt.offsetY) : { x: evt.offsetX, y: evt.offsetY };
-
-    socket.send(
-      JSON.stringify({
-        type: "request_move",
-        move: {
-          id: selectedId,
-          x,
-          y,
-        },
-      }),
-    );
-  };
+  background.onclick = clearSelection;
 }
 
 function createToken(token: Token) {
@@ -104,12 +65,8 @@ function createToken(token: Token) {
     throw `Unsupported token data ${JSON.stringify(token)}`;
   }
 
-  element.addEventListener("click", () => select(token.id));
-  element.addEventListener("focus", () => select(token.id));
-
+  makeElementDraggable(element);
   collection.appendChild(element);
 }
 
-const drawing = { initialize, createToken, move };
-
-export default drawing;
+export const drawing = { initialize, createToken, move };

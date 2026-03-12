@@ -1,4 +1,4 @@
-import drawing from "./drawing";
+import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket from "./socket";
