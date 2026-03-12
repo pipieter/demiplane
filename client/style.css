@@ -15,17 +15,17 @@ header {
     z-index: 1000;
 }
 
-header > ul {
-    margin: 0;
-    display: flex;
-    justify-content: space-evenly;
-    
+header > nav {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+
     gap: 1rem;
     margin-bottom: 1rem;
 }
 
-header > ul > button {
-    min-width: 20%;
+header > nav > button {
+    min-width: 100%;
 }
 
 button {

@@ -1,10 +1,12 @@
 import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
+import { initHeader } from "./header";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket from "./socket";
 import { initViewport } from "./viewport";
 
 drawing.initialize();
+initHeader();
 initViewport();
 
 socket.onmessage = function (event) {
