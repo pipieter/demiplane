@@ -2,12 +2,21 @@ import { makeElementDraggable } from "./movement";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
-export const background = document.getElementById("drawing-background-image") as unknown as SVGImageElement;
+export const background = document.getElementById("drawing-background") as unknown as SVGElement;
+export const backgroundImage = document.getElementById("drawing-background-image") as unknown as SVGImageElement;
 export const container = document.getElementById("drawing-container")!;
+export const drawingObjects = document.getElementById("drawing-objects") as unknown as SVGSVGElement;
+export const contents = document.getElementById("drawing") as unknown as SVGSVGElement;
 export let selected: SVGElement[] = [];
 
-function setBackground(href: string) {
-  background.setAttribute("href", href);
+function setBackground(href: string, width: number, height: number) {
+  backgroundImage.setAttribute("href", href);
+  backgroundImage.setAttribute("width", `${width}px`);
+  backgroundImage.setAttribute("height", `${height}px`);
+  background.setAttribute("width", `${width}px`);
+  background.setAttribute("height", `${height}px`);
+  drawingObjects.setAttribute("width", `${width}px`);
+  drawingObjects.setAttribute("height", `${height}px`);
 }
 
 export function clearSelection() {

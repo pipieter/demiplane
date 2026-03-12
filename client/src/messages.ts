@@ -54,7 +54,11 @@ export interface BackgroundRequestMessage {
 /** Set the background image */
 export interface BackgroundResponseMessage {
   type: "background";
-  href: string;
+  background: {
+    href: string;
+    width: number;
+    height: number;
+  };
 }
 
 export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage | BackgroundRequestMessage;

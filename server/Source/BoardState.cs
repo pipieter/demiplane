@@ -7,7 +7,7 @@ public class ConcurrentBoardState
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
     private readonly Grid.Grid _grid = new(64, 0, 0);
-    private string _backgroundHref = "";
+    private readonly Background _background = new("", 1024, 1024);
 
     public bool AddToken(Token token)
     {
@@ -58,19 +58,21 @@ public class ConcurrentBoardState
         }
     }
 
-    public void SetBackgroundHref(string href)
+    public void SetBackground(Background background)
     {
         lock (_lock)
         {
-            _backgroundHref = href;
+            _background.href = background.href;
+            _background.width = background.width;
+            _background.height = background.height;
         }
     }
 
-    public string GetBackgroundHref()
+    public Background GetBackground()
     {
         lock (_lock)
         {
-            return _backgroundHref;
+            return _background.Clone();
         }
     }
 }

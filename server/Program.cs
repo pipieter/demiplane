@@ -81,15 +81,13 @@ public class Startup
         else if (json.type == "request_background")
         {
             string base64 = json.data;
-            string filename = $"background-${Guid.NewGuid()}";
-            string? href = Util.Image.SaveBase64Image(filename, base64);
-
-            if (href == null)
+            Background? background = Background.CreateFromBase64(base64);
+            if (background == null)
                 return;
 
-            _state.SetBackgroundHref(href);
-            BackgroundResponseMessage background = new(_state.GetBackgroundHref());
-            await BroadcastMessage(JsonConvert.SerializeObject(background));
+            _state.SetBackground(background);
+            BackgroundResponseMessage response = new(_state.GetBackground());
+            await BroadcastMessage(JsonConvert.SerializeObject(response));
         }
     }
 
@@ -104,6 +102,9 @@ public class Startup
             CreateResponseMessage create = new(token);
             await SendMessage(socket, JsonConvert.SerializeObject(create));
         }
+        // Send teh background
+        BackgroundResponseMessage background = new(_state.GetBackground());
+        await BroadcastMessage(JsonConvert.SerializeObject(background));
 
         // A large buffer is required to upload image data
         var buffer = new byte[1024 * 1024 * 100];

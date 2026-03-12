@@ -27,8 +27,8 @@ public record struct GridResponseMessage(Grid.Grid grid)
     public Grid.Grid grid = grid;
 }
 
-public record struct BackgroundResponseMessage(string href)
+public record struct BackgroundResponseMessage(Background background)
 {
     public string type = "background";
-    public string href = href;
+    public Background background = background;
 }

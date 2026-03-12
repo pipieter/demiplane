@@ -18,8 +18,8 @@ socket.onmessage = function (event) {
   } else if (data.type === "grid") {
     setGrid(data.grid);
   } else if (data.type == "background") {
-    const href = BackendURL + data.href;
-    drawing.setBackground(href);
+    const href = BackendURL + data.background.href;
+    drawing.setBackground(href, data.background.width, data.background.height);
   }
 };
 
