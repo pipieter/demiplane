@@ -1,9 +1,9 @@
 export let gridSize = 64;
-export let gridOffset = { x: 0, y: 0 };
+export const gridOffset = { x: 0, y: 0 };
 
-const gridSizeInput = document.getElementById('grid-size') as HTMLInputElement | null;
-const gridOffsetXInput = document.getElementById('grid-offset-X') as HTMLInputElement | null;
-const gridOffsetYInput = document.getElementById('grid-offset-Y') as HTMLInputElement | null;
+const gridSizeInput = document.getElementById("grid-size") as HTMLInputElement | null;
+const gridOffsetXInput = document.getElementById("grid-offset-X") as HTMLInputElement | null;
+const gridOffsetYInput = document.getElementById("grid-offset-Y") as HTMLInputElement | null;
 
 export function setGrid(newSize: number, offsetX: number = 0, offsetY: number = 0) {
   gridSize = newSize;
@@ -31,33 +31,30 @@ export function setGrid(newSize: number, offsetX: number = 0, offsetY: number = 
   gridPatternElement.setAttribute("height", `${gridSize}px`);
   path.setAttribute("d", `M ${gridSize} 0 L 0 0 0 ${gridSize}`);
 
-  gridPatternElement.setAttribute(
-    "patternTransform",
-    `translate(${gridOffset.x}, ${gridOffset.y})`
-  );
+  gridPatternElement.setAttribute("patternTransform", `translate(${gridOffset.x}, ${gridOffset.y})`);
 }
 
-export function getGridLockedCoordinates(x: number, y: number): { x: number, y: number } {
+export function getGridLockedCoordinates(x: number, y: number): { x: number; y: number } {
   const localX = x - gridOffset.x;
   const localY = y - gridOffset.y;
 
   return {
     x: Math.floor(localX / gridSize) * gridSize + gridSize / 2 + gridOffset.x,
-    y: Math.floor(localY / gridSize) * gridSize + gridSize / 2 + gridOffset.y
+    y: Math.floor(localY / gridSize) * gridSize + gridSize / 2 + gridOffset.y,
   };
 }
 
-gridSizeInput?.addEventListener('input', () => {
+gridSizeInput?.addEventListener("input", () => {
   const size = Number(gridSizeInput.value);
-  setGrid(size, gridOffset.x, gridOffset.y)
-})
+  setGrid(size, gridOffset.x, gridOffset.y);
+});
 
-gridOffsetXInput?.addEventListener('input', () => {
+gridOffsetXInput?.addEventListener("input", () => {
   const offset = Number(gridOffsetXInput.value);
-  setGrid(gridSize, offset, gridOffset.y)
-})
+  setGrid(gridSize, offset, gridOffset.y);
+});
 
-gridOffsetYInput?.addEventListener('input', () => {
+gridOffsetYInput?.addEventListener("input", () => {
   const offset = Number(gridOffsetYInput.value);
-  setGrid(gridSize, gridOffset.x, offset)
-})
+  setGrid(gridSize, gridOffset.x, offset);
+});

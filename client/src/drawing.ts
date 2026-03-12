@@ -41,9 +41,7 @@ function initialize() {
     if ((evt.buttons & 1) !== 1) return;
     if (selectedId === null) return;
 
-    const { x, y } = shift
-      ? getGridLockedCoordinates(evt.offsetX, evt.offsetY)
-      : { x: evt.offsetX, y: evt.offsetY };
+    const { x, y } = shift ? getGridLockedCoordinates(evt.offsetX, evt.offsetY) : { x: evt.offsetX, y: evt.offsetY };
 
     socket.send(
       JSON.stringify({
