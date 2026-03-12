@@ -1,3 +1,4 @@
 .vscode
+/workspaceConfiguration
 .env
 demiplane.sln
