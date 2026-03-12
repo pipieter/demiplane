@@ -1,5 +1,4 @@
 using Server.Tokens;
-using Server.Grid;
 
 namespace Server;
 
@@ -52,6 +51,9 @@ public class ConcurrentBoardState
 
     public Grid.Grid GetGrid()
     {
-        return _grid;
+        lock (_lock)
+        {
+            return _grid.Clone();
+        }
     }
 }

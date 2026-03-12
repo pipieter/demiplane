@@ -10,4 +10,9 @@ public class Grid(int size, int offsetX, int offsetY)
 {
     public int size = size;
     public Offset offset = new(offsetX, offsetY);
+
+    public Grid Clone()
+    {
+        return new Grid(size, offset.x, offset.y);
+    }
 }
