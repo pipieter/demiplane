@@ -18,24 +18,52 @@ socket.onmessage = function (event) {
 };
 
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
+const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 
-randomCircleButton.onclick = () => {
-  const x = Math.floor(Math.random() * 1280);
-  const y = Math.floor(Math.random() * 600);
-  const r = grid.size / 2;
+function getRandomPosition(): { x: number; y: number } {
+  return {
+    x: Math.floor(Math.random() * 1280),
+    y: Math.floor(Math.random() * 600),
+  };
+}
 
+function getRandomColor(): string {
   const colors = ["red", "blue", "orange", "yellow", "green", "purple", "pink", "black", "cyan", "lime"];
-  const color = colors[Math.floor(Math.random() * colors.length)];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+randomCircleButton.onclick = () => {
+  const { x, y } = getRandomPosition();
+  const r = grid.size / 2;
 
   const message: CreateRequestMessage = {
     type: "request_create",
     create: {
       type: "circle",
+      color: getRandomColor(),
       x,
       y,
       r,
-      color,
+    },
+  };
+  socket.send(JSON.stringify(message));
+};
+
+randomRectangleButton.onclick = () => {
+  const { x, y } = getRandomPosition();
+  const w = grid.size;
+  const h = grid.size;
+
+  const message: CreateRequestMessage = {
+    type: "request_create",
+    create: {
+      type: "rectangle",
+      color: getRandomColor(),
+      x,
+      y,
+      w,
+      h,
     },
   };
   socket.send(JSON.stringify(message));
@@ -57,8 +85,7 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
       return;
     }
 
-    const x = Math.floor(Math.random() * 1280);
-    const y = Math.floor(Math.random() * 600);
+    const { x, y } = getRandomPosition();
     const w = grid.size;
     const h = grid.size;
 
