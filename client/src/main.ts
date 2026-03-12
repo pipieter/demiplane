@@ -37,7 +37,6 @@ function getRandomColor(): string {
 
 randomCircleButton.onclick = () => {
   const { x, y } = getRandomPosition();
-  const r = grid.size / 2;
 
   const message: CreateRequestMessage = {
     type: "request_create",
@@ -46,7 +45,8 @@ randomCircleButton.onclick = () => {
       color: getRandomColor(),
       x,
       y,
-      r,
+      w: grid.size / 2,
+      h: grid.size / 2,
     },
   };
   socket.send(JSON.stringify(message));

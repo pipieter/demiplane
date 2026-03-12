@@ -3,7 +3,8 @@ export interface CreationDataCircle {
   color: string;
   x: number;
   y: number;
-  r: number;
+  w: number;
+  h: number;
 }
 
 export interface CreationDataRectangle {
@@ -24,33 +25,27 @@ export interface CreationDataImage {
   h: number;
 }
 
-export interface TokenCircle {
+interface AbstractToken {
   id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface TokenCircle extends AbstractToken {
   type: "circle";
   color: string;
-  x: number;
-  y: number;
-  r: number;
 }
 
-export interface TokenRectangle {
-  id: string;
+export interface TokenRectangle extends AbstractToken {
   type: "rectangle";
   color: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
 }
 
-export interface TokenImage {
-  id: string;
+export interface TokenImage extends AbstractToken {
   type: "image";
   href: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
 }
 
 export type CreationData = CreationDataCircle | CreationDataImage | CreationDataRectangle;
