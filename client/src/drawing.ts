@@ -32,12 +32,11 @@ function cursorOnSelected(event: MouseEvent, detectBoxScaling: number = 2): bool
   if (!selected) return false;
 
   const bbox = selected.getBBox();
-  const dx = event.offsetX - bbox.x - (bbox.width / 2);
-  const dy = event.offsetY - bbox.y - (bbox.height / 2);
+  const dx = event.offsetX - bbox.x - bbox.width / 2;
+  const dy = event.offsetY - bbox.y - bbox.height / 2;
 
   // Applying a scaling on the detection box makes drag movement more reliable.
-  return (Math.abs(dx) < (bbox.width * detectBoxScaling))
-    && (Math.abs(dy) < (bbox.height * detectBoxScaling));
+  return Math.abs(dx) < bbox.width * detectBoxScaling && Math.abs(dy) < bbox.height * detectBoxScaling;
 }
 
 function initialize() {
