@@ -1,16 +1,15 @@
 export function initHeader() {
-    document.querySelectorAll(".tab-button").forEach(button => {
-        button.addEventListener("click", () => {
+  document.querySelectorAll(".tab-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.getAttribute("data-tab");
 
-            const tab = button.getAttribute('data-tab')
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
+        (panel as HTMLElement).hidden = true;
+      });
 
-            document.querySelectorAll(".tab-panel").forEach(panel => {
-                (panel as HTMLElement).hidden = true;
-            });
-
-            const activeTab = document.querySelector("#tab-" + tab) as HTMLElement;
-            if (!activeTab) throw `Unknown tab ${tab}.`
-            activeTab.hidden = false;
-        });
+      const activeTab = document.querySelector("#tab-" + tab) as HTMLElement;
+      if (!activeTab) throw `Unknown tab ${tab}.`;
+      activeTab.hidden = false;
     });
+  });
 }
