@@ -19,6 +19,16 @@ public abstract class Token(string id, int x, int y)
             return new TokenCircle(id, color, x, y, r);
         }
 
+        if (create.type == "rectangle")
+        {
+            string color = create.color;
+            int x = create.x;
+            int y = create.y;
+            int w = create.w;
+            int h = create.h;
+            return new TokenRectangle(id, color, x, y, w, h);
+        }
+
         if (create.type == "image")
         {
             string data = create.data;
@@ -42,6 +52,14 @@ public class TokenCircle(string id, string color, int x, int y, int r) : Token(i
     public string type = "circle";
     public string color = color;
     public int r = r;
+}
+
+public class TokenRectangle(string id, string color, int x, int y, int w, int h) : Token(id, x, y)
+{
+    public string type = "rectangle";
+    public string color = color;
+    public int w = w;
+    public int h = h;
 }
 
 public class TokenImage(string id, string href, int x, int y, int w, int h) : Token(id, x, y)
