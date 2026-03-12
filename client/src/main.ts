@@ -3,6 +3,7 @@ import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { uploadImageToBackend } from "./socket";
+import { readBase64 } from "./util";
 import { viewport } from "./viewport";
 
 drawing.initialize();
@@ -73,7 +74,7 @@ randomRectangleButton.onclick = () => {
   socket.send(JSON.stringify(message));
 };
 
-uploadTokenInput.addEventListener("change", (evt: Event) => {
+uploadTokenInput.addEventListener("change", async (evt: Event) => {
   // @ts-expect-error Files should be a valid field
   const file = evt.target?.files[0];
   if (!file) {
@@ -81,37 +82,32 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = async (evt) => {
-    const base64 = evt.target?.result?.toString();
-    if (!base64) {
-      console.error("Could not read file.");
-      return;
-    }
+  const base64 = await readBase64(file);
+  if (!base64) {
+    console.error("Could not read file.");
+    return;
+  }
 
-    const href = await uploadImageToBackend(base64);
-    if (!href) {
-      console.error("Could not upload image to server.");
-      return;
-    }
+  const href = await uploadImageToBackend(base64);
+  if (!href) {
+    console.error("Could not upload image to server.");
+    return;
+  }
 
-    const { x, y } = getRandomPosition();
-    const w = grid.size;
-    const h = grid.size;
+  const { x, y } = getRandomPosition();
+  const w = grid.size;
+  const h = grid.size;
 
-    const message: CreateRequestMessage = {
-      type: "request_create",
-      create: {
-        type: "image",
-        href,
-        x,
-        y,
-        w,
-        h,
-      },
-    };
-    socket.send(JSON.stringify(message));
+  const message: CreateRequestMessage = {
+    type: "request_create",
+    create: {
+      type: "image",
+      href,
+      x,
+      y,
+      w,
+      h,
+    },
   };
-
-  reader.readAsDataURL(file);
+  socket.send(JSON.stringify(message));
 });
