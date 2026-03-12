@@ -1,6 +1,7 @@
 import { clearSelection, container, selected } from "./drawing";
 import { getGridLockedCoordinates } from "./grid";
 import socket from "./socket";
+import { getZoomTranslatedCoords } from "./viewport";
 
 export function cursorWithinElement(e: MouseEvent, element: Element): boolean {
   const { left, right, top, bottom } = element.getBoundingClientRect();
@@ -26,11 +27,12 @@ export function makeElementDraggable(element: SVGElement) {
   }
 
   function dragElement(e: MouseEvent) {
+    const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const { x, y } = e.shiftKey
-      ? getGridLockedCoordinates(e.offsetX, e.offsetY)
+      ? getGridLockedCoordinates(cursor.x, cursor.y)
       : {
-          x: e.offsetX - element.getBoundingClientRect().width / 2,
-          y: e.offsetY - element.getBoundingClientRect().height / 2,
+          x: cursor.x - element.getBoundingClientRect().width / 2,
+          y: cursor.y - element.getBoundingClientRect().height / 2,
         };
 
     if (!cursorWithinElement(e, container)) return;

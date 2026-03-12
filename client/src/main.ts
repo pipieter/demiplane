@@ -2,9 +2,11 @@ import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { BackendURL } from "./socket";
+import { initViewport } from "./viewport";
 import { readFileContentsBase64 } from "./util";
 
 drawing.initialize();
+initViewport();
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
