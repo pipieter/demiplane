@@ -46,8 +46,8 @@ export function getGridLockedCoordinates(x: number, y: number): { x: number; y: 
   const localY = y - grid.offset.y;
 
   return {
-    x: Math.floor(localX / grid.size) * grid.size + grid.size / 2 + grid.offset.x,
-    y: Math.floor(localY / grid.size) * grid.size + grid.size / 2 + grid.offset.y,
+    x: Math.floor(localX / grid.size) * grid.size + grid.offset.x,
+    y: Math.floor(localY / grid.size) * grid.size + grid.offset.y,
   };
 }
 

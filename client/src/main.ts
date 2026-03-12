@@ -59,8 +59,8 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
 
     const x = Math.floor(Math.random() * 1280);
     const y = Math.floor(Math.random() * 600);
-    const w = gridSize;
-    const h = gridSize;
+    const w = grid.size;
+    const h = grid.size;
 
     const message: CreateRequestMessage = {
       type: "request_create",
