@@ -2,7 +2,7 @@ import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
-import socket from "./socket";
+import socket, { uploadImageToBackend } from "./socket";
 import { viewport } from "./viewport";
 
 drawing.initialize();
@@ -82,10 +82,16 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
   }
 
   const reader = new FileReader();
-  reader.onload = (evt) => {
+  reader.onload = async (evt) => {
     const base64 = evt.target?.result?.toString();
     if (!base64) {
       console.error("Could not read file.");
+      return;
+    }
+
+    const href = await uploadImageToBackend(base64);
+    if (!href) {
+      console.error("Could not upload image to server.");
       return;
     }
 
@@ -97,7 +103,7 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
       type: "request_create",
       create: {
         type: "image",
-        data: base64,
+        href,
         x,
         y,
         w,
