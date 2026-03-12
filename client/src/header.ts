@@ -1,4 +1,4 @@
-export function initHeader() {
+function initialize() {
   document.querySelectorAll(".tab-button").forEach((button) => {
     button.addEventListener("click", () => {
       const tab = button.getAttribute("data-tab");
@@ -13,3 +13,5 @@ export function initHeader() {
     });
   });
 }
+
+export const header = { initialize };
