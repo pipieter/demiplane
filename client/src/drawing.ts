@@ -1,4 +1,4 @@
-import { getGridLockedCoordinates, grid, setGrid } from "./grid";
+import { getGridLockedCoordinates } from "./grid";
 import socket from "./socket";
 import type { Token } from "./token";
 

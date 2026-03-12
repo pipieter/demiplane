@@ -35,14 +35,14 @@ export interface MoveResponseMessage {
 
 /** Request the grid to be adjusted */
 export interface GridRequestMessage {
-  type: "request_grid",
-  grid: GridData
+  type: "request_grid";
+  grid: GridData;
 }
 
 /** Adjust the grid */
 export interface GridResponseMessage {
-  type: "grid",
-  grid: GridData
+  type: "grid";
+  grid: GridData;
 }
 
 export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage;

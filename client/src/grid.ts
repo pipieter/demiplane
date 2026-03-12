@@ -5,7 +5,7 @@ export interface GridData {
   offset: {
     x: number;
     y: number;
-  }
+  };
 }
 
 export let grid: GridData = { size: 64, offset: { x: 0, y: 0 } };
@@ -14,8 +14,8 @@ const gridSizeInput = document.getElementById("grid-size") as HTMLInputElement |
 const gridOffsetXInput = document.getElementById("grid-offset-X") as HTMLInputElement | null;
 const gridOffsetYInput = document.getElementById("grid-offset-Y") as HTMLInputElement | null;
 
-export function setGrid(grid: GridData) {
-  grid = grid;
+export function setGrid(gridData: GridData) {
+  grid = gridData;
 
   if (gridSizeInput) gridSizeInput.value = grid.size.toString();
   if (gridOffsetXInput) {
@@ -55,22 +55,22 @@ function sendGridRequest() {
   socket.send(
     JSON.stringify({
       type: "request_grid",
-      grid: grid
+      grid: grid,
     }),
   );
 }
 
 gridSizeInput?.addEventListener("input", () => {
   grid.size = Number(gridSizeInput.value);
-  sendGridRequest()
+  sendGridRequest();
 });
 
 gridOffsetXInput?.addEventListener("input", () => {
   grid.offset.x = Number(gridOffsetXInput.value);
-  sendGridRequest()
+  sendGridRequest();
 });
 
 gridOffsetYInput?.addEventListener("input", () => {
   grid.offset.y = Number(gridOffsetYInput.value);
-  sendGridRequest()
+  sendGridRequest();
 });
