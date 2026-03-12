@@ -42,8 +42,8 @@ export function makeElementDraggable(element: SVGElement) {
         type: "request_move",
         move: {
           id: element.id,
-          x: x,
-          y: y,
+          x,
+          y,
         },
       }),
     );
