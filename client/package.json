@@ -18,6 +18,9 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "@types/d3-zoom": "^3.0.8",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
     "dotenv": "^17.3.1"
   }
 }

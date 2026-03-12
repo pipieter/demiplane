@@ -48,6 +48,17 @@ button:hover {
     color: black;
 }
 
+#drawing-container {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#drawing {
+    display: block;
+}
+
 #drawing-objects > * {
     transition: transform 0.2s ease-out, filter 0.2s ease;
     transform-box: fill-box;
