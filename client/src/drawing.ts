@@ -7,8 +7,7 @@ export let selected: SVGElement[] = [];
 
 export function clearSelection() {
   for (const element of selected) {
-    if (element.classList.contains('selected'))
-      element.classList.remove('selected');
+    if (element.classList.contains("selected")) element.classList.remove("selected");
   }
   selected = [];
 }
