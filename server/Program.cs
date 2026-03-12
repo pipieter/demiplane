@@ -90,6 +90,9 @@ public class Startup
 
     private async Task HandleWebSocket(WebSocket socket)
     {
+        GridResponseMessage gridResponse = new(_state.GetGrid());
+        await SendMessage(socket, JsonConvert.SerializeObject(gridResponse));
+
         // Send the history to the socket
         foreach (var token in _state.Tokens())
         {

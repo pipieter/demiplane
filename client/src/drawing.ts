@@ -31,7 +31,6 @@ function getObjectsCollection(): SVGSVGElement {
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
-  setGrid(grid); // TODO Load grid from server on start (?)
   background.onclick = unselect;
   container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");
