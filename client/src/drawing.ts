@@ -1,4 +1,4 @@
-import { getGridLockedCoordinate, setGridSize } from "./grid";
+import { getGridLockedCoordinates } from "./grid";
 import socket, { BackendURL } from "./socket";
 import type { Token } from "./token";
 
@@ -38,7 +38,6 @@ function getObjectsCollection(): SVGSVGElement {
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
-  setGridSize(64);
   background.onclick = unselect;
   container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");
@@ -48,9 +47,7 @@ function initialize() {
     if ((evt.buttons & 1) !== 1) return;
     if (selectedId === null) return;
 
-    // TODO find a cleaner way of doing this
-    const x = shift ? getGridLockedCoordinate(evt.offsetX) : evt.offsetX;
-    const y = shift ? getGridLockedCoordinate(evt.offsetY) : evt.offsetY;
+    const { x, y } = shift ? getGridLockedCoordinates(evt.offsetX, evt.offsetY) : { x: evt.offsetX, y: evt.offsetY };
 
     socket.send(
       JSON.stringify({
