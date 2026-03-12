@@ -15,11 +15,12 @@ export function clearSelection() {
 function move(id: string, x: number, y: number) {
   const element = document.getElementById(id) as unknown as SVGElement;
 
-  if (element.tagName === "circle") {
+  if (element.tagName === "ellipse") {
     // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    const r = parseInt(element.getAttribute("r") ?? "0");
-    element.setAttribute("cx", (x + r).toString());
-    element.setAttribute("cy", (y + r).toString());
+    const w = parseInt(element.getAttribute("rx") ?? "0");
+    const h = parseInt(element.getAttribute("ry") ?? "0");
+    element.setAttribute("cx", (x + w).toString());
+    element.setAttribute("cy", (y + h).toString());
   } else {
     element.setAttribute("x", x.toString());
     element.setAttribute("y", y.toString());
@@ -43,13 +44,14 @@ function createToken(token: Token) {
   let element: SVGElement;
 
   if (token.type === "circle") {
-    element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    element = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
     element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
     // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    element.setAttribute("cx", (token.x + token.r).toString());
-    element.setAttribute("cy", (token.y + token.r).toString());
-    element.setAttribute("r", token.r.toString());
+    element.setAttribute("cx", (token.x + token.w).toString());
+    element.setAttribute("cy", (token.y + token.h).toString());
+    element.setAttribute("rx", token.w.toString());
+    element.setAttribute("ry", token.h.toString());
     element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "rectangle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
