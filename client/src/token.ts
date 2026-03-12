@@ -1,8 +1,4 @@
-export interface TokenId {
-  id: string;
-}
-
-export interface TokenDataCircle {
+export interface CreationDataCircle {
   type: "circle";
   color: string;
   x: number;
@@ -10,7 +6,33 @@ export interface TokenDataCircle {
   r: number;
 }
 
-export interface TokenCircle extends TokenDataCircle, TokenId {}
+export interface CreationDataImage {
+  type: "image";
+  data: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 
-export type TokenData = TokenDataCircle;
-export type Token = TokenCircle;
+export interface TokenCircle {
+  id: string;
+  type: "circle";
+  color: string;
+  x: number;
+  y: number;
+  r: number;
+}
+
+export interface TokenImage {
+  id: string;
+  type: "image";
+  href: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export type CreationData = CreationDataCircle | CreationDataImage;
+export type Token = TokenCircle | TokenImage;

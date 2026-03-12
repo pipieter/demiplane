@@ -11,7 +11,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    padding: 1rem 0rem;
+    padding: 1rem 1rem;
     z-index: 1000;
 }
 
@@ -21,6 +21,7 @@ header > ul {
     justify-content: space-evenly;
     
     gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 header > ul > button {

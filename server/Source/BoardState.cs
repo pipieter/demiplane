@@ -6,6 +6,7 @@ public class ConcurrentBoardState
 {
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
+    private Grid.Grid _grid = new(64, 0, 0);
 
     public bool AddToken(Token token)
     {
@@ -35,6 +36,24 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             return [.. _tokens];
+        }
+    }
+
+    public void SetGrid(int size, int offsetX, int offsetY)
+    {
+        lock (_lock)
+        {
+            _grid.size = size;
+            _grid.offset.x = offsetX;
+            _grid.offset.y = offsetY;
+        }
+    }
+
+    public Grid.Grid GetGrid()
+    {
+        lock (_lock)
+        {
+            return _grid.Clone();
         }
     }
 }

@@ -9,10 +9,20 @@
     <header>
       <ul>
         <button id="random-circle-button">Add circle</button>
-        <button>Placeholder</button>
+        <button>
+          <input id="upload-token-button" type="file" accept="image/*">Upload a token</button>
+        </button>
         <button>Placeholder</button>
         <button>Placeholder</button>
       </ul>
+      <div>
+        <label for="grid-size">size</label>
+        <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64">
+        <label for="grid-offset-X">offset X</label>
+        <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0">
+        <label for="grid-offset-Y">offset Y</label>
+        <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0">
+      </div>
     </header>
 
     <div id="drawing-container">
@@ -36,4 +46,4 @@
 
     <script type="module" src="./src/main.ts"></script>
   </body>
-</html>
+</ihtml>

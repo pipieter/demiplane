@@ -1,5 +1,5 @@
-import { getGridLockedCoordinate, setGridSize } from "./grid";
-import socket from "./socket";
+import { getGridLockedCoordinates } from "./grid";
+import socket, { BackendURL } from "./socket";
 import type { Token } from "./token";
 
 const container = document.getElementById("drawing") as unknown as SVGSVGElement;
@@ -17,10 +17,17 @@ function select(id: string) {
 }
 
 function move(id: string, x: number, y: number) {
-  const element = document.getElementById(id) as unknown as SVGSVGElement;
+  const element = document.getElementById(id) as unknown as SVGElement;
 
-  element.setAttribute("cx", x.toString());
-  element.setAttribute("cy", y.toString());
+  if (element.tagName === "circle") {
+    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
+    const r = parseInt(element.getAttribute("r") ?? "0");
+    element.setAttribute("cx", (x + r).toString());
+    element.setAttribute("cy", (y + r).toString());
+  } else {
+    element.setAttribute("x", x.toString());
+    element.setAttribute("y", y.toString());
+  }
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -42,7 +49,6 @@ function cursorOnSelected(event: MouseEvent, detectBoxScaling: number = 2): bool
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
-  setGridSize(64);
   background.onclick = unselect;
   container.onmousemove = (evt) => {
     const selectedId = selected?.getAttribute("id");
@@ -56,9 +62,7 @@ function initialize() {
       return;
     }
 
-    // TODO find a cleaner way of doing this
-    const x = shift ? getGridLockedCoordinate(evt.offsetX) : evt.offsetX;
-    const y = shift ? getGridLockedCoordinate(evt.offsetY) : evt.offsetY;
+    const { x, y } = shift ? getGridLockedCoordinates(evt.offsetX, evt.offsetY) : { x: evt.offsetX, y: evt.offsetY };
 
     socket.send(
       JSON.stringify({
@@ -76,19 +80,28 @@ function initialize() {
 function createToken(token: Token) {
   const collection = getObjectsCollection();
 
-  let element: SVGSVGElement;
+  let element: SVGElement;
 
   if (token.type === "circle") {
-    // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
     element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
-    element.setAttribute("cx", token.x.toString());
-    element.setAttribute("cy", token.y.toString());
+    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
+    element.setAttribute("cx", (token.x + token.r).toString());
+    element.setAttribute("cy", (token.y + token.r).toString());
     element.setAttribute("r", token.r.toString());
     element.setAttribute("tabindex", "-1"); // Makes object selectable
+  } else if (token.type === "image") {
+    const href = BackendURL + token.href;
+    element = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    element.setAttribute("id", token.id);
+    element.setAttribute("href", href);
+    element.setAttribute("x", token.x.toString());
+    element.setAttribute("y", token.y.toString());
+    element.setAttribute("width", token.w.toString());
+    element.setAttribute("height", token.h.toString());
   } else {
-    throw `Unsupported token type: ${token.type}`;
+    throw `Unsupported token data ${JSON.stringify(token)}`;
   }
 
   element.addEventListener("click", () => select(token.id));

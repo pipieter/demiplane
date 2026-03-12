@@ -1,9 +1,10 @@
-import type { Token, TokenData } from "./token";
+import type { GridData } from "./grid";
+import type { Token, CreationData } from "./token";
 
 /** Request to create a token on the drawing board */
 export interface CreateRequestMessage {
   type: "request_create";
-  create: TokenData;
+  create: CreationData;
 }
 
 /** Create a token on the drawing board */
@@ -32,5 +33,17 @@ export interface MoveResponseMessage {
   };
 }
 
-export type RequestMessage = CreateRequestMessage | MoveRequestMessage;
-export type ResponseMessage = CreateResponseMessage | MoveResponseMessage;
+/** Request the grid to be adjusted */
+export interface GridRequestMessage {
+  type: "request_grid";
+  grid: GridData;
+}
+
+/** Adjust the grid */
+export interface GridResponseMessage {
+  type: "grid";
+  grid: GridData;
+}
+
+export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage;
+export type ResponseMessage = CreateResponseMessage | MoveResponseMessage | GridResponseMessage;
