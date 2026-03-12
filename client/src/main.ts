@@ -2,8 +2,10 @@ import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket from "./socket";
+import { initViewport } from "./viewport";
 
 drawing.initialize();
+initViewport();
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
