@@ -1,7 +1,8 @@
 import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
-import type { CreateRequestMessage, ResponseMessage } from "./messages";
-import socket from "./socket";
+import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
+import socket, { BackendURL } from "./socket";
+import { readFileContentsBase64 } from "./util";
 
 drawing.initialize();
 
@@ -14,12 +15,16 @@ socket.onmessage = function (event) {
     drawing.move(data.move.id, data.move.x, data.move.y);
   } else if (data.type === "grid") {
     setGrid(data.grid);
+  } else if (data.type == "background") {
+    const href = BackendURL + data.href;
+    drawing.setBackground(href);
   }
 };
 
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
 const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
+const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
 
 function getRandomPosition(): { x: number; y: number } {
   return {
@@ -70,21 +75,8 @@ randomRectangleButton.onclick = () => {
 };
 
 uploadTokenInput.addEventListener("change", (evt: Event) => {
-  // @ts-expect-error Files should be a valid field
-  const file = evt.target?.files[0];
-  if (!file) {
-    console.error("Could not open file.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (evt) => {
-    const base64 = evt.target?.result?.toString();
-    if (!base64) {
-      console.error("Could not read file.");
-      return;
-    }
-
+  readFileContentsBase64(evt, (base64) => {
+    if (!base64) return;
     const { x, y } = getRandomPosition();
     const w = grid.size;
     const h = grid.size;
@@ -101,7 +93,17 @@ uploadTokenInput.addEventListener("change", (evt: Event) => {
       },
     };
     socket.send(JSON.stringify(message));
-  };
+  });
+});
 
-  reader.readAsDataURL(file);
+uploadBackgroundInput.addEventListener("change", (evt: Event) => {
+  readFileContentsBase64(evt, (base64) => {
+    if (!base64) return;
+
+    const message: BackgroundRequestMessage = {
+      type: "request_background",
+      data: base64,
+    };
+    socket.send(JSON.stringify(message));
+  });
 });

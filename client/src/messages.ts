@@ -45,5 +45,21 @@ export interface GridResponseMessage {
   grid: GridData;
 }
 
-export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage;
-export type ResponseMessage = CreateResponseMessage | MoveResponseMessage | GridResponseMessage;
+/** Request to change the background image */
+export interface BackgroundRequestMessage {
+  type: "request_background";
+  data: string;
+}
+
+/** Set the background image */
+export interface BackgroundResponseMessage {
+  type: "background";
+  href: string;
+}
+
+export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage | BackgroundRequestMessage;
+export type ResponseMessage =
+  | CreateResponseMessage
+  | MoveResponseMessage
+  | GridResponseMessage
+  | BackgroundResponseMessage;

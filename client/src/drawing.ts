@@ -2,8 +2,13 @@ import { makeElementDraggable } from "./movement";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
+export const background = document.getElementById("drawing-background-image") as unknown as SVGImageElement;
 export const container = document.getElementById("drawing-container")!;
 export let selected: SVGElement[] = [];
+
+function setBackground(href: string) {
+  background.setAttribute("href", href);
+}
 
 export function clearSelection() {
   for (const element of selected) {
@@ -77,4 +82,4 @@ function createToken(token: Token) {
   collection.appendChild(element);
 }
 
-export const drawing = { initialize, createToken, move };
+export const drawing = { initialize, createToken, move, setBackground };
