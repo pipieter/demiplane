@@ -28,6 +28,18 @@ function getObjectsCollection(): SVGSVGElement {
   return document.getElementById("drawing-objects");
 }
 
+function cursorOnSelected(event: MouseEvent, detectBoxScaling: number = 2): boolean {
+  if (!selected) return false;
+
+  const bbox = selected.getBBox();
+  const dx = event.offsetX - bbox.x - (bbox.width / 2);
+  const dy = event.offsetY - bbox.y - (bbox.height / 2);
+
+  // Applying a scaling on the detection box makes drag movement more reliable.
+  return (Math.abs(dx) < (bbox.width * detectBoxScaling))
+    && (Math.abs(dy) < (bbox.height * detectBoxScaling));
+}
+
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("drawing-background") as SVGSVGElement;
@@ -40,6 +52,10 @@ function initialize() {
     // Move the selected token if the left mouse button is down
     if ((evt.buttons & 1) !== 1) return;
     if (selectedId === null) return;
+    if (!cursorOnSelected(evt)) {
+      unselect();
+      return;
+    }
 
     // TODO find a cleaner way of doing this
     const x = shift ? getGridLockedCoordinate(evt.offsetX) : evt.offsetX;
