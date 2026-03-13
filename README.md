@@ -1,16 +1,12 @@
 # Demiplane
 
-Demiplane is an interactive collaborative whiteboard tool designed to be used as a lightweight virtual tabletop environment.
+Demiplane is an interactive collaborative whiteboard tool designed to be used as a lightweight virtual tabletop environment. Users can move tokens around, set a grid, and apply a background.
 
 # Usage
 
-Demiplane consists of a Typescript frontend server and C# backend server.
+Demiplane consists of a Typescript frontend server and C# backend server. The frontend server requires [Node.js](https://nodejs.org/en) 22+ and the backend server requires [.NET](https://dotnet.microsoft.com/en-us/download/dotnet) 9.0+.
 
-## Requirements
-
-The frontend server requires [Node.js](https://nodejs.org/en) 22+ and the backend server requires [.NET](https://dotnet.microsoft.com/en-us/download/dotnet) 9.0+.
-
-## Usage
+## Launching the servers
 
 The backend server can be launched by using the following command, which launches the server at port 5000.
 
