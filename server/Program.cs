@@ -5,14 +5,12 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Server.Messages;
 using Server.Tokens;
+using Server.Util;
 
 namespace Server;
 
@@ -21,11 +19,22 @@ public class Startup
     private readonly ConcurrentDictionary<WebSocket, string> _clients = new();
     private readonly ConcurrentBoardState _state = new();
 
-    public void ConfigureServices(IServiceCollection services) { }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy(
+                "AllowAllCors",
+                builder =>
+                    builder.AllowAnyMethod().AllowCredentials().SetIsOriginAllowed((host) => true).AllowAnyHeader()
+            );
+        });
+    }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseWebSockets();
+        app.UseCors("AllowAllCors");
         app.Use(
             async (context, next) =>
             {
@@ -36,6 +45,10 @@ public class Startup
 
                     await HandleWebSocket(webSocket);
                 }
+                if (context.Request.Method == HttpMethods.Post && context.Request.Path == "/images")
+                {
+                    await HandleImageUpload(context);
+                }
                 else
                 {
                     await next();
@@ -43,6 +56,53 @@ public class Startup
             }
         );
         app.UseStaticFiles();
+    }
+
+    private static async Task HandleImageUpload(HttpContext context)
+    {
+        // Read the request body
+        context.Request.EnableBuffering();
+        using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        context.Request.Body.Position = 0; // Reset the stream position
+
+        // If no body is given
+        if (body == null)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("{\"status\": \"error\", \"message\":\"Could not receive data.\"}");
+            return;
+        }
+
+        dynamic? contents = JsonConvert.DeserializeObject(body);
+        dynamic? data = contents?.data?.Value;
+
+        // If given data is not present or not a string
+        if (data is not string)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync(
+                "{\"status\": \"error\", \"message\":\"Invalid or missing data field, expected string.\"}"
+            );
+            return;
+        }
+
+        string name = $"image-{Guid.NewGuid()}";
+        ImageResult? result = Image.SaveBase64Image(name, data);
+        if (result == null)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("{\"status\": \"error\", \"message\":\"Could not parse image.\"}");
+            return;
+        }
+
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = 200;
+        await context.Response.WriteAsync($"{{\"status\": \"success\", \"href\": \"{result.href}\"}}");
+        return;
     }
 
     private async Task ProcessMessage(WebSocket socket, string? message)
@@ -77,11 +137,7 @@ public class Startup
         }
         else if (json.type == "request_grid")
         {
-            _state.SetGrid(
-                    (int)json.grid.size, 
-                    (int)json.grid.offset.x, 
-                    (int)json.grid.offset.y
-                );
+            _state.SetGrid((int)json.grid.size, (int)json.grid.offset.x, (int)json.grid.offset.y);
 
             GridResponseMessage gridResponse = new(_state.GetGrid());
             await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));

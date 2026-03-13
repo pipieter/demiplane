@@ -18,7 +18,7 @@ export interface CreationDataRectangle {
 
 export interface CreationDataImage {
   type: "image";
-  data: string;
+  href: string;
   x: number;
   y: number;
   w: number;
