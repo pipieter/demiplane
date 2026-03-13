@@ -1,4 +1,4 @@
-import { clearSelection, container, selected } from "./drawing";
+import { clearSelection, selected, whiteboard } from "./whiteboard";
 import { getGridLockedCoordinates } from "./grid";
 import { transform } from "./transform";
 import socket from "./socket";
@@ -38,7 +38,7 @@ export function makeElementDraggable(element: SVGElement) {
           y: cursor.y - element.getBoundingClientRect().height / 2,
         };
 
-    if (!cursorWithinElement(e, container)) return;
+    if (!cursorWithinElement(e, whiteboard.container)) return;
 
     socket.send(
       JSON.stringify({

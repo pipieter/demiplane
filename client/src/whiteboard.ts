@@ -3,8 +3,23 @@ import { transform } from "./transform";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
-export const container = document.getElementById("drawing-container")!;
+const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
+const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
+const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
+const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 export let selected: SVGElement[] = [];
+
+function setBackground(href: string | null, width: number, height: number) {
+  if (href) backgroundImage.setAttribute("href", href);
+  else backgroundImage.removeAttribute("href");
+
+  backgroundImage.setAttribute("width", `${width}px`);
+  backgroundImage.setAttribute("height", `${height}px`);
+  backgroundLayer.setAttribute("width", `${width}px`);
+  backgroundLayer.setAttribute("height", `${height}px`);
+  objectsLayer.setAttribute("width", `${width}px`);
+  objectsLayer.setAttribute("height", `${height}px`);
+}
 
 export function clearSelection() {
   for (const element of selected) {
@@ -31,12 +46,12 @@ function move(id: string, x: number, y: number) {
 
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  return document.getElementById("drawing-objects");
+  return document.getElementById("whiteboard-objects-layer");
 }
 
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  const background = document.getElementById("drawing-background") as SVGSVGElement;
+  const background = document.getElementById("whiteboard-background-layer") as SVGSVGElement;
   background.onclick = clearSelection;
 }
 
@@ -81,4 +96,4 @@ function createToken(token: Token) {
   collection.appendChild(element);
 }
 
-export const drawing = { initialize, createToken, move };
+export const whiteboard = { initialize, createToken, move, setBackground, container };

@@ -142,6 +142,17 @@ public class Startup
             GridResponseMessage gridResponse = new(_state.GetGrid());
             await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));
         }
+        else if (json.type == "request_background")
+        {
+            string href = json.href;
+            Background? background = Background.FindFromHref(href);
+            if (background == null)
+                return;
+
+            _state.SetBackground(background);
+            BackgroundResponseMessage response = new(_state.GetBackground());
+            await BroadcastMessage(JsonConvert.SerializeObject(response));
+        }
         else if (json.type == "request_size")
         {
             string id = json.size.id;
@@ -167,6 +178,9 @@ public class Startup
             CreateResponseMessage create = new(token);
             await SendMessage(socket, JsonConvert.SerializeObject(create));
         }
+        // Send the background
+        BackgroundResponseMessage background = new(_state.GetBackground());
+        await BroadcastMessage(JsonConvert.SerializeObject(background));
 
         // A large buffer is required to upload image data
         var buffer = new byte[1024 * 1024 * 100];

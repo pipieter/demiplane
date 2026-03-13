@@ -1,7 +1,7 @@
-import { selected } from "./drawing";
+import { selected } from "./whiteboard";
 import socket from "./socket";
 
-const resizeLayer = document.getElementById("drawing-resize");
+const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
 
 function showBox(element: SVGGraphicsElement) {

@@ -18,6 +18,9 @@
         <button>
           <input id="upload-token-button" type="file" accept="image/*">Upload a token</button>
         </button>
+        <button>
+          <input id="upload-background-button" type="file" accept="image/*">Upload background</button>
+        </button>
       </section>
       
       <section id="tab-settings" class="tab-panel" hidden>
@@ -30,21 +33,21 @@
       </section>
     </header>
 
-    <div id="drawing-container">
-      <svg id="drawing" width="1920px" height="1920px">
+    <div id="whiteboard-container">
+      <svg id="whiteboard" width="100vw" height="100vh">
         <g id="viewport">
-          <svg id="drawing-background">
+          <svg id="whiteboard-background-layer">
             <defs>
               <!-- Grid-size is declared through code -->
               <pattern id="grid-pattern" width="50px" height="50px" patternUnits="userSpaceOnUse">
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#666" stroke-width="1" />
-                </pattern>
-                </defs>
-                <rect fill="url(#grid-pattern)" width="100%" height="100%" />
-                </svg>
-
-          <svg id="drawing-objects"></svg>
-          <svg id="drawing-resize">
+              </pattern>
+            </defs>
+            <image id="whiteboard-background-image" width="1024px" height="1024px"/>
+            <rect id="whiteboard-background-grid" fill="url(#grid-pattern)" width="100%" height="100%" />
+          </svg>
+          <svg id="whiteboard-objects-layer"></svg>
+          <svg id="whiteboard-resize">
             <rect id="resize-box" fill="none" stroke="#4da3ff" stroke-width="1" pointer-events="none" />
           
             <rect class="resize-handle" id="handle-tr" data-dir="tl" width="8" height="8" fill="white" stroke="black" />
