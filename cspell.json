@@ -3,7 +3,7 @@
     "language": "en",
     "ignorePaths": [],
     "dictionaryDefinitions": [],
-    "dictionaries": [],
+    "dictionaries": ["fullstack", "softwareTerms", "csharp", "typescript", "html", "css"],
     "words": [
         "Demiplane",
         "discordsays",
