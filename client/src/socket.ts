@@ -6,3 +6,31 @@ export const BackendURL = location.host.includes(".discordsays.com") ? "/server"
 const socket = new WebSocket(BackendURL);
 
 export default socket;
+
+export async function uploadImageToBackend(base64: string): Promise<string | null> {
+  const url = BackendURL + "/images";
+  const body = JSON.stringify({ data: base64 });
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+  };
+
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    console.error(`Could not send image to backend.`);
+    return null;
+  }
+
+  const responseData = await response.json();
+
+  if (responseData?.status !== "success") {
+    console.error(`Could not upload image: ${responseData?.message}`);
+    return null;
+  }
+
+  return responseData?.href;
+}

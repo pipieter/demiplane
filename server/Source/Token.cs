@@ -1,6 +1,6 @@
 namespace Server.Tokens;
 
-public abstract class Token(string id, int x, int y,  int w, int h)
+public abstract class Token(string id, int x, int y, int w, int h)
 {
     public string id = id;
     public int x = x;
@@ -31,11 +31,7 @@ public abstract class Token(string id, int x, int y,  int w, int h)
 
         if (create.type == "image")
         {
-            string data = create.data;
-            string? href = Util.Image.SaveBase64Image(id, data);
-            if (href == null)
-                return null;
-
+            string href = create.href;
             return new TokenImage(id, href, x, y, w, h);
         }
 
