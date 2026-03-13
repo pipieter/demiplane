@@ -48,7 +48,7 @@ export interface GridResponseMessage {
 /** Request to change the background image */
 export interface BackgroundRequestMessage {
   type: "request_background";
-  data: string;
+  href: string;
 }
 
 /** Set the background image */

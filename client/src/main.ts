@@ -116,14 +116,29 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   socket.send(JSON.stringify(message));
 });
 
-uploadBackgroundInput.addEventListener("change", (evt: Event) => {
-  readFileContentsBase64(evt, (base64) => {
-    if (!base64) return;
+uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
+  // @ts-expect-error Files should be a valid field
+  const file = evt.target?.files[0];
+  if (!file) {
+    console.error("Could not open file.");
+    return;
+  }
 
-    const message: BackgroundRequestMessage = {
-      type: "request_background",
-      data: base64,
-    };
-    socket.send(JSON.stringify(message));
-  });
+  const base64 = await readBase64(file);
+  if (!base64) {
+    console.error("Could not read file.");
+    return;
+  }
+
+  const href = await uploadImageToBackend(base64);
+  if (!href) {
+    console.error("Could not upload image to server.");
+    return;
+  }
+
+  const message: BackgroundRequestMessage = {
+    type: "request_background",
+    href,
+  };
+  socket.send(JSON.stringify(message));
 });
