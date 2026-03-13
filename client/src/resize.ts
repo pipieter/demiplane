@@ -50,8 +50,6 @@ document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
 });
 
 function startResize(e: MouseEvent) {
-  console.log("hi");
-
   e.stopPropagation();
   const target = e.target as HTMLElement;
   resizeDir = target.dataset.dir ?? null;
@@ -71,7 +69,6 @@ function resizeMove(e: MouseEvent) {
 
   const dx = e.movementX;
   const dy = e.movementY;
-  console.log(dx, dy);
 
   switch (resizeDir) {
     case "br":
@@ -115,11 +112,8 @@ function resizeMove(e: MouseEvent) {
 }
 
 function stopResize() {
-  console.log("bye");
-
   document.removeEventListener("mousemove", resizeMove);
   document.removeEventListener("mouseup", stopResize);
-
   resizeDir = null;
 }
 
