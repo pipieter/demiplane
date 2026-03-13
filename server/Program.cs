@@ -142,6 +142,18 @@ public class Startup
             GridResponseMessage gridResponse = new(_state.GetGrid());
             await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));
         }
+        else if (json.type == "request_size")
+        {
+            string id = json.size.id;
+            int x = json.size.x;
+            int y = json.size.y;
+            int w = json.size.w;
+            int h = json.size.h;
+            _state.ResizeToken(id, x, y, w, h);
+
+            SizeResponseMessage size = new(new SizeResponseMessage.Size(id, x, y, w, h));
+            await BroadcastMessage(JsonConvert.SerializeObject(size));
+        }
     }
 
     private async Task HandleWebSocket(WebSocket socket)

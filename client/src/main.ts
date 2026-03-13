@@ -3,6 +3,7 @@ import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { uploadImageToBackend } from "./socket";
+import { transform } from "./transform";
 import { readBase64 } from "./util";
 import { viewport } from "./viewport";
 
@@ -13,12 +14,25 @@ viewport.initialize();
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
-  if (data.type === "create") {
-    drawing.createToken(data.create);
-  } else if (data.type === "move") {
-    drawing.move(data.move.id, data.move.x, data.move.y);
-  } else if (data.type === "grid") {
-    setGrid(data.grid);
+  switch (data.type) {
+    case "create":
+      drawing.createToken(data.create);
+      break;
+
+    case "move":
+      drawing.move(data.move.id, data.move.x, data.move.y);
+      break;
+
+    case "grid":
+      setGrid(data.grid);
+      break;
+
+    case "size":
+      transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
+      break;
+
+    default:
+      throw (`Unknown message type: ${data}`);
   }
 };
 

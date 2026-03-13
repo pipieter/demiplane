@@ -56,4 +56,20 @@ public class ConcurrentBoardState
             return _grid.Clone();
         }
     }
+
+    public bool ResizeToken(string id, int x, int y, int h, int w)
+    {
+        lock (_lock)
+        {
+            var token = _tokens.Find(token => token.id == id);
+            if (token == null)
+                return false;
+
+            token.x = x;
+            token.y = y;
+            token.w = w;
+            token.h = h;
+            return true;
+        }
+    }
 }

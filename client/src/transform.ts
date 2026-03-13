@@ -1,9 +1,10 @@
 import { selected } from "./drawing";
+import socket from "./socket";
 
 const resizeLayer = document.getElementById("drawing-resize");
 const resizeBox = document.getElementById("resize-box");
 
-function show(element: SVGGraphicsElement) {
+function showBox(element: SVGGraphicsElement) {
   if (!resizeBox) return;
   const box = element.getBBox();
 
@@ -22,7 +23,7 @@ function show(element: SVGGraphicsElement) {
   positionHandles(box);
 }
 
-function hide() {
+function hideBox() {
   if (resizeLayer) resizeLayer.style.display = "none";
 }
 
@@ -54,13 +55,20 @@ function startResize(e: MouseEvent) {
   const target = e.target as HTMLElement;
   resizeDir = target.dataset.dir ?? null;
 
-  document.addEventListener("mousemove", resizeMove);
+  document.addEventListener("mousemove", sendSizeRequest);
   document.addEventListener("mouseup", stopResize);
 }
 
-function resizeMove(e: MouseEvent) {
+function stopResize() {
+  document.removeEventListener("mousemove", sendSizeRequest);
+  document.removeEventListener("mouseup", stopResize);
+  resizeDir = null;
+}
+
+function sendSizeRequest(e: MouseEvent) {
   if (selected.length <= 0 || !resizeDir) return;
   const box = (selected[0] as SVGGraphicsElement).getBBox();
+  showBox(selected[0] as SVGGraphicsElement);
 
   let x = box.x;
   let y = box.y;
@@ -96,25 +104,35 @@ function resizeMove(e: MouseEvent) {
       break;
   }
 
-  if (selected[0].tagName === "ellipse") {
-    selected[0].setAttribute("cx", (x + width / 2).toString());
-    selected[0].setAttribute("cy", (y + height / 2).toString());
-    selected[0].setAttribute("rx", (width / 2).toString());
-    selected[0].setAttribute("ry", (height / 2).toString());
+  console.log("out", x, y, width, height);
+  socket.send(
+    JSON.stringify({
+      type: "request_size",
+      size: {
+        id: selected[0].id,
+        x,
+        y,
+        w: width,
+        h: height
+      },
+    }),
+  );
+}
+
+function resize(id: string, x: number, y: number, w: number, h: number) {
+  const element = document.getElementById(id) as unknown as SVGGraphicsElement;
+
+  if (element.tagName === "ellipse") {
+    element.setAttribute("cx", (x + w / 2).toString());
+    element.setAttribute("cy", (y + h / 2).toString());
+    element.setAttribute("rx", (w / 2).toString());
+    element.setAttribute("ry", (h / 2).toString());
   } else {
-    selected[0].setAttribute("x", x.toString());
-    selected[0].setAttribute("y", y.toString());
-    selected[0].setAttribute("width", width.toString());
-    selected[0].setAttribute("height", height.toString());
+    element.setAttribute("x", x.toString());
+    element.setAttribute("y", y.toString());
+    element.setAttribute("width", w.toString());
+    element.setAttribute("height", h.toString());
   }
-
-  resize.show(selected[0] as SVGGraphicsElement);
 }
 
-function stopResize() {
-  document.removeEventListener("mousemove", resizeMove);
-  document.removeEventListener("mouseup", stopResize);
-  resizeDir = null;
-}
-
-export const resize = { show, hide };
+export const transform = { showBox, hideBox, resize };

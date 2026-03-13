@@ -23,13 +23,37 @@ export interface MoveRequestMessage {
   };
 }
 
-/** Move a token the board */
+/** Move a token on the board */
 export interface MoveResponseMessage {
   type: "move";
   move: {
     id: string;
     x: number;
     y: number;
+  };
+}
+
+/** Request to resize a token on the drawing board */
+export interface SizeRequestMessage {
+  type: "request_size";
+  size: {
+    id: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+}
+
+/** Resize a token on the board */
+export interface SizeResponseMessage {
+  type: "size";
+  size: {
+    id: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
   };
 }
 
@@ -45,5 +69,5 @@ export interface GridResponseMessage {
   grid: GridData;
 }
 
-export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage;
-export type ResponseMessage = CreateResponseMessage | MoveResponseMessage | GridResponseMessage;
+export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage | SizeRequestMessage;
+export type ResponseMessage = CreateResponseMessage | MoveResponseMessage | GridResponseMessage | SizeResponseMessage;
