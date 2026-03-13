@@ -41,8 +41,8 @@ public static class Image
 
         // Note, due to how the ASP.NET Core works, static files need to be stored in wwwroot.
         // The href will be a subdirectory in wwwroot.
-        string localPath = Path.Join(Directory.GetCurrentDirectory(), "./wwwroot/images", filename);
-        string href = Path.Join("/images", filename);
+        string localPath = $"./wwwroot/images/{filename}";
+        string href = $"/images/{filename}";
         byte[] bytes = Convert.FromBase64String(data);
 
         File.WriteAllBytes(localPath, bytes);
