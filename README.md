@@ -19,6 +19,7 @@ The frontend can be run in development mode using the following command, which l
 
 ```bash
 cd client
+npm install
 npm run dev
 ```
 
