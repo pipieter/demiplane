@@ -2,11 +2,10 @@ import { makeElementDraggable } from "./movement";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
-export const background = document.getElementById("drawing-background") as unknown as SVGElement;
-export const backgroundImage = document.getElementById("drawing-background-image") as unknown as SVGImageElement;
-export const container = document.getElementById("drawing-container")!;
-export const drawingObjects = document.getElementById("drawing-objects") as unknown as SVGSVGElement;
-export const contents = document.getElementById("drawing") as unknown as SVGSVGElement;
+const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
+const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
+const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
+const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 export let selected: SVGElement[] = [];
 
 function setBackground(href: string | null, width: number, height: number) {
@@ -15,10 +14,10 @@ function setBackground(href: string | null, width: number, height: number) {
 
   backgroundImage.setAttribute("width", `${width}px`);
   backgroundImage.setAttribute("height", `${height}px`);
-  background.setAttribute("width", `${width}px`);
-  background.setAttribute("height", `${height}px`);
-  drawingObjects.setAttribute("width", `${width}px`);
-  drawingObjects.setAttribute("height", `${height}px`);
+  backgroundLayer.setAttribute("width", `${width}px`);
+  backgroundLayer.setAttribute("height", `${height}px`);
+  objectsLayer.setAttribute("width", `${width}px`);
+  objectsLayer.setAttribute("height", `${height}px`);
 }
 
 export function clearSelection() {
@@ -45,12 +44,12 @@ function move(id: string, x: number, y: number) {
 
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  return document.getElementById("drawing-objects");
+  return document.getElementById("whiteboard-objects-layer");
 }
 
 function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  const background = document.getElementById("drawing-background") as SVGSVGElement;
+  const background = document.getElementById("whiteboard-background-layer") as SVGSVGElement;
   background.onclick = clearSelection;
 }
 
@@ -95,4 +94,4 @@ function createToken(token: Token) {
   collection.appendChild(element);
 }
 
-export const drawing = { initialize, createToken, move, setBackground };
+export const whiteboard = { initialize, createToken, move, setBackground, container };
