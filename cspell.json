@@ -1,0 +1,15 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": ["fullstack", "softwareTerms", "csharp", "typescript", "html", "css"],
+    "words": [
+        "Demiplane",
+        "discordsays",
+        "Newtonsoft",
+        "wwwroot"
+    ],
+    "ignoreWords": [],
+    "import": []
+}
