@@ -1,12 +1,15 @@
 import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
+import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { BackendURL } from "./socket";
-import { initViewport } from "./viewport";
+import socket, { uploadImageToBackend }, { BackendURL } from "./socket";
+import { readBase64 } from "./util";
+import { viewport } from "./viewport";
 import { readFileContentsBase64 } from "./util";
 
 drawing.initialize();
-initViewport();
+header.initialize();
+viewport.initialize();
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -42,7 +45,6 @@ function getRandomColor(): string {
 
 randomCircleButton.onclick = () => {
   const { x, y } = getRandomPosition();
-  const r = grid.size / 2;
 
   const message: CreateRequestMessage = {
     type: "request_create",
@@ -51,7 +53,8 @@ randomCircleButton.onclick = () => {
       color: getRandomColor(),
       x,
       y,
-      r,
+      w: grid.size / 2,
+      h: grid.size / 2,
     },
   };
   socket.send(JSON.stringify(message));

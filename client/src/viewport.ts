@@ -1,8 +1,8 @@
 import * as d3 from "d3-selection";
 import * as d3Zoom from "d3-zoom";
 
-const svgDrawing = d3.select("#drawing");
-const viewport = d3.select("#viewport");
+const drawingElement = d3.select("#drawing");
+const viewportElement = d3.select("#viewport");
 
 export const zoom = d3Zoom
   .zoom()
@@ -17,16 +17,16 @@ export const zoom = d3Zoom
     );
   })
   .on("zoom", (event) => {
-    viewport.attr("transform", event.transform);
+    viewportElement.attr("transform", event.transform);
   });
 
-export function initViewport() {
+function initialize() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  svgDrawing.call(zoom as any);
+  drawingElement.call(zoom as any);
 }
 
 export function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
-  const node = svgDrawing.node() as SVGSVGElement;
+  const node = drawingElement.node() as SVGSVGElement;
   if (!node) return { x, y };
 
   const transform = d3Zoom.zoomTransform(node);
@@ -35,3 +35,5 @@ export function getZoomTranslatedCoords(x: number, y: number): { x: number; y: n
     y: (y - transform.y) / transform.k,
   };
 }
+
+export const viewport = { initialize };
