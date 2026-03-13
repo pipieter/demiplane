@@ -104,7 +104,6 @@ function sendSizeRequest(e: MouseEvent) {
       break;
   }
 
-  console.log("out", x, y, width, height);
   socket.send(
     JSON.stringify({
       type: "request_size",
