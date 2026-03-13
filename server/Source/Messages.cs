@@ -26,3 +26,9 @@ public record struct GridResponseMessage(Grid.Grid grid)
     public string type = "grid";
     public Grid.Grid grid = grid;
 }
+
+public record struct BackgroundResponseMessage(Background background)
+{
+    public string type = "background";
+    public Background background = background;
+}

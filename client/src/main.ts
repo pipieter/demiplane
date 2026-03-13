@@ -1,10 +1,10 @@
 import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
-import type { CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { uploadImageToBackend } from "./socket";
-import { readBase64 } from "./util";
+import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
+import socket, { BackendURL, uploadImageToBackend } from "./socket";
 import { viewport } from "./viewport";
+import { readBase64 } from "./util";
 
 drawing.initialize();
 header.initialize();
@@ -19,12 +19,17 @@ socket.onmessage = function (event) {
     drawing.move(data.move.id, data.move.x, data.move.y);
   } else if (data.type === "grid") {
     setGrid(data.grid);
+  } else if (data.type == "background") {
+    let href = null;
+    if (data.background.href) href = BackendURL + data.background.href;
+    drawing.setBackground(href, data.background.width, data.background.height);
   }
 };
 
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
 const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
+const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
 
 function getRandomPosition(): { x: number; y: number } {
   return {
@@ -108,6 +113,33 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       w,
       h,
     },
+  };
+  socket.send(JSON.stringify(message));
+});
+
+uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
+  // @ts-expect-error Files should be a valid field
+  const file = evt.target?.files[0];
+  if (!file) {
+    console.error("Could not open file.");
+    return;
+  }
+
+  const base64 = await readBase64(file);
+  if (!base64) {
+    console.error("Could not read file.");
+    return;
+  }
+
+  const href = await uploadImageToBackend(base64);
+  if (!href) {
+    console.error("Could not upload image to server.");
+    return;
+  }
+
+  const message: BackgroundRequestMessage = {
+    type: "request_background",
+    href,
   };
   socket.send(JSON.stringify(message));
 });
