@@ -85,9 +85,15 @@ export interface BackgroundResponseMessage {
   };
 }
 
-export type RequestMessage = CreateRequestMessage | MoveRequestMessage | GridRequestMessage | SizeRequestMessage | BackgroundRequestMessage;
+export type RequestMessage =
+  | CreateRequestMessage
+  | MoveRequestMessage
+  | GridRequestMessage
+  | SizeRequestMessage
+  | BackgroundRequestMessage;
 export type ResponseMessage =
   | CreateResponseMessage
   | MoveResponseMessage
-  | GridResponseMessage | SizeResponseMessage
+  | GridResponseMessage
+  | SizeResponseMessage
   | BackgroundResponseMessage;

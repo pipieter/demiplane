@@ -112,7 +112,7 @@ function sendSizeRequest(e: MouseEvent) {
         x,
         y,
         w: width,
-        h: height
+        h: height,
       },
     }),
   );

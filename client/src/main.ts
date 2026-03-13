@@ -26,7 +26,7 @@ socket.onmessage = function (event) {
     case "grid":
       setGrid(data.grid);
       break;
-    
+
     case "background":
       let href = null;
       if (data.background.href) href = BackendURL + data.background.href;
@@ -38,7 +38,7 @@ socket.onmessage = function (event) {
       break;
 
     default:
-      throw (`Unknown message type: ${data}`);
+      throw `Unknown message type: ${data}`;
   }
 };
 
