@@ -6,15 +6,12 @@ public class Background(string href, int width, int height)
     public int width = width;
     public int height = height;
 
-    public static Background? CreateFromBase64(string base64)
+    public static Background? FindFromHref(string href)
     {
-        string filename = $"background-${Guid.NewGuid()}";
-        string? href = Util.Image.SaveBase64Image(filename, base64);
-
-        if (href == null)
+        string fullPath = $"./wwwroot{href}";
+        if (!File.Exists(fullPath))
             return null;
 
-        string fullPath = $"./wwwroot{href}";
         SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(fullPath);
         return new(href, image.Size.Width, image.Size.Height);
     }

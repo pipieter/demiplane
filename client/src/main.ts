@@ -2,10 +2,9 @@ import { drawing } from "./drawing";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { uploadImageToBackend }, { BackendURL } from "./socket";
-import { readBase64 } from "./util";
+import socket, { BackendURL, uploadImageToBackend } from "./socket";
 import { viewport } from "./viewport";
-import { readFileContentsBase64 } from "./util";
+import { readBase64 } from "./util";
 
 drawing.initialize();
 header.initialize();
@@ -79,26 +78,42 @@ randomRectangleButton.onclick = () => {
   socket.send(JSON.stringify(message));
 };
 
-uploadTokenInput.addEventListener("change", (evt: Event) => {
-  readFileContentsBase64(evt, (base64) => {
-    if (!base64) return;
-    const { x, y } = getRandomPosition();
-    const w = grid.size;
-    const h = grid.size;
+uploadTokenInput.addEventListener("change", async (evt: Event) => {
+  // @ts-expect-error Files should be a valid field
+  const file = evt.target?.files[0];
+  if (!file) {
+    console.error("Could not open file.");
+    return;
+  }
 
-    const message: CreateRequestMessage = {
-      type: "request_create",
-      create: {
-        type: "image",
-        data: base64,
-        x,
-        y,
-        w,
-        h,
-      },
-    };
-    socket.send(JSON.stringify(message));
-  });
+  const base64 = await readBase64(file);
+  if (!base64) {
+    console.error("Could not read file.");
+    return;
+  }
+
+  const href = await uploadImageToBackend(base64);
+  if (!href) {
+    console.error("Could not upload image to server.");
+    return;
+  }
+
+  const { x, y } = getRandomPosition();
+  const w = grid.size;
+  const h = grid.size;
+
+  const message: CreateRequestMessage = {
+    type: "request_create",
+    create: {
+      type: "image",
+      href,
+      x,
+      y,
+      w,
+      h,
+    },
+  };
+  socket.send(JSON.stringify(message));
 });
 
 uploadBackgroundInput.addEventListener("change", (evt: Event) => {

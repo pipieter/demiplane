@@ -144,8 +144,8 @@ public class Startup
         }
         else if (json.type == "request_background")
         {
-            string base64 = json.data;
-            Background? background = Background.CreateFromBase64(base64);
+            string href = json.href;
+            Background? background = Background.FindFromHref(href);
             if (background == null)
                 return;
 
