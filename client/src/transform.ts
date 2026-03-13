@@ -9,7 +9,7 @@ function showBox(element: SVGGraphicsElement) {
   const box = element.getBBox();
 
   if (resizeLayer) resizeLayer.style.display = "block";
-  const offset = 5;
+  const offset = 3;
   box.x -= offset;
   box.y -= offset;
   box.width += offset * 2;
