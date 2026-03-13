@@ -1,4 +1,4 @@
-import { drawing } from "./drawing";
+import { whiteboard } from "./whiteboard";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
@@ -6,7 +6,7 @@ import socket, { BackendURL, uploadImageToBackend } from "./socket";
 import { viewport } from "./viewport";
 import { readBase64 } from "./util";
 
-drawing.initialize();
+whiteboard.initialize();
 header.initialize();
 viewport.initialize();
 
@@ -14,15 +14,15 @@ socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   if (data.type === "create") {
-    drawing.createToken(data.create);
+    whiteboard.createToken(data.create);
   } else if (data.type === "move") {
-    drawing.move(data.move.id, data.move.x, data.move.y);
+    whiteboard.move(data.move.id, data.move.x, data.move.y);
   } else if (data.type === "grid") {
     setGrid(data.grid);
   } else if (data.type == "background") {
     let href = null;
     if (data.background.href) href = BackendURL + data.background.href;
-    drawing.setBackground(href, data.background.width, data.background.height);
+    whiteboard.setBackground(href, data.background.width, data.background.height);
   }
 };
 

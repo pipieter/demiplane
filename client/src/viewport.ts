@@ -1,7 +1,7 @@
 import * as d3 from "d3-selection";
 import * as d3Zoom from "d3-zoom";
 
-const drawingElement = d3.select("#drawing");
+const whiteboardElement = d3.select("#whiteboard");
 const viewportElement = d3.select("#viewport");
 
 export const zoom = d3Zoom
@@ -13,7 +13,9 @@ export const zoom = d3Zoom
     const target = event.target as HTMLElement | SVGElement;
     if (!target) return true;
     return (
-      target.id === "drawing-background" || target.id === "drawing" || target.closest("#drawing-background") !== null
+      target.id === "whiteboard-background-layer" ||
+      target.id === "whiteboard" ||
+      target.closest("#whiteboard-background-layer") !== null
     );
   })
   .on("zoom", (event) => {
@@ -22,11 +24,11 @@ export const zoom = d3Zoom
 
 function initialize() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  drawingElement.call(zoom as any);
+  whiteboardElement.call(zoom as any);
 }
 
 export function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
-  const node = drawingElement.node() as SVGSVGElement;
+  const node = whiteboardElement.node() as SVGSVGElement;
   if (!node) return { x, y };
 
   const transform = d3Zoom.zoomTransform(node);

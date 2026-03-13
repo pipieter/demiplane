@@ -33,20 +33,20 @@
       </section>
     </header>
 
-    <div id="drawing-container">
-      <svg id="drawing" width="100vw" height="100vh">
+    <div id="whiteboard-container">
+      <svg id="whiteboard" width="100vw" height="100vh">
         <g id="viewport">
-          <svg id="drawing-background">
+          <svg id="whiteboard-background-layer">
             <defs>
               <!-- Grid-size is declared through code -->
               <pattern id="grid-pattern" width="50px" height="50px" patternUnits="userSpaceOnUse">
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#666" stroke-width="1" />
               </pattern>
             </defs>
-            <image id="drawing-background-image" width="1024px" height="1024px"/>
-            <rect fill="url(#grid-pattern)" width="100%" height="100%" />
+            <image id="whiteboard-background-image" width="1024px" height="1024px"/>
+            <rect id="whiteboard-background-grid" fill="url(#grid-pattern)" width="100%" height="100%" />
           </svg>
-          <svg id="drawing-objects"></svg>
+          <svg id="whiteboard-objects-layer"></svg>
         </g>
       </svg>
     </div>
