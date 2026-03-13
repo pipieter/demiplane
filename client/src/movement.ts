@@ -1,5 +1,6 @@
 import { clearSelection, selected, whiteboard } from "./whiteboard";
 import { getGridLockedCoordinates } from "./grid";
+import { transform } from "./transform";
 import socket from "./socket";
 import { getZoomTranslatedCoords } from "./viewport";
 
@@ -24,9 +25,11 @@ export function makeElementDraggable(element: SVGElement) {
     clearSelection();
     element.classList.add("selected");
     selected.push(element);
+    transform.showBox(element as SVGGraphicsElement);
   }
 
   function dragElement(e: MouseEvent) {
+    transform.hideBox();
     const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const { x, y } = e.shiftKey
       ? getGridLockedCoordinates(cursor.x, cursor.y)
@@ -52,5 +55,8 @@ export function makeElementDraggable(element: SVGElement) {
   function deselectElement() {
     document.onmouseup = null;
     document.onmousemove = null;
+    if (selected.length <= 0) {
+      transform.hideBox();
+    }
   }
 }

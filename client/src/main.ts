@@ -3,6 +3,7 @@ import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { BackendURL, uploadImageToBackend } from "./socket";
+import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { readBase64 } from "./util";
 
@@ -13,16 +14,31 @@ viewport.initialize();
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
-  if (data.type === "create") {
-    whiteboard.createToken(data.create);
-  } else if (data.type === "move") {
-    whiteboard.move(data.move.id, data.move.x, data.move.y);
-  } else if (data.type === "grid") {
-    setGrid(data.grid);
-  } else if (data.type == "background") {
-    let href = null;
-    if (data.background.href) href = BackendURL + data.background.href;
-    whiteboard.setBackground(href, data.background.width, data.background.height);
+  switch (data.type) {
+    case "create":
+      whiteboard.createToken(data.create);
+      break;
+
+    case "move":
+      whiteboard.move(data.move.id, data.move.x, data.move.y);
+      break;
+
+    case "grid":
+      setGrid(data.grid);
+      break;
+
+    case "background":
+      let href = null;
+      if (data.background.href) href = BackendURL + data.background.href;
+      whiteboard.setBackground(href, data.background.width, data.background.height);
+      break;
+
+    case "size":
+      transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
+      break;
+
+    default:
+      throw `Unknown message type: ${data}`;
   }
 };
 

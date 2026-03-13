@@ -47,6 +47,14 @@
             <rect id="whiteboard-background-grid" fill="url(#grid-pattern)" width="100%" height="100%" />
           </svg>
           <svg id="whiteboard-objects-layer"></svg>
+          <svg id="whiteboard-resize" style="display: none;">
+            <rect id="resize-box" fill="none" stroke="#4da3ff" stroke-width="1" pointer-events="none" />
+          
+            <rect class="resize-handle" id="handle-tr" data-dir="tl" width="8" height="8" fill="white" stroke="black" />
+            <rect class="resize-handle" id="handle-tl" data-dir="tr" width="8" height="8" fill="white" stroke="black" />
+            <rect class="resize-handle" id="handle-bl" data-dir="bl" width="8" height="8" fill="white" stroke="black" />
+            <rect class="resize-handle" id="handle-br" data-dir="br" width="8" height="8" fill="white" stroke="black" />
+          </svg>
         </g>
       </svg>
     </div>

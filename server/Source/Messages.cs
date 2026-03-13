@@ -32,3 +32,18 @@ public record struct BackgroundResponseMessage(Background background)
     public string type = "background";
     public Background background = background;
 }
+
+public record struct SizeResponseMessage(SizeResponseMessage.Size size)
+{
+    public string type = "size";
+    public Size move = size;
+
+    public record struct Size(string id, int x, int y, int w, int h)
+    {
+        public string id = id;
+        public int x = x;
+        public int y = y;
+        public int w = w;
+        public int h = h;
+    }
+}

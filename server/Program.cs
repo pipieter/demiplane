@@ -153,6 +153,18 @@ public class Startup
             BackgroundResponseMessage response = new(_state.GetBackground());
             await BroadcastMessage(JsonConvert.SerializeObject(response));
         }
+        else if (json.type == "request_size")
+        {
+            string id = json.size.id;
+            int x = json.size.x;
+            int y = json.size.y;
+            int w = json.size.w;
+            int h = json.size.h;
+            _state.ResizeToken(id, x, y, w, h);
+
+            SizeResponseMessage size = new(new SizeResponseMessage.Size(id, x, y, w, h));
+            await BroadcastMessage(JsonConvert.SerializeObject(size));
+        }
     }
 
     private async Task HandleWebSocket(WebSocket socket)
