@@ -1,4 +1,5 @@
 import { makeElementDraggable } from "./movement";
+import { resize } from "./resize";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
@@ -10,6 +11,7 @@ export function clearSelection() {
     if (element.classList.contains("selected")) element.classList.remove("selected");
   }
   selected = [];
+  resize.hide();
 }
 
 function move(id: string, x: number, y: number) {

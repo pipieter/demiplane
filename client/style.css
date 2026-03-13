@@ -87,3 +87,21 @@ button:hover {
 
     stroke-width: 4px;
 }
+
+#drawing-resize {
+  pointer-events: none;
+}
+
+.resize-handle {
+  pointer-events: all;
+}
+
+#handle-tr,
+#handle-br {
+cursor: nwse-resize;
+}
+
+#handle-tl,
+#handle-bl {
+cursor: sw-resize;
+}
