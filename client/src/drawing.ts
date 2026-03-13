@@ -9,8 +9,10 @@ export const drawingObjects = document.getElementById("drawing-objects") as unkn
 export const contents = document.getElementById("drawing") as unknown as SVGSVGElement;
 export let selected: SVGElement[] = [];
 
-function setBackground(href: string, width: number, height: number) {
-  backgroundImage.setAttribute("href", href);
+function setBackground(href: string | null, width: number, height: number) {
+  if (href) backgroundImage.setAttribute("href", href);
+  else backgroundImage.removeAttribute("href");
+
   backgroundImage.setAttribute("width", `${width}px`);
   backgroundImage.setAttribute("height", `${height}px`);
   background.setAttribute("width", `${width}px`);

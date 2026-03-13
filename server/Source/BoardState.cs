@@ -7,7 +7,7 @@ public class ConcurrentBoardState
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
     private readonly Grid.Grid _grid = new(64, 0, 0);
-    private readonly Background _background = new("", 1024, 1024);
+    private readonly Background _background = new(null, 1024, 1024);
 
     public bool AddToken(Token token)
     {

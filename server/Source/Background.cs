@@ -1,8 +1,8 @@
 namespace Server;
 
-public class Background(string href, int width, int height)
+public class Background(string? href, int width, int height)
 {
-    public string href = href;
+    public string? href = href;
     public int width = width;
     public int height = height;
 

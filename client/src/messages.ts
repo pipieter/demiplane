@@ -55,7 +55,7 @@ export interface BackgroundRequestMessage {
 export interface BackgroundResponseMessage {
   type: "background";
   background: {
-    href: string;
+    href: string | null;
     width: number;
     height: number;
   };
