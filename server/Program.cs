@@ -213,6 +213,9 @@ public class Startup
 
 public class Program
 {
+    public const string URL = "http://localhost:5000";
+    public const string WebsocketURL = "ws://localhost:5000";
+
     public static void Main(string[] args)
     {
         Env.Load(Path.Combine("..", ".env"));
@@ -225,7 +228,7 @@ public class Program
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseUrls("http://localhost:5000");
+                webBuilder.UseUrls(URL);
             });
     }
 }
