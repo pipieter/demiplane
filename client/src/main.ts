@@ -35,7 +35,7 @@ socket.onmessage = function (event) {
     case "size":
       transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
       break;
-    
+
     case "sync":
       setGrid(data.grid);
       whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
