@@ -1,8 +1,11 @@
 import { selected } from "./whiteboard";
 import socket from "./socket";
+import { getZoomTranslatedCoords } from "./viewport";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
+
+let prevPosition = { x: 0, y: 0 };
 
 function showBox(element: SVGGraphicsElement) {
   if (!resizeBox) return;
@@ -55,6 +58,7 @@ function startResize(e: MouseEvent) {
   const target = e.target as HTMLElement;
   resizeDir = target.dataset.dir ?? null;
 
+  prevPosition = getZoomTranslatedCoords(e.offsetX, e.offsetY);
   document.addEventListener("mousemove", sendSizeRequest);
   document.addEventListener("mouseup", stopResize);
 }
@@ -75,8 +79,10 @@ function sendSizeRequest(e: MouseEvent) {
   let width = box.width;
   let height = box.height;
 
-  const dx = e.movementX;
-  const dy = e.movementY;
+  const current = getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  const dx = current.x - prevPosition.x;
+  const dy = current.y - prevPosition.y;
+  prevPosition = current;
 
   switch (resizeDir) {
     case "br":
