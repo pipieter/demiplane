@@ -2,6 +2,14 @@ using Server.Tokens;
 
 namespace Server.Messages;
 
+public record struct SyncResponseMessage(Token[] tokens, Background background, Grid.Grid grid)
+{
+    public string type = "sync";
+    public Token[] tokens = tokens;
+    public Background background = background;
+    public Grid.Grid grid = grid;
+}
+
 public record struct CreateResponseMessage(Token create)
 {
     public string type = "create";

@@ -157,18 +157,9 @@ public class Startup
 
     private async Task HandleWebSocket(WebSocket socket)
     {
-        GridResponseMessage gridResponse = new(_state.GetGrid());
-        await SendMessage(socket, JsonConvert.SerializeObject(gridResponse));
-
-        // Send the history to the socket
-        foreach (var token in _state.Tokens())
-        {
-            CreateResponseMessage create = new(token);
-            await SendMessage(socket, JsonConvert.SerializeObject(create));
-        }
-        // Send the background
-        BackgroundResponseMessage background = new(_state.GetBackground());
-        await BroadcastMessage(JsonConvert.SerializeObject(background));
+        // Synchronize the current state
+        SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid());
+        await SendMessage(socket, JsonConvert.SerializeObject(sync));
 
         // A large buffer is required to upload image data
         var buffer = new byte[1024 * 1024 * 100];
