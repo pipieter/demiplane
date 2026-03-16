@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Server.Tokens;
 
 public abstract class Token(string id, int x, int y, int w, int h)
@@ -55,4 +59,38 @@ public class TokenImage(string id, string href, int x, int y, int w, int h) : To
 {
     public string type = "image";
     public string href = href;
+}
+
+public class TokenJsonConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(Token);
+    }
+
+    public override object? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        object? existingValue,
+        JsonSerializer serializer
+    )
+    {
+        JObject? obj = JObject.Load(reader);
+
+        if (obj == null)
+            return null;
+
+        return obj["type"]?.Value<string>() switch
+        {
+            "image" => obj.ToObject<TokenImage>(),
+            "circle" => obj.ToObject<TokenCircle>(),
+            "rectangle" => obj.ToObject<TokenRectangle>(),
+            _ => null,
+        };
+    }
+
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    {
+        throw new NotImplementedException();
+    }
 }
