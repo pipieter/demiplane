@@ -69,8 +69,11 @@ public class ServerTests
         await _socket.SendAsync(request);
         var response = await _socket.ReceiveAsync<CreateResponseMessage>();
 
-        Assert.That(response.type, Is.EqualTo("create"));
-        Assert.That(response.create, Is.InstanceOf<TokenCircle>());
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.type, Is.EqualTo("create"));
+            Assert.That(response.create, Is.InstanceOf<TokenCircle>());
+        });
 
         TokenCircle circle = (TokenCircle)response.create;
         Assert.Multiple(() =>
