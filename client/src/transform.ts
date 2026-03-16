@@ -110,6 +110,16 @@ function sendSizeRequest(e: MouseEvent) {
       break;
   }
 
+  // Limit minimum width & height
+  if (width <= 8) {
+    x = box.x; // Prevent accidental shifting
+    width = 8;
+  }
+  if (height <= 8) {
+    y = box.y; // Prevent accidental shifting
+    height = 8;
+  }
+
   socket.send(
     JSON.stringify({
       type: "request_size",
