@@ -2,7 +2,7 @@ import { whiteboard } from "./whiteboard";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { BackendURL, uploadImageToBackend } from "./socket";
+import socket, { uploadImageToBackend } from "./socket";
 import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { readBase64 } from "./util";
@@ -28,15 +28,20 @@ socket.onmessage = function (event) {
       break;
 
     case "background": {
-      let href = null;
-      if (data.background.href) href = BackendURL + data.background.href;
-      whiteboard.setBackground(href, data.background.width, data.background.height);
+      whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
       break;
     }
 
     case "size":
       transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
       break;
+    
+    case "sync":
+      setGrid(data.grid);
+      whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
+      for (const token of data.tokens) {
+        whiteboard.createToken(token);
+      }
 
     default:
       throw `Unknown message type: ${data}`;

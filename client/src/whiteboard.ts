@@ -10,9 +10,11 @@ const container = document.getElementById("whiteboard-container") as HTMLDivElem
 export let selected: SVGElement[] = [];
 
 function setBackground(href: string | null, width: number, height: number) {
-  if (href) backgroundImage.setAttribute("href", href);
-  else backgroundImage.removeAttribute("href");
-
+  if (href === null) {
+    backgroundImage.removeAttribute("href");
+  } else {
+    backgroundImage.setAttribute("href", BackendURL + href);
+  }
   backgroundImage.setAttribute("width", `${width}px`);
   backgroundImage.setAttribute("height", `${height}px`);
   backgroundLayer.setAttribute("width", `${width}px`);

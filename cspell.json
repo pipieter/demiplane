@@ -3,8 +3,16 @@
     "language": "en",
     "ignorePaths": [],
     "dictionaryDefinitions": [],
-    "dictionaries": ["fullstack", "softwareTerms", "csharp", "typescript", "html", "css"],
+    "dictionaries": [
+        "fullstack",
+        "softwareTerms",
+        "csharp",
+        "typescript",
+        "html",
+        "css"
+    ],
     "words": [
+        "cloudflared",
         "Demiplane",
         "discordsays",
         "Newtonsoft",

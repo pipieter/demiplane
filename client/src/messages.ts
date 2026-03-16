@@ -1,6 +1,18 @@
 import type { GridData } from "./grid";
 import type { Token, CreationData } from "./token";
 
+/** Sync the current board state */
+export interface SyncResponseMessage {
+  type: "sync";
+  background: {
+    href: string | null;
+    width: number;
+    height: number;
+  };
+  grid: GridData;
+  tokens: Token[];
+}
+
 /** Request to create a token on the whiteboard */
 export interface CreateRequestMessage {
   type: "request_create";
@@ -92,6 +104,7 @@ export type RequestMessage =
   | SizeRequestMessage
   | BackgroundRequestMessage;
 export type ResponseMessage =
+  | SyncResponseMessage
   | CreateResponseMessage
   | MoveResponseMessage
   | GridResponseMessage
