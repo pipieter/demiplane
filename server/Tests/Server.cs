@@ -1,19 +1,17 @@
-using System.Net.WebSockets;
-using System.Text;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Server;
+using Server.Messages;
+using Server.Tokens;
 
 namespace Demiplane.Tests;
 
 [TestFixture]
 public class ServerTests
 {
-    private readonly byte[] _buffer = new byte[1024 * 1024 * 10];
     private IHost _server;
-    private ClientWebSocket _socket;
+    private TestSocket _socket;
 
     [OneTimeSetUp]
     public void ServerSetUp()
@@ -31,32 +29,29 @@ public class ServerTests
     [SetUp]
     public async Task Setup()
     {
-        _socket = new ClientWebSocket();
-        await _socket.ConnectAsync(new Uri(Program.WebsocketURL), CancellationToken.None);
+        _socket = new();
+        await _socket.ConnectAsync(Program.WebsocketURL);
     }
 
     [TearDown]
     public async Task TearDown()
     {
-        await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+        await _socket.CloseAsync();
         _socket.Dispose();
     }
 
     [Test, Timeout(5000)]
     public async Task ConnectionToServer_Succeeds()
     {
-        var response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
-        var message = Encoding.UTF8.GetString(_buffer, 0, response.Count);
-        dynamic? body = JsonConvert.DeserializeObject(message);
+        var response = await _socket.ReceiveAsync<SyncResponseMessage>();
 
-        Assert.That(body, Is.Not.Null);
-        Assert.That(body.type.ToString(), Is.EqualTo("sync"));
+        Assert.That(response.type, Is.EqualTo("sync"));
     }
 
     [Test, Timeout(5000)]
     public async Task AddingCircle_Succeeds()
     {
-        await _socket.ReceiveAsync(_buffer, CancellationToken.None); // Receive initial message, and ignore
+        await _socket.ReceiveAsync(); // Receive initial message, and ignore
 
         var request =
             @"{
@@ -71,19 +66,23 @@ public class ServerTests
             }
         }";
 
-        await _socket.SendAsync(
-            Encoding.UTF8.GetBytes(request),
-            WebSocketMessageType.Text,
-            true,
-            CancellationToken.None
-        );
+        await _socket.SendAsync(request);
+        var response = await _socket.ReceiveAsync<CreateResponseMessage>();
 
-        var response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
-        var message = Encoding.UTF8.GetString(_buffer, 0, response.Count);
-        dynamic? body = JsonConvert.DeserializeObject(message);
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.type, Is.EqualTo("create"));
+            Assert.That(response.create, Is.InstanceOf<TokenCircle>());
+        });
 
-        Assert.That(body, Is.Not.Null);
-        Assert.That(body.type.ToString(), Is.EqualTo("create"));
-        Assert.That(body.create.type.ToString(), Is.EqualTo("circle"));
+        TokenCircle circle = (TokenCircle)response.create;
+        Assert.Multiple(() =>
+        {
+            Assert.That(circle.type, Is.EqualTo("circle"));
+            Assert.That(circle.x, Is.EqualTo(200));
+            Assert.That(circle.y, Is.EqualTo(200));
+            Assert.That(circle.w, Is.EqualTo(50));
+            Assert.That(circle.h, Is.EqualTo(50));
+        });
     }
 }
