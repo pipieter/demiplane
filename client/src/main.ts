@@ -19,10 +19,6 @@ socket.onmessage = function (event) {
       whiteboard.createToken(data.create);
       break;
 
-    case "move":
-      whiteboard.move(data.move.id, data.move.x, data.move.y);
-      break;
-
     case "grid":
       setGrid(data.grid);
       break;
@@ -32,8 +28,8 @@ socket.onmessage = function (event) {
       break;
     }
 
-    case "size":
-      transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
+    case "transform":
+      transform.setTransform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
       break;
 
     case "sync":

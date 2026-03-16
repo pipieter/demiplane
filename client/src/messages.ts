@@ -25,30 +25,10 @@ export interface CreateResponseMessage {
   create: Token;
 }
 
-/** Request to move a token on the whiteboard */
-export interface MoveRequestMessage {
-  type: "request_move";
-  move: {
-    id: string;
-    x: number;
-    y: number;
-  };
-}
-
-/** Move a token on the board */
-export interface MoveResponseMessage {
-  type: "move";
-  move: {
-    id: string;
-    x: number;
-    y: number;
-  };
-}
-
 /** Request to resize a token on the whiteboard */
-export interface SizeRequestMessage {
-  type: "request_size";
-  size: {
+export interface TransformRequestMessage {
+  type: "request_transform";
+  transform: {
     id: string;
     x: number;
     y: number;
@@ -58,9 +38,9 @@ export interface SizeRequestMessage {
 }
 
 /** Resize a token on the board */
-export interface SizeResponseMessage {
-  type: "size";
-  size: {
+export interface TransformResponseMessage {
+  type: "transform";
+  transform: {
     id: string;
     x: number;
     y: number;
@@ -99,14 +79,12 @@ export interface BackgroundResponseMessage {
 
 export type RequestMessage =
   | CreateRequestMessage
-  | MoveRequestMessage
+  | TransformRequestMessage
   | GridRequestMessage
-  | SizeRequestMessage
   | BackgroundRequestMessage;
 export type ResponseMessage =
   | SyncResponseMessage
   | CreateResponseMessage
-  | MoveResponseMessage
+  | TransformResponseMessage
   | GridResponseMessage
-  | SizeResponseMessage
   | BackgroundResponseMessage;

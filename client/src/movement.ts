@@ -31,22 +31,25 @@ export function makeElementDraggable(element: SVGElement) {
   function dragElement(e: MouseEvent) {
     transform.hideBox();
     const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
+    const bbox = element.getBoundingClientRect();
     const { x, y } = e.shiftKey
       ? getGridLockedCoordinates(cursor.x, cursor.y)
       : {
-          x: cursor.x - element.getBoundingClientRect().width / 2,
-          y: cursor.y - element.getBoundingClientRect().height / 2,
+          x: cursor.x - bbox.width / 2,
+          y: cursor.y - bbox.height / 2,
         };
 
     if (!cursorWithinElement(e, whiteboard.container)) return;
 
     socket.send(
       JSON.stringify({
-        type: "request_move",
-        move: {
+        type: "request_transform",
+        transform: {
           id: element.id,
           x,
           y,
+          w: bbox.width,
+          h: bbox.height,
         },
       }),
     );
