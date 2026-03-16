@@ -21,6 +21,10 @@ function setBackground(href: string | null, width: number, height: number) {
   backgroundLayer.setAttribute("height", `${height}px`);
   objectsLayer.setAttribute("width", `${width}px`);
   objectsLayer.setAttribute("height", `${height}px`);
+  if (transform.resizeLayer) {
+    transform.resizeLayer.setAttribute("width", `${width}px`);
+    transform.resizeLayer.setAttribute("height", `${height}px`);
+  }
 }
 
 export function clearSelection() {

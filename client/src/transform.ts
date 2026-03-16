@@ -150,4 +150,4 @@ function resize(id: string, x: number, y: number, w: number, h: number) {
   }
 }
 
-export const transform = { showBox, hideBox, resize };
+export const transform = { showBox, hideBox, resize, resizeLayer };
