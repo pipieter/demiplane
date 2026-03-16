@@ -1,4 +1,5 @@
 import { makeElementDraggable } from "./movement";
+import { transform } from "./transform";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
 
@@ -20,6 +21,10 @@ function setBackground(href: string | null, width: number, height: number) {
   backgroundLayer.setAttribute("height", `${height}px`);
   objectsLayer.setAttribute("width", `${width}px`);
   objectsLayer.setAttribute("height", `${height}px`);
+  if (transform.resizeLayer) {
+    transform.resizeLayer.setAttribute("width", `${width}px`);
+    transform.resizeLayer.setAttribute("height", `${height}px`);
+  }
 }
 
 export function clearSelection() {
@@ -27,21 +32,7 @@ export function clearSelection() {
     if (element.classList.contains("selected")) element.classList.remove("selected");
   }
   selected = [];
-}
-
-function move(id: string, x: number, y: number) {
-  const element = document.getElementById(id) as unknown as SVGElement;
-
-  if (element.tagName === "ellipse") {
-    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    const w = parseInt(element.getAttribute("rx") ?? "0");
-    const h = parseInt(element.getAttribute("ry") ?? "0");
-    element.setAttribute("cx", (x + w).toString());
-    element.setAttribute("cy", (y + h).toString());
-  } else {
-    element.setAttribute("x", x.toString());
-    element.setAttribute("y", y.toString());
-  }
+  transform.hideBox();
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -62,38 +53,25 @@ function createToken(token: Token) {
 
   if (token.type === "circle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-    element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
-    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    element.setAttribute("cx", (token.x + token.w).toString());
-    element.setAttribute("cy", (token.y + token.h).toString());
-    element.setAttribute("rx", token.w.toString());
-    element.setAttribute("ry", token.h.toString());
-    element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "rectangle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    element.setAttribute("id", token.id);
+
     element.setAttribute("fill", token.color);
-    element.setAttribute("x", token.x.toString());
-    element.setAttribute("y", token.y.toString());
-    element.setAttribute("width", token.w.toString());
-    element.setAttribute("height", token.h.toString());
-    element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "image") {
     const href = BackendURL + token.href;
     element = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    element.setAttribute("id", token.id);
     element.setAttribute("href", href);
-    element.setAttribute("x", token.x.toString());
-    element.setAttribute("y", token.y.toString());
-    element.setAttribute("width", token.w.toString());
-    element.setAttribute("height", token.h.toString());
   } else {
     throw `Unsupported token data ${JSON.stringify(token)}`;
   }
 
+  element.setAttribute("id", token.id);
+  element.setAttribute("tabindex", "-1"); // Makes object selectable
   makeElementDraggable(element);
+
   collection.appendChild(element);
+  transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, move, setBackground, container };
+export const whiteboard = { initialize, createToken, setBackground, container };

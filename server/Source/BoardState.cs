@@ -75,4 +75,20 @@ public class ConcurrentBoardState
             return _background.Clone();
         }
     }
+
+    public bool TransformToken(string id, int x, int y, int w, int h)
+    {
+        lock (_lock)
+        {
+            var token = _tokens.Find(token => token.id == id);
+            if (token == null)
+                return false;
+
+            token.x = x;
+            token.y = y;
+            token.w = w;
+            token.h = h;
+            return true;
+        }
+    }
 }

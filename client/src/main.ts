@@ -3,6 +3,7 @@ import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { uploadImageToBackend } from "./socket";
+import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { readBase64 } from "./util";
 
@@ -13,20 +14,34 @@ viewport.initialize();
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
-  if (data.type === "create") {
-    whiteboard.createToken(data.create);
-  } else if (data.type === "move") {
-    whiteboard.move(data.move.id, data.move.x, data.move.y);
-  } else if (data.type === "grid") {
-    setGrid(data.grid);
-  } else if (data.type == "background") {
-    whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
-  } else if (data.type == "sync") {
-    setGrid(data.grid);
-    whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
-    for (const token of data.tokens) {
-      whiteboard.createToken(token);
+  switch (data.type) {
+    case "create":
+      whiteboard.createToken(data.create);
+      break;
+
+    case "grid":
+      setGrid(data.grid);
+      break;
+
+    case "background": {
+      whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
+      break;
     }
+
+    case "transform":
+      transform.setTransform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
+      break;
+
+    case "sync":
+      setGrid(data.grid);
+      whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
+      for (const token of data.tokens) {
+        whiteboard.createToken(token);
+      }
+      break;
+
+    default:
+      throw `Unknown message type: ${data}`;
   }
 };
 
@@ -57,8 +72,8 @@ randomCircleButton.onclick = () => {
       color: getRandomColor(),
       x,
       y,
-      w: grid.size / 2,
-      h: grid.size / 2,
+      w: grid.size,
+      h: grid.size,
     },
   };
   socket.send(JSON.stringify(message));
