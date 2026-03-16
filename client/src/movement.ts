@@ -31,7 +31,7 @@ export function makeElementDraggable(element: SVGElement) {
   function dragElement(e: MouseEvent) {
     transform.hideBox();
     const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
-    const bbox = element.getBoundingClientRect();
+    const bbox = (element as SVGGraphicsElement).getBBox();
     const { x, y } = e.shiftKey
       ? getGridLockedCoordinates(cursor.x, cursor.y)
       : {
