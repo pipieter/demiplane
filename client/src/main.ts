@@ -27,11 +27,12 @@ socket.onmessage = function (event) {
       setGrid(data.grid);
       break;
 
-    case "background":
+    case "background": {
       let href = null;
       if (data.background.href) href = BackendURL + data.background.href;
       whiteboard.setBackground(href, data.background.width, data.background.height);
       break;
+    }
 
     case "size":
       transform.resize(data.size.id, data.size.x, data.size.y, data.size.w, data.size.h);
@@ -69,8 +70,8 @@ randomCircleButton.onclick = () => {
       color: getRandomColor(),
       x,
       y,
-      w: grid.size / 2,
-      h: grid.size / 2,
+      w: grid.size,
+      h: grid.size,
     },
   };
   socket.send(JSON.stringify(message));
