@@ -101,5 +101,5 @@ cursor: nwse-resize;
 
 #handle-tl,
 #handle-bl {
-cursor: sw-resize;
+cursor: nesw-resize;
 }

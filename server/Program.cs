@@ -148,7 +148,8 @@ public class Startup
             int y = json.transform.y;
             int w = json.transform.w;
             int h = json.transform.h;
-            _state.TransformToken(id, x, y, w, h);
+            if (!_state.TransformToken(id, x, y, w, h))
+                return;
 
             TransformResponseMessage size = new(new TransformResponseMessage.Transform(id, x, y, w, h));
             await BroadcastMessage(JsonConvert.SerializeObject(size));
