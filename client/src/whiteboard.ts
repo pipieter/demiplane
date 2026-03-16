@@ -62,38 +62,25 @@ function createToken(token: Token) {
 
   if (token.type === "circle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-    element.setAttribute("id", token.id);
     element.setAttribute("fill", token.color);
-    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    element.setAttribute("cx", (token.x + token.w).toString());
-    element.setAttribute("cy", (token.y + token.h).toString());
-    element.setAttribute("rx", token.w.toString());
-    element.setAttribute("ry", token.h.toString());
-    element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "rectangle") {
     element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    element.setAttribute("id", token.id);
+
     element.setAttribute("fill", token.color);
-    element.setAttribute("x", token.x.toString());
-    element.setAttribute("y", token.y.toString());
-    element.setAttribute("width", token.w.toString());
-    element.setAttribute("height", token.h.toString());
-    element.setAttribute("tabindex", "-1"); // Makes object selectable
   } else if (token.type === "image") {
     const href = BackendURL + token.href;
     element = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    element.setAttribute("id", token.id);
     element.setAttribute("href", href);
-    element.setAttribute("x", token.x.toString());
-    element.setAttribute("y", token.y.toString());
-    element.setAttribute("width", token.w.toString());
-    element.setAttribute("height", token.h.toString());
   } else {
     throw `Unsupported token data ${JSON.stringify(token)}`;
   }
 
+  element.setAttribute("id", token.id);
+  element.setAttribute("tabindex", "-1"); // Makes object selectable
   makeElementDraggable(element);
+
   collection.appendChild(element);
+  transform.resize(token.id, token.x, token.y, token.w, token.h);
 }
 
 export const whiteboard = { initialize, createToken, move, setBackground, container };
