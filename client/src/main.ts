@@ -42,6 +42,7 @@ socket.onmessage = function (event) {
       for (const token of data.tokens) {
         whiteboard.createToken(token);
       }
+      break;
 
     default:
       throw `Unknown message type: ${data}`;
