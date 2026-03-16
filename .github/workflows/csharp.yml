@@ -1,11 +1,11 @@
 name: C#
 
 on:
-    pull_request:
-      branches: [main]
-      paths:
-        - 'server/**'
-    workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "server/**"
+  workflow_dispatch:
 
 jobs:
   csharpier:
@@ -46,10 +46,33 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: "9.0.x"
 
       - name: Restore
         run: dotnet restore
 
       - name: Check formatting
         run: dotnet format --verify-no-changes
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Run tests
+        run: dotnet test
