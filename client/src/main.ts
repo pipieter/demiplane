@@ -2,7 +2,7 @@ import { whiteboard } from "./whiteboard";
 import { grid, setGrid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { BackendURL, uploadImageToBackend } from "./socket";
+import socket, { uploadImageToBackend } from "./socket";
 import { viewport } from "./viewport";
 import { readBase64 } from "./util";
 
@@ -20,9 +20,13 @@ socket.onmessage = function (event) {
   } else if (data.type === "grid") {
     setGrid(data.grid);
   } else if (data.type == "background") {
-    let href = null;
-    if (data.background.href) href = BackendURL + data.background.href;
-    whiteboard.setBackground(href, data.background.width, data.background.height);
+    whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
+  } else if (data.type == "sync") {
+    setGrid(data.grid);
+    whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
+    for (const token of data.tokens) {
+      whiteboard.createToken(token);
+    }
   }
 };
 
