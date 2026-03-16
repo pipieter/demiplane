@@ -76,7 +76,7 @@ public class ConcurrentBoardState
         }
     }
 
-    public bool ResizeToken(string id, int x, int y, int w, int h)
+    public bool TransformToken(string id, int x, int y, int w, int h)
     {
         lock (_lock)
         {

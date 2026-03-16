@@ -16,19 +16,6 @@ public record struct CreateResponseMessage(Token create)
     public Token create = create;
 }
 
-public record struct MoveResponseMessage(MoveResponseMessage.Move move)
-{
-    public string type = "move";
-    public Move move = move;
-
-    public record struct Move(string id, int x, int y)
-    {
-        public string id = id;
-        public int x = x;
-        public int y = y;
-    }
-}
-
 public record struct GridResponseMessage(Grid.Grid grid)
 {
     public string type = "grid";
@@ -41,12 +28,12 @@ public record struct BackgroundResponseMessage(Background background)
     public Background background = background;
 }
 
-public record struct SizeResponseMessage(SizeResponseMessage.Size size)
+public record struct TransformResponseMessage(TransformResponseMessage.Transform transform)
 {
-    public string type = "size";
-    public Size move = size;
+    public string type = "transform";
+    public Transform transform = transform;
 
-    public record struct Size(string id, int x, int y, int w, int h)
+    public record struct Transform(string id, int x, int y, int w, int h)
     {
         public string id = id;
         public int x = x;

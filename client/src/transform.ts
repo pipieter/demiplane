@@ -122,8 +122,8 @@ function sendSizeRequest(e: MouseEvent) {
 
   socket.send(
     JSON.stringify({
-      type: "request_size",
-      size: {
+      type: "request_transform",
+      transform: {
         id: selected[0].id,
         x,
         y,
@@ -134,7 +134,7 @@ function sendSizeRequest(e: MouseEvent) {
   );
 }
 
-function resize(id: string, x: number, y: number, w: number, h: number) {
+function setTransform(id: string, x: number, y: number, w: number, h: number) {
   const element = document.getElementById(id) as unknown as SVGGraphicsElement;
 
   if (element.tagName === "ellipse") {
@@ -150,4 +150,4 @@ function resize(id: string, x: number, y: number, w: number, h: number) {
   }
 }
 
-export const transform = { showBox, hideBox, resize, resizeLayer };
+export const transform = { showBox, hideBox, setTransform, resizeLayer };

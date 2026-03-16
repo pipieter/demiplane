@@ -35,21 +35,6 @@ export function clearSelection() {
   transform.hideBox();
 }
 
-function move(id: string, x: number, y: number) {
-  const element = document.getElementById(id) as unknown as SVGElement;
-
-  if (element.tagName === "ellipse") {
-    // A circle's cx and cy are the *center* coordinates, and need to be shifted using the radius
-    const w = parseInt(element.getAttribute("rx") ?? "0");
-    const h = parseInt(element.getAttribute("ry") ?? "0");
-    element.setAttribute("cx", (x + w).toString());
-    element.setAttribute("cy", (y + h).toString());
-  } else {
-    element.setAttribute("x", x.toString());
-    element.setAttribute("y", y.toString());
-  }
-}
-
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   return document.getElementById("whiteboard-objects-layer");
@@ -86,7 +71,7 @@ function createToken(token: Token) {
   makeElementDraggable(element);
 
   collection.appendChild(element);
-  transform.resize(token.id, token.x, token.y, token.w, token.h);
+  transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, move, setBackground, container };
+export const whiteboard = { initialize, createToken, setBackground, container };

@@ -123,18 +123,6 @@ public class Startup
             CreateResponseMessage create = new(token);
             await BroadcastMessage(JsonConvert.SerializeObject(create));
         }
-        else if (json.type == "request_move")
-        {
-            string id = json.move.id;
-            int x = json.move.x;
-            int y = json.move.y;
-
-            if (!_state.MoveToken(id, x, y))
-                return;
-
-            MoveResponseMessage move = new(new MoveResponseMessage.Move(id, x, y));
-            await BroadcastMessage(JsonConvert.SerializeObject(move));
-        }
         else if (json.type == "request_grid")
         {
             _state.SetGrid((int)json.grid.size, (int)json.grid.offset.x, (int)json.grid.offset.y);
@@ -153,16 +141,16 @@ public class Startup
             BackgroundResponseMessage response = new(_state.GetBackground());
             await BroadcastMessage(JsonConvert.SerializeObject(response));
         }
-        else if (json.type == "request_size")
+        else if (json.type == "request_transform")
         {
-            string id = json.size.id;
-            int x = json.size.x;
-            int y = json.size.y;
-            int w = json.size.w;
-            int h = json.size.h;
-            _state.ResizeToken(id, x, y, w, h);
+            string id = json.transform.id;
+            int x = json.transform.x;
+            int y = json.transform.y;
+            int w = json.transform.w;
+            int h = json.transform.h;
+            _state.TransformToken(id, x, y, w, h);
 
-            SizeResponseMessage size = new(new SizeResponseMessage.Size(id, x, y, w, h));
+            TransformResponseMessage size = new(new TransformResponseMessage.Transform(id, x, y, w, h));
             await BroadcastMessage(JsonConvert.SerializeObject(size));
         }
     }
