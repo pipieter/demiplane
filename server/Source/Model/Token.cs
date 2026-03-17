@@ -1,39 +1,65 @@
 using Demiplane.Util;
+using Newtonsoft.Json;
 
 namespace Demiplane.Model;
 
 public abstract class TokenCreateBody(int x, int y, int w, int h)
 {
-    public int x = x;
-    public int y = y;
-    public int w = w;
-    public int h = h;
+    [JsonProperty(Required = Required.Always)]
+    public required int x = x;
+
+    [JsonProperty(Required = Required.Always)]
+    public required int y = y;
+
+    [JsonProperty(Required = Required.Always)]
+    public required int w = w;
+
+    [JsonProperty(Required = Required.Always)]
+    public required int h = h;
 }
 
 public class TokenCreateCircleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "circle";
+
+    [JsonProperty(Required = Required.Always)]
     public string color = color;
 }
 
 public class TokenCreateRectangleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "rectangle";
+
+    [JsonProperty(Required = Required.Always)]
     public string color = color;
 }
 
 public class TokenCreateImageBody(string href, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "image";
+
+    [JsonProperty(Required = Required.Always)]
     public string href = href;
 }
 
 public abstract class Token(string id, int x, int y, int w, int h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string id = id;
+
+    [JsonProperty(Required = Required.Always)]
     public int x = x;
+
+    [JsonProperty(Required = Required.Always)]
     public int y = y;
+
+    [JsonProperty(Required = Required.Always)]
     public int w = w;
+
+    [JsonProperty(Required = Required.Always)]
     public int h = h;
 
     public static Token? Create(TokenCreateBody create)
@@ -56,19 +82,28 @@ public abstract class Token(string id, int x, int y, int w, int h)
 
 public class TokenCircle(string id, string color, int x, int y, int w, int h) : Token(id, x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "circle";
+
+    [JsonProperty(Required = Required.Always)]
     public string color = color;
 }
 
 public class TokenRectangle(string id, string color, int x, int y, int w, int h) : Token(id, x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "rectangle";
+
+    [JsonProperty(Required = Required.Always)]
     public string color = color;
 }
 
 public class TokenImage(string id, string href, int x, int y, int w, int h) : Token(id, x, y, w, h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "image";
+
+    [JsonProperty(Required = Required.Always)]
     public string href = href;
 }
 

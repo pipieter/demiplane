@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Demiplane.Messages;
 using Demiplane.Model;
 using Newtonsoft.Json;
@@ -24,7 +23,12 @@ public static class Json
             new TokenCreateBodyJsonConverter(),
             new MessageJsonConverter(),
         ];
-        JsonSerializerSettings settings = new() { TypeNameHandling = TypeNameHandling.Auto, Converters = converters };
+        JsonSerializerSettings settings = new()
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            MissingMemberHandling = MissingMemberHandling.Error,
+            Converters = converters,
+        };
         return JsonConvert.DeserializeObject<T>(value, settings);
     }
 
@@ -61,10 +65,7 @@ public static class Json
             if (type == null)
                 return null;
 
-            var instance = RuntimeHelpers.GetUninitializedObject(type);
-            serializer.Populate(obj.CreateReader(), instance);
-
-            return instance;
+            return obj.ToObject(type, serializer);
         }
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
