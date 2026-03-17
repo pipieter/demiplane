@@ -1,6 +1,6 @@
-import { selected } from "./whiteboard";
+import { whiteboard } from "./whiteboard";
 import socket from "./socket";
-import { getZoomTranslatedCoords } from "./viewport";
+import { viewport } from "./viewport";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
@@ -58,7 +58,7 @@ function startResize(e: MouseEvent) {
   const target = e.target as HTMLElement;
   resizeDir = target.dataset.dir ?? null;
 
-  prevPosition = getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  prevPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
   document.addEventListener("mousemove", sendSizeRequest);
   document.addEventListener("mouseup", stopResize);
 }
@@ -70,16 +70,16 @@ function stopResize() {
 }
 
 function sendSizeRequest(e: MouseEvent) {
-  if (selected.length <= 0 || !resizeDir) return;
-  const box = (selected[0] as SVGGraphicsElement).getBBox();
-  showBox(selected[0] as SVGGraphicsElement);
+  if (whiteboard.selected.length <= 0 || !resizeDir) return;
+  const box = (whiteboard.selected[0] as SVGGraphicsElement).getBBox();
+  showBox(whiteboard.selected[0] as SVGGraphicsElement);
 
   let x = box.x;
   let y = box.y;
   let width = box.width;
   let height = box.height;
 
-  const current = getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
   const dx = current.x - prevPosition.x;
   const dy = current.y - prevPosition.y;
   prevPosition = current;
@@ -124,7 +124,7 @@ function sendSizeRequest(e: MouseEvent) {
     JSON.stringify({
       type: "request_transform",
       transform: {
-        id: selected[0].id,
+        id: whiteboard.selected[0].id,
         x,
         y,
         w: width,

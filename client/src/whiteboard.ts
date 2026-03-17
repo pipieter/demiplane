@@ -7,7 +7,7 @@ const backgroundLayer = document.getElementById("whiteboard-background-layer") a
 const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
 const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
-export let selected: SVGElement[] = [];
+let selected: SVGElement[] = [];
 
 function setBackground(href: string | null, width: number, height: number) {
   if (href === null) {
@@ -27,7 +27,7 @@ function setBackground(href: string | null, width: number, height: number) {
   }
 }
 
-export function clearSelection() {
+function clearSelection() {
   for (const element of selected) {
     if (element.classList.contains("selected")) element.classList.remove("selected");
   }
@@ -74,4 +74,4 @@ function createToken(token: Token) {
   transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, setBackground, container };
+export const whiteboard = { initialize, createToken, setBackground, container, selected, clearSelection };

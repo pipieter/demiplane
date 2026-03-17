@@ -1,8 +1,8 @@
-import { clearSelection, selected, whiteboard } from "./whiteboard";
+import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { transform } from "./transform";
 import socket from "./socket";
-import { getZoomTranslatedCoords } from "./viewport";
+import { viewport } from "./viewport";
 
 function cursorWithinElement(e: MouseEvent, element: Element): boolean {
   const { left, right, top, bottom } = element.getBoundingClientRect();
@@ -22,15 +22,15 @@ function makeDraggable(element: SVGElement) {
     document.onmouseup = deselectElement;
     document.onmousemove = dragElement;
 
-    clearSelection();
+    whiteboard.clearSelection();
     element.classList.add("selected");
-    selected.push(element);
+    whiteboard.selected.push(element);
     transform.showBox(element as SVGGraphicsElement);
   }
 
   function dragElement(e: MouseEvent) {
     transform.hideBox();
-    const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
+    const cursor = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const bbox = (element as SVGGraphicsElement).getBBox();
     const { x, y } = e.shiftKey
       ? grid.getGridLockedCoordinates(cursor.x, cursor.y)
@@ -58,7 +58,7 @@ function makeDraggable(element: SVGElement) {
   function deselectElement() {
     document.onmouseup = null;
     document.onmousemove = null;
-    if (selected.length <= 0) {
+    if (whiteboard.selected.length <= 0) {
       transform.hideBox();
     }
   }

@@ -4,7 +4,7 @@ import * as d3Zoom from "d3-zoom";
 const whiteboardElement = d3.select("#whiteboard");
 const viewportElement = d3.select("#viewport");
 
-export const zoom = d3Zoom
+const zoom = d3Zoom
   .zoom()
   .scaleExtent([0.1, 10])
   .filter((event) => {
@@ -27,7 +27,7 @@ function initialize() {
   whiteboardElement.call(zoom as any);
 }
 
-export function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
+function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
   const node = whiteboardElement.node() as SVGSVGElement;
   if (!node) return { x, y };
 
@@ -38,4 +38,4 @@ export function getZoomTranslatedCoords(x: number, y: number): { x: number; y: n
   };
 }
 
-export const viewport = { initialize };
+export const viewport = { initialize, getZoomTranslatedCoords };
