@@ -94,46 +94,64 @@ function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
       break;
 
     case "tr":
-      width = (elementStartSize.width + dx);
-      height = (elementStartSize.height - dy);
+      width = elementStartSize.width + dx;
+      height = elementStartSize.height - dy;
       y = elementStartSize.y + (elementStartSize.height - height);
       break;
 
     case "bl":
-      width = (elementStartSize.width - dx);
-      height = (elementStartSize.height + dy);
+      width = elementStartSize.width - dx;
+      height = elementStartSize.height + dy;
       x = elementStartSize.x + (elementStartSize.width - width);
       break;
 
     case "tl":
-      width = (elementStartSize.width - dx);
-      height = (elementStartSize.height - dy);
+      width = elementStartSize.width - dx;
+      height = elementStartSize.height - dy;
       x = elementStartSize.x + (elementStartSize.width - width);
       y = elementStartSize.y + (elementStartSize.height - height);
       break;
   }
 
   if (e.shiftKey) {
+    function getSnapStep(size: number, gridSize: number, minSize: number) {
+      let step = gridSize;
+
+      while (step / 2 >= minSize && size < step) {
+        if (size <= minSize) break;
+        step /= 2;
+      }
+
+      return step;
+    }
+
+    function snapToStep(value: number, offset: number, step: number) {
+      return Math.round((value - offset) / step) * step + offset;
+    }
+
+    const stepX = getSnapStep(width, grid.get().size, minSize);
+    const stepY = getSnapStep(height, grid.get().size, minSize);
+
     if (resizeDir.includes("r")) {
-      const snapped = grid.getGridlockedCoords(x + width, y);
-      width = snapped.x - x;
+      const snappedX = snapToStep(x + width, grid.get().offset.x, stepX);
+      width = snappedX - x;
     }
 
     if (resizeDir.includes("l")) {
-      const snapped = grid.getGridlockedCoords(x, y);
-      const newX = snapped.x;
+      const snappedX = snapToStep(x, grid.get().offset.x, stepX);
+      const newX = snappedX;
       width = width + (x - newX);
       x = newX;
     }
 
     if (resizeDir.includes("b")) {
-      const snapped = grid.getGridlockedCoords(x, y + height);
-      height = snapped.y - y;
+      const snappedY = snapToStep(y + height, grid.get().offset.y, stepY);
+      height = snappedY - y;
     }
 
     if (resizeDir.includes("t")) {
-      const snapped = grid.getGridlockedCoords(x, y);
-      const newY = snapped.y;
+      const snappedY = snapToStep(y, grid.get().offset.y, stepY);
+      const newY = snappedY;
       height = height + (y - newY);
       y = newY;
     }
@@ -150,7 +168,6 @@ function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
   }
 
   console.log(width, height);
-
 
   server.send({
     type: "request_transform",
