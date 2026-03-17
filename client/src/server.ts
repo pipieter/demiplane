@@ -2,12 +2,12 @@
 // If so, we have to use the local /server proxy, as set-up by discord
 // (see the README on how to do this)
 
-export const BackendURL = location.host.includes(".discordsays.com") ? "/server" : import.meta.env.VITE_SERVER_URL;
+import type { RequestMessage } from "./messages";
+
+const BackendURL = location.host.includes(".discordsays.com") ? "/server" : import.meta.env.VITE_SERVER_URL;
 const socket = new WebSocket(BackendURL);
 
-export default socket;
-
-export async function uploadImageToBackend(base64: string): Promise<string | null> {
+async function uploadImageToBackend(base64: string): Promise<string | null> {
   const url = BackendURL + "/images";
   const body = JSON.stringify({ data: base64 });
   const options = {
@@ -34,3 +34,9 @@ export async function uploadImageToBackend(base64: string): Promise<string | nul
 
   return responseData?.href;
 }
+
+function send(req: RequestMessage) {
+  socket.send(JSON.stringify(req));
+}
+
+export const server = { send, socket, uploadImageToBackend, BackendURL };

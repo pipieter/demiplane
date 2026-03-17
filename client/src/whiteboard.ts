@@ -1,19 +1,19 @@
-import { makeElementDraggable } from "./movement";
+import { movement } from "./movement";
 import { transform } from "./transform";
-import { BackendURL } from "./socket";
+import { server } from "./server";
 import type { Token } from "./token";
 
 const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
 const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
 const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
-export let selected: SVGElement[] = [];
+let selected: SVGElement[] = [];
 
 function setBackground(href: string | null, width: number, height: number) {
   if (href === null) {
     backgroundImage.removeAttribute("href");
   } else {
-    backgroundImage.setAttribute("href", BackendURL + href);
+    backgroundImage.setAttribute("href", server.BackendURL + href);
   }
   backgroundImage.setAttribute("width", `${width}px`);
   backgroundImage.setAttribute("height", `${height}px`);
@@ -27,12 +27,21 @@ function setBackground(href: string | null, width: number, height: number) {
   }
 }
 
-export function clearSelection() {
+function clearSelection() {
   for (const element of selected) {
     if (element.classList.contains("selected")) element.classList.remove("selected");
   }
+
   selected = [];
   transform.hideBox();
+}
+
+function addSelected(element: SVGElement) {
+  selected.push(element);
+}
+
+function getSelected(): SVGElement[] {
+  return selected;
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -59,7 +68,7 @@ function createToken(token: Token) {
 
     element.setAttribute("fill", token.color);
   } else if (token.type === "image") {
-    const href = BackendURL + token.href;
+    const href = server.BackendURL + token.href;
     element = document.createElementNS("http://www.w3.org/2000/svg", "image");
     element.setAttribute("href", href);
   } else {
@@ -68,10 +77,18 @@ function createToken(token: Token) {
 
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  makeElementDraggable(element);
+  movement.makeDraggable(element);
 
   collection.appendChild(element);
   transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, setBackground, container };
+export const whiteboard = {
+  initialize,
+  createToken,
+  setBackground,
+  container,
+  clearSelection,
+  addSelected,
+  getSelected,
+};

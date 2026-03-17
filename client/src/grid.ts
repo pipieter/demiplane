@@ -1,4 +1,4 @@
-import socket from "./socket";
+import { server } from "./server";
 
 export interface GridData {
   size: number;
@@ -8,25 +8,30 @@ export interface GridData {
   };
 }
 
-export let grid: GridData = { size: 64, offset: { x: 0, y: 0 } };
-
+let size = 64;
+let offset = { x: 0, y: 0 };
 const gridSizeInput = document.getElementById("grid-size") as HTMLInputElement | null;
 const gridOffsetXInput = document.getElementById("grid-offset-X") as HTMLInputElement | null;
 const gridOffsetYInput = document.getElementById("grid-offset-Y") as HTMLInputElement | null;
 
-export function setGrid(gridData: GridData) {
-  grid = gridData;
+function get(): GridData {
+  return { size, offset };
+}
 
-  if (gridSizeInput) gridSizeInput.value = grid.size.toString();
+function set(newSize: number, offsetX: number, offsetY: number) {
+  size = newSize;
+  offset = { x: offsetX, y: offsetY };
+
+  if (gridSizeInput) gridSizeInput.value = size.toString();
   if (gridOffsetXInput) {
-    gridOffsetXInput.value = grid.offset.x.toString();
-    gridOffsetXInput.min = (-grid.size / 2).toString();
-    gridOffsetXInput.max = (grid.size / 2).toString();
+    gridOffsetXInput.value = offset.x.toString();
+    gridOffsetXInput.min = (-size / 2).toString();
+    gridOffsetXInput.max = (size / 2).toString();
   }
   if (gridOffsetYInput) {
-    gridOffsetYInput.value = grid.offset.y.toString();
-    gridOffsetYInput.min = (-grid.size / 2).toString();
-    gridOffsetYInput.max = (grid.size / 2).toString();
+    gridOffsetYInput.value = offset.y.toString();
+    gridOffsetYInput.min = (-size / 2).toString();
+    gridOffsetYInput.max = (size / 2).toString();
   }
 
   const gridPatternElement = document.getElementById("grid-pattern");
@@ -34,43 +39,45 @@ export function setGrid(gridData: GridData) {
   const path = gridPatternElement.querySelector("path");
   if (!path) return;
 
-  gridPatternElement.setAttribute("width", `${grid.size}px`);
-  gridPatternElement.setAttribute("height", `${grid.size}px`);
-  path.setAttribute("d", `M ${grid.size} 0 L 0 0 0 ${grid.size}`);
+  gridPatternElement.setAttribute("width", `${size}px`);
+  gridPatternElement.setAttribute("height", `${size}px`);
+  path.setAttribute("d", `M ${size} 0 L 0 0 0 ${size}`);
 
-  gridPatternElement.setAttribute("patternTransform", `translate(${grid.offset.x}, ${grid.offset.y})`);
+  gridPatternElement.setAttribute("patternTransform", `translate(${offset.x}, ${offset.y})`);
 }
 
-export function getGridLockedCoordinates(x: number, y: number): { x: number; y: number } {
-  const localX = x - grid.offset.x;
-  const localY = y - grid.offset.y;
+function getGridLockedCoordinates(x: number, y: number): { x: number; y: number } {
+  const localX = x - offset.x;
+  const localY = y - offset.y;
 
   return {
-    x: Math.floor(localX / grid.size) * grid.size + grid.offset.x,
-    y: Math.floor(localY / grid.size) * grid.size + grid.offset.y,
+    x: Math.floor(localX / size) * size + offset.x,
+    y: Math.floor(localY / size) * size + offset.y,
   };
 }
 
 function sendGridRequest() {
-  socket.send(
-    JSON.stringify({
-      type: "request_grid",
-      grid: grid,
-    }),
-  );
+  server.send({
+    type: "request_grid",
+    grid: get(),
+  });
 }
 
-gridSizeInput?.addEventListener("input", () => {
-  grid.size = Number(gridSizeInput.value);
-  sendGridRequest();
-});
+function initialize() {
+  gridSizeInput?.addEventListener("input", () => {
+    size = Number(gridSizeInput.value);
+    sendGridRequest();
+  });
 
-gridOffsetXInput?.addEventListener("input", () => {
-  grid.offset.x = Number(gridOffsetXInput.value);
-  sendGridRequest();
-});
+  gridOffsetXInput?.addEventListener("input", () => {
+    offset.x = Number(gridOffsetXInput.value);
+    sendGridRequest();
+  });
 
-gridOffsetYInput?.addEventListener("input", () => {
-  grid.offset.y = Number(gridOffsetYInput.value);
-  sendGridRequest();
-});
+  gridOffsetYInput?.addEventListener("input", () => {
+    offset.y = Number(gridOffsetYInput.value);
+    sendGridRequest();
+  });
+}
+
+export const grid = { get, set, initialize, getGridLockedCoordinates };

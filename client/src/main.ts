@@ -1,17 +1,18 @@
 import { whiteboard } from "./whiteboard";
-import { grid, setGrid } from "./grid";
+import { grid } from "./grid";
 import { header } from "./header";
-import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { uploadImageToBackend } from "./socket";
+import type { ResponseMessage } from "./messages";
 import { transform } from "./transform";
 import { viewport } from "./viewport";
-import { readBase64 } from "./util";
+import { util } from "./util";
+import { server } from "./server";
 
 whiteboard.initialize();
 header.initialize();
 viewport.initialize();
+grid.initialize();
 
-socket.onmessage = function (event) {
+server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
@@ -20,7 +21,7 @@ socket.onmessage = function (event) {
       break;
 
     case "grid":
-      setGrid(data.grid);
+      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       break;
 
     case "background": {
@@ -33,7 +34,7 @@ socket.onmessage = function (event) {
       break;
 
     case "sync":
-      setGrid(data.grid);
+      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
         whiteboard.createToken(token);
@@ -65,26 +66,25 @@ function getRandomColor(): string {
 randomCircleButton.onclick = () => {
   const { x, y } = getRandomPosition();
 
-  const message: CreateRequestMessage = {
+  server.send({
     type: "request_create",
     create: {
       type: "circle",
       color: getRandomColor(),
       x,
       y,
-      w: grid.size,
-      h: grid.size,
+      w: grid.get().size,
+      h: grid.get().size,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 };
 
 randomRectangleButton.onclick = () => {
   const { x, y } = getRandomPosition();
-  const w = grid.size;
-  const h = grid.size;
+  const w = grid.get().size;
+  const h = grid.get().size;
 
-  const message: CreateRequestMessage = {
+  server.send({
     type: "request_create",
     create: {
       type: "rectangle",
@@ -94,8 +94,7 @@ randomRectangleButton.onclick = () => {
       w,
       h,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 };
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
@@ -106,23 +105,23 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const base64 = await readBase64(file);
+  const base64 = await util.readBase64(file);
   if (!base64) {
     console.error("Could not read file.");
     return;
   }
 
-  const href = await uploadImageToBackend(base64);
+  const href = await server.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
   }
 
   const { x, y } = getRandomPosition();
-  const w = grid.size;
-  const h = grid.size;
+  const w = grid.get().size;
+  const h = grid.get().size;
 
-  const message: CreateRequestMessage = {
+  server.send({
     type: "request_create",
     create: {
       type: "image",
@@ -132,8 +131,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       w,
       h,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 });
 
 uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
@@ -144,21 +142,20 @@ uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const base64 = await readBase64(file);
+  const base64 = await util.readBase64(file);
   if (!base64) {
     console.error("Could not read file.");
     return;
   }
 
-  const href = await uploadImageToBackend(base64);
+  const href = await server.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
   }
 
-  const message: BackgroundRequestMessage = {
+  server.send({
     type: "request_background",
     href,
-  };
-  socket.send(JSON.stringify(message));
+  });
 });
