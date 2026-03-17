@@ -1,18 +1,18 @@
 import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { header } from "./header";
-import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
-import socket, { uploadImageToBackend } from "./socket";
+import type { ResponseMessage } from "./messages";
 import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
+import { socket } from "./socket";
 
 whiteboard.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
 
-socket.onmessage = function (event) {
+socket.websocket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
@@ -66,7 +66,7 @@ function getRandomColor(): string {
 randomCircleButton.onclick = () => {
   const { x, y } = getRandomPosition();
 
-  const message: CreateRequestMessage = {
+  socket.send({
     type: "request_create",
     create: {
       type: "circle",
@@ -76,16 +76,15 @@ randomCircleButton.onclick = () => {
       w: grid.get().size,
       h: grid.get().size,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 };
 
 randomRectangleButton.onclick = () => {
   const { x, y } = getRandomPosition();
-  const w = grid.get().size
+  const w = grid.get().size;
   const h = grid.get().size;
 
-  const message: CreateRequestMessage = {
+  socket.send({
     type: "request_create",
     create: {
       type: "rectangle",
@@ -95,8 +94,7 @@ randomRectangleButton.onclick = () => {
       w,
       h,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 };
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
@@ -113,7 +111,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await uploadImageToBackend(base64);
+  const href = await socket.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
@@ -123,7 +121,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const w = grid.get().size;
   const h = grid.get().size;
 
-  const message: CreateRequestMessage = {
+  socket.send({
     type: "request_create",
     create: {
       type: "image",
@@ -133,8 +131,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       w,
       h,
     },
-  };
-  socket.send(JSON.stringify(message));
+  });
 });
 
 uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
@@ -151,15 +148,14 @@ uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await uploadImageToBackend(base64);
+  const href = await socket.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
   }
 
-  const message: BackgroundRequestMessage = {
+  socket.send({
     type: "request_background",
     href,
-  };
-  socket.send(JSON.stringify(message));
+  });
 });

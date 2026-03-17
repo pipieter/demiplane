@@ -1,5 +1,5 @@
 import { whiteboard } from "./whiteboard";
-import socket from "./socket";
+import { socket } from "./socket";
 import { viewport } from "./viewport";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
@@ -120,18 +120,16 @@ function sendSizeRequest(e: MouseEvent) {
     height = 8;
   }
 
-  socket.send(
-    JSON.stringify({
-      type: "request_transform",
-      transform: {
-        id: whiteboard.selected[0].id,
-        x,
-        y,
-        w: width,
-        h: height,
-      },
-    }),
-  );
+  socket.send({
+    type: "request_transform",
+    transform: {
+      id: whiteboard.selected[0].id,
+      x,
+      y,
+      w: width,
+      h: height,
+    },
+  });
 }
 
 function setTransform(id: string, x: number, y: number, w: number, h: number) {

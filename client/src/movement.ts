@@ -1,7 +1,7 @@
 import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { transform } from "./transform";
-import socket from "./socket";
+import { socket } from "./socket";
 import { viewport } from "./viewport";
 
 function cursorWithinElement(e: MouseEvent, element: Element): boolean {
@@ -41,18 +41,16 @@ function makeDraggable(element: SVGElement) {
 
     if (!cursorWithinElement(e, whiteboard.container)) return;
 
-    socket.send(
-      JSON.stringify({
-        type: "request_transform",
-        transform: {
-          id: element.id,
-          x,
-          y,
-          w: bbox.width,
-          h: bbox.height,
-        },
-      }),
-    );
+    socket.send({
+      type: "request_transform",
+      transform: {
+        id: element.id,
+        x,
+        y,
+        w: bbox.width,
+        h: bbox.height,
+      },
+    });
   }
 
   function deselectElement() {
@@ -64,4 +62,4 @@ function makeDraggable(element: SVGElement) {
   }
 }
 
-export const movement = { makeDraggable }
+export const movement = { makeDraggable };
