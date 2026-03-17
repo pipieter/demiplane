@@ -6,6 +6,7 @@ import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
 import { server } from "./server";
+import drawing from "./drawing";
 
 whiteboard.initialize();
 header.initialize();
@@ -42,12 +43,13 @@ server.socket.onmessage = function (event) {
       break;
 
     default:
-      throw `Unknown message type: ${data}`;
+      throw `Unknown message type: ${JSON.stringify(data)}`;
   }
 };
 
 const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
 const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
+const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
 
@@ -96,6 +98,8 @@ randomRectangleButton.onclick = () => {
     },
   });
 };
+
+beginDrawingButton.onclick = drawing.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
   // @ts-expect-error Files should be a valid field
