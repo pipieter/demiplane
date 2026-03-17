@@ -20,7 +20,6 @@ public partial class Server
         var body = await reader.ReadToEndAsync();
         context.Request.Body.Position = 0; // Reset the stream position
 
-        // If no body is given
         if (body == null)
         {
             context.Response.ContentType = "application/json";
