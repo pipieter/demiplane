@@ -83,4 +83,12 @@ function createToken(token: Token) {
   transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, setBackground, container, clearSelection, addSelected, getSelected };
+export const whiteboard = {
+  initialize,
+  createToken,
+  setBackground,
+  container,
+  clearSelection,
+  addSelected,
+  getSelected,
+};
