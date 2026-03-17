@@ -5,6 +5,12 @@ namespace Demiplane.Messages;
 
 public abstract class Message { }
 
+public class ErrorResponseMessage(string message)
+{
+    public string type = "error";
+    public string message = message;
+}
+
 public class SyncResponseMessage(Token[] tokens, Background background, Grid grid) : Message
 {
     public string type = "sync";
@@ -77,6 +83,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
         get =>
             new()
             {
+                ["error"] = typeof(ErrorResponseMessage),
                 ["sync"] = typeof(SyncResponseMessage),
                 ["grid"] = typeof(GridResponseMessage),
                 ["create"] = typeof(CreateResponseMessage),
