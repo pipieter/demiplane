@@ -1,5 +1,5 @@
 import { whiteboard } from "./whiteboard";
-import { grid, setGrid } from "./grid";
+import { grid } from "./grid";
 import { header } from "./header";
 import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } from "./messages";
 import socket, { uploadImageToBackend } from "./socket";
@@ -10,6 +10,7 @@ import { readBase64 } from "./util";
 whiteboard.initialize();
 header.initialize();
 viewport.initialize();
+grid.initialize();
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -20,7 +21,7 @@ socket.onmessage = function (event) {
       break;
 
     case "grid":
-      setGrid(data.grid);
+      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       break;
 
     case "background": {
@@ -33,7 +34,7 @@ socket.onmessage = function (event) {
       break;
 
     case "sync":
-      setGrid(data.grid);
+      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
         whiteboard.createToken(token);
@@ -72,8 +73,8 @@ randomCircleButton.onclick = () => {
       color: getRandomColor(),
       x,
       y,
-      w: grid.size,
-      h: grid.size,
+      w: grid.get().size,
+      h: grid.get().size,
     },
   };
   socket.send(JSON.stringify(message));
@@ -81,8 +82,8 @@ randomCircleButton.onclick = () => {
 
 randomRectangleButton.onclick = () => {
   const { x, y } = getRandomPosition();
-  const w = grid.size;
-  const h = grid.size;
+  const w = grid.get().size
+  const h = grid.get().size;
 
   const message: CreateRequestMessage = {
     type: "request_create",
@@ -119,8 +120,8 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   }
 
   const { x, y } = getRandomPosition();
-  const w = grid.size;
-  const h = grid.size;
+  const w = grid.get().size;
+  const h = grid.get().size;
 
   const message: CreateRequestMessage = {
     type: "request_create",

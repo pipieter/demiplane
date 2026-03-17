@@ -1,5 +1,5 @@
 import { clearSelection, selected, whiteboard } from "./whiteboard";
-import { getGridLockedCoordinates } from "./grid";
+import { grid } from "./grid";
 import { transform } from "./transform";
 import socket from "./socket";
 import { getZoomTranslatedCoords } from "./viewport";
@@ -33,7 +33,7 @@ export function makeElementDraggable(element: SVGElement) {
     const cursor = getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const bbox = (element as SVGGraphicsElement).getBBox();
     const { x, y } = e.shiftKey
-      ? getGridLockedCoordinates(cursor.x, cursor.y)
+      ? grid.getGridLockedCoordinates(cursor.x, cursor.y)
       : {
           x: cursor.x - bbox.width / 2,
           y: cursor.y - bbox.height / 2,
