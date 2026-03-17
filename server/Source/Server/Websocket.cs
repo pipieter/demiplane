@@ -122,6 +122,21 @@ public partial class Server
                     break;
                 }
 
+            case DeleteRequestMessage delete:
+                {
+                    List<string> deletedIds = [];
+
+                    foreach (string id in delete.delete)
+                    {
+                        if (_state.DeleteToken(id))
+                            deletedIds.Add(id);
+                    }
+
+                    var response = new DeleteResponseMessage(deletedIds);
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
+
             case BackgroundRequestMessage background:
                 {
                     string href = background.href;

@@ -21,6 +21,12 @@ server.socket.onmessage = function (event) {
       whiteboard.createToken(data.create);
       break;
 
+    case "delete":
+      for (const id of data.delete) {
+        whiteboard.deleteToken(id);
+      }
+      break;
+
     case "grid":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       break;

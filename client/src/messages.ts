@@ -25,6 +25,18 @@ export interface CreateResponseMessage {
   create: Token;
 }
 
+/** Request to delete a token on the whiteboard */
+export interface DeleteRequestMessage {
+  type: "request_delete";
+  delete: string[];
+}
+
+/** Delete a token on the whiteboard */
+export interface DeleteResponseMessage {
+  type: "delete";
+  delete: string[];
+}
+
 /** Request to resize a token on the whiteboard */
 export interface TransformRequestMessage {
   type: "request_transform";
@@ -79,12 +91,14 @@ export interface BackgroundResponseMessage {
 
 export type RequestMessage =
   | CreateRequestMessage
+  | DeleteRequestMessage
   | TransformRequestMessage
   | GridRequestMessage
   | BackgroundRequestMessage;
 export type ResponseMessage =
   | SyncResponseMessage
   | CreateResponseMessage
+  | DeleteResponseMessage
   | TransformResponseMessage
   | GridResponseMessage
   | BackgroundResponseMessage;

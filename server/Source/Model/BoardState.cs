@@ -18,6 +18,19 @@ public class ConcurrentBoardState
         }
     }
 
+    public bool DeleteToken(string id)
+    {
+        lock (_lock)
+        {
+            Token? token = _tokens.FirstOrDefault(token => token.id == id);
+            if (token == null)
+                return false;
+
+            _tokens.Remove(token);
+            return true;
+        }
+    }
+
     public bool MoveToken(string id, int x, int y)
     {
         lock (_lock)

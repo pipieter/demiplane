@@ -48,6 +48,24 @@ public class CreateResponseMessage(Token create) : Message
     public Token create = create;
 }
 
+public class DeleteRequestMessage(List<string> delete) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_delete";
+
+    [JsonProperty(Required = Required.Always)]
+    public List<string> delete = delete;
+}
+
+public class DeleteResponseMessage(List<string> delete) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "delete";
+
+    [JsonProperty(Required = Required.Always)]
+    public List<string> delete = delete;
+}
+
 public class GridRequestMessage(Grid grid) : Message
 {
     [JsonProperty(Required = Required.Always)]
@@ -135,6 +153,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["background"] = typeof(BackgroundResponseMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
+                ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),
             };
