@@ -17,14 +17,24 @@ const zoom = d3Zoom
       target.id === "whiteboard" ||
       target.closest("#whiteboard-background-layer") !== null
     );
-  })
-  .on("zoom", (event) => {
-    viewportElement.attr("transform", event.transform);
   });
 
 function initialize() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   whiteboardElement.call(zoom as any);
+  enable();
+}
+
+function enable() {
+  zoom.on("zoom", (event) => {
+    viewportElement.attr("transform", event.transform);
+  });
+  (viewportElement.node() as any).style.pointerEvents = "auto";
+}
+
+function disable() {
+  zoom.on("zoom", null);
+  (viewportElement.node() as any).style.pointerEvents = "none";
 }
 
 function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
@@ -38,4 +48,4 @@ function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number }
   };
 }
 
-export const viewport = { initialize, getZoomTranslatedCoords };
+export const viewport = { initialize, getZoomTranslatedCoords, enable, disable };
