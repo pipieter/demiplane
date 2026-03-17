@@ -28,13 +28,20 @@ function setBackground(href: string | null, width: number, height: number) {
 }
 
 function clearSelection() {
-  console.log(selected);
   for (const element of selected) {
     if (element.classList.contains("selected")) element.classList.remove("selected");
   }
 
   selected = [];
   transform.hideBox();
+}
+
+function addSelected(element: SVGElement) {
+  selected.push(element);
+}
+
+function getSelected(): SVGElement[] {
+  return selected;
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -76,4 +83,4 @@ function createToken(token: Token) {
   transform.setTransform(token.id, token.x, token.y, token.w, token.h);
 }
 
-export const whiteboard = { initialize, createToken, setBackground, container, selected, clearSelection };
+export const whiteboard = { initialize, createToken, setBackground, container, clearSelection, addSelected, getSelected };

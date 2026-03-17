@@ -24,7 +24,7 @@ function makeDraggable(element: SVGElement) {
 
     whiteboard.clearSelection();
     element.classList.add("selected");
-    whiteboard.selected.push(element);
+    whiteboard.addSelected(element);
     transform.showBox(element as SVGGraphicsElement);
   }
 
@@ -56,7 +56,7 @@ function makeDraggable(element: SVGElement) {
   function deselectElement() {
     document.onmouseup = null;
     document.onmousemove = null;
-    if (whiteboard.selected.length <= 0) {
+    if (whiteboard.getSelected().length <= 0) {
       transform.hideBox();
     }
   }

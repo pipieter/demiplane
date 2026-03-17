@@ -70,9 +70,9 @@ function stopResize() {
 }
 
 function sendSizeRequest(e: MouseEvent) {
-  if (whiteboard.selected.length <= 0 || !resizeDir) return;
-  const box = (whiteboard.selected[0] as SVGGraphicsElement).getBBox();
-  showBox(whiteboard.selected[0] as SVGGraphicsElement);
+  if (whiteboard.getSelected().length <= 0 || !resizeDir) return;
+  const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
+  showBox(whiteboard.getSelected()[0] as SVGGraphicsElement);
 
   let x = box.x;
   let y = box.y;
@@ -123,7 +123,7 @@ function sendSizeRequest(e: MouseEvent) {
   socket.send({
     type: "request_transform",
     transform: {
-      id: whiteboard.selected[0].id,
+      id: whiteboard.getSelected()[0].id,
       x,
       y,
       w: width,
