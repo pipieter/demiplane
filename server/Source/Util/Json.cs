@@ -1,7 +1,7 @@
+using Demiplane.Model;
 using Newtonsoft.Json;
-using Server.Tokens;
 
-namespace Server.Util;
+namespace Demiplane.Util;
 
 /// <summary>
 /// Wrapper class to make JSON operations easier and less verbose.

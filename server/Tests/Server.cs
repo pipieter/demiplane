@@ -1,9 +1,8 @@
+using Demiplane.Messages;
+using Demiplane.Model;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using Server;
-using Server.Messages;
-using Server.Tokens;
 
 namespace Demiplane.Tests;
 
