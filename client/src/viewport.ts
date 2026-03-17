@@ -29,12 +29,12 @@ function enable() {
   zoom.on("zoom", (event) => {
     viewportElement.attr("transform", event.transform);
   });
-  (viewportElement.node() as any).style.pointerEvents = "auto";
+  (viewportElement.node() as HTMLDivElement).style.pointerEvents = "auto";
 }
 
 function disable() {
   zoom.on("zoom", null);
-  (viewportElement.node() as any).style.pointerEvents = "none";
+  (viewportElement.node() as HTMLDivElement).style.pointerEvents = "none";
 }
 
 function getZoomTranslatedCoords(x: number, y: number): { x: number; y: number } {
