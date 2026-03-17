@@ -1,9 +1,15 @@
 using System.Text;
 using Demiplane.Services;
+using Demiplane.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Demiplane.Server;
+
+internal class ImageUploadDto(string data)
+{
+    public string data = data;
+}
 
 public partial class Server
 {
@@ -28,10 +34,9 @@ public partial class Server
             return;
         }
 
-        dynamic? contents = JsonConvert.DeserializeObject(body);
-        dynamic? data = contents?.data?.Value;
+        ImageUploadDto? contents = Json.Deserialize<ImageUploadDto>(body);
 
-        if (data is not string)
+        if (contents?.data is null)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = 400;
@@ -41,7 +46,7 @@ public partial class Server
             return;
         }
 
-        Asset? asset = AssetService.UploadImage(data);
+        Asset? asset = AssetService.UploadImage(contents.data);
         if (asset == null)
         {
             context.Response.ContentType = "application/json";

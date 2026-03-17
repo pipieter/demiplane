@@ -1,7 +1,32 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Demiplane.Util;
 
 namespace Demiplane.Model;
+
+public abstract class TokenCreateBody(int x, int y, int w, int h)
+{
+    public int x = x;
+    public int y = y;
+    public int w = w;
+    public int h = h;
+}
+
+public class TokenCreateCircleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "circle";
+    public string color = color;
+}
+
+public class TokenCreateRectangleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "rectangle";
+    public string color = color;
+}
+
+public class TokenCreateImageBody(string href, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "image";
+    public string href = href;
+}
 
 public abstract class Token(string id, int x, int y, int w, int h)
 {
@@ -11,7 +36,7 @@ public abstract class Token(string id, int x, int y, int w, int h)
     public int w = w;
     public int h = h;
 
-    public static Token? Create(dynamic create)
+    public static Token? Create(TokenCreateBody create)
     {
         string id = $"object-{Guid.NewGuid()}";
         int x = create.x;
@@ -19,26 +44,13 @@ public abstract class Token(string id, int x, int y, int w, int h)
         int w = create.w;
         int h = create.h;
 
-        if (create.type == "circle")
+        return create switch
         {
-            string color = create.color;
-
-            return new TokenCircle(id, color, x, y, w, h);
-        }
-
-        if (create.type == "rectangle")
-        {
-            string color = create.color;
-            return new TokenRectangle(id, color, x, y, w, h);
-        }
-
-        if (create.type == "image")
-        {
-            string href = create.href;
-            return new TokenImage(id, href, x, y, w, h);
-        }
-
-        return null;
+            TokenCreateImageBody image => new TokenImage(id, image.href, x, y, w, h),
+            TokenCreateCircleBody circle => new TokenCircle(id, circle.color, x, y, w, h),
+            TokenCreateRectangleBody rectangle => new TokenRectangle(id, rectangle.color, x, y, w, h),
+            _ => null,
+        };
     }
 }
 
@@ -60,36 +72,30 @@ public class TokenImage(string id, string href, int x, int y, int w, int h) : To
     public string href = href;
 }
 
-public class TokenJsonConverter : JsonConverter
+public class TokenCreateBodyJsonConverter : Json.TypeConverter<TokenCreateBody>
 {
-    public override bool CanConvert(Type objectType)
+    public override Dictionary<string, Type> TypeMap
     {
-        return objectType == typeof(Token);
+        get =>
+            new()
+            {
+                ["image"] = typeof(TokenCreateImageBody),
+                ["circle"] = typeof(TokenCreateCircleBody),
+                ["rectangle"] = typeof(TokenCreateRectangleBody),
+            };
     }
+}
 
-    public override object? ReadJson(
-        JsonReader reader,
-        Type objectType,
-        object? existingValue,
-        JsonSerializer serializer
-    )
+public class TokenJsonConverter : Json.TypeConverter<Token>
+{
+    public override Dictionary<string, Type> TypeMap
     {
-        JObject? obj = JObject.Load(reader);
-
-        if (obj == null)
-            return null;
-
-        return obj["type"]?.Value<string>() switch
-        {
-            "image" => obj.ToObject<TokenImage>(),
-            "circle" => obj.ToObject<TokenCircle>(),
-            "rectangle" => obj.ToObject<TokenRectangle>(),
-            _ => null,
-        };
-    }
-
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-    {
-        throw new NotImplementedException();
+        get =>
+            new()
+            {
+                ["image"] = typeof(TokenImage),
+                ["circle"] = typeof(TokenCircle),
+                ["rectangle"] = typeof(TokenRectangle),
+            };
     }
 }
