@@ -72,7 +72,7 @@ function stopResize() {
   resizeDir = null;
 }
 
-function sendSizeRequest(e: MouseEvent) {
+function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
   if (whiteboard.getSelected().length <= 0 || !resizeDir) return;
   const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
   showBox(whiteboard.getSelected()[0] as SVGGraphicsElement);
@@ -86,10 +86,18 @@ function sendSizeRequest(e: MouseEvent) {
   const dx = current.x - cursorStartPosition.x;
   const dy = current.y - cursorStartPosition.y;
 
-  const snapSize = (v: number) => {
-    if (!e.shiftKey) return v;
-    const size = grid.get().size;
-    return Math.round(v / size) * size;
+  const snapSize = (value: number) => {
+    if (!e.shiftKey) return value;
+    const gridSize = grid.get().size;
+
+    // If the size is smaller than a grid, snap to 1/2, 1/4, 1/8 of a grid
+    let step = gridSize;
+    while (step > 1 && value < step) {
+      if (step <= minSize) break;
+      step /= 2;
+    }
+
+    return Math.round(value / step) * step;
   };
 
   switch (resizeDir) {
@@ -119,13 +127,13 @@ function sendSizeRequest(e: MouseEvent) {
   }
 
   // Limit minimum width & height
-  if (width <= 8) {
+  if (width <= minSize) {
     x = box.x; // Prevent accidental shifting
-    width = 8;
+    width = minSize;
   }
-  if (height <= 8) {
+  if (height <= minSize) {
     y = box.y; // Prevent accidental shifting
-    height = 8;
+    height = minSize;
   }
 
   server.send({
