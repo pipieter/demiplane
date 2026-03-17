@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
+using Demiplane.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -66,49 +67,51 @@ public partial class Server
         if (message == null)
             return;
 
-        dynamic json = JsonConvert.DeserializeObject(message)!;
-        if (json.type == "request_create")
+        Message? body = Json.Deserialize<Message>(message);
+
+        switch (body)
         {
-            Token? token = Token.Create(json.create);
-            if (token == null)
-                return;
+            case CreateRequestMessage create:
+            {
+                Token? token = Token.Create(create.create);
+                if (token == null)
+                    return;
 
-            if (!_state.AddToken(token))
-                return;
+                if (!_state.AddToken(token))
+                    return;
 
-            CreateResponseMessage create = new(token);
-            await BroadcastMessage(JsonConvert.SerializeObject(create));
-        }
-        else if (json.type == "request_grid")
-        {
-            _state.SetGrid((int)json.grid.size, (int)json.grid.offset.x, (int)json.grid.offset.y);
+                CreateResponseMessage response = new(token);
+                await BroadcastMessage(JsonConvert.SerializeObject(response));
+                break;
+            }
 
-            GridResponseMessage gridResponse = new(_state.GetGrid());
-            await BroadcastMessage(JsonConvert.SerializeObject(gridResponse));
-        }
-        else if (json.type == "request_background")
-        {
-            string href = json.href;
-            Background? background = Background.FindFromHref(href);
-            if (background == null)
-                return;
+            case BackgroundRequestMessage background:
+            {
+                string href = background.href;
+                Background? found = Background.FindFromHref(href);
+                if (found == null)
+                    return;
 
-            _state.SetBackground(background);
-            BackgroundResponseMessage response = new(_state.GetBackground());
-            await BroadcastMessage(JsonConvert.SerializeObject(response));
-        }
-        else if (json.type == "request_transform")
-        {
-            string id = json.transform.id;
-            int x = json.transform.x;
-            int y = json.transform.y;
-            int w = json.transform.w;
-            int h = json.transform.h;
-            if (!_state.TransformToken(id, x, y, w, h))
-                return;
+                _state.SetBackground(found);
+                BackgroundResponseMessage response = new(_state.GetBackground());
+                await BroadcastMessage(JsonConvert.SerializeObject(response));
+                break;
+            }
 
-            TransformResponseMessage size = new(new TransformResponseMessage.Transform(id, x, y, w, h));
-            await BroadcastMessage(JsonConvert.SerializeObject(size));
+            case TransformRequestMessage transform:
+            {
+                string id = transform.transform.id;
+                int x = transform.transform.x;
+                int y = transform.transform.y;
+                int w = transform.transform.w;
+                int h = transform.transform.h;
+                if (!_state.TransformToken(id, x, y, w, h))
+                    return;
+
+                TransformResponseMessage size = new(new Transform(id, x, y, w, h));
+                await BroadcastMessage(JsonConvert.SerializeObject(size));
+                break;
+            }
         }
     }
 }
