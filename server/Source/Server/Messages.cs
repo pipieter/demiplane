@@ -149,6 +149,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["sync"] = typeof(SyncResponseMessage),
                 ["grid"] = typeof(GridResponseMessage),
                 ["create"] = typeof(CreateResponseMessage),
+                ["delete"] = typeof(DeleteResponseMessage),
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
