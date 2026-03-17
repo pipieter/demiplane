@@ -91,6 +91,10 @@ button:hover {
   pointer-events: none;
 }
 
+#resize-box {
+    filter: drop-shadow(0px 0px 1px #4da3ff);
+}
+
 .resize-handle {
   pointer-events: all;
 }

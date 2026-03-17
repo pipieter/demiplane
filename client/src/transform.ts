@@ -1,18 +1,20 @@
 import { whiteboard } from "./whiteboard";
 import { server } from "./server";
 import { viewport } from "./viewport";
+import { grid } from "./grid";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
 
-let prevPosition = { x: 0, y: 0 };
+let cursorStartPosition = { x: 0, y: 0 };
+let elementStartSize: DOMRect = new DOMRect(0, 0, 0, 0);
 
 function showBox(element: SVGGraphicsElement) {
   if (!resizeBox) return;
   const box = element.getBBox();
 
   if (resizeLayer) resizeLayer.style.display = "block";
-  const offset = 3;
+  const offset = 0;
   box.x -= offset;
   box.y -= offset;
   box.width += offset * 2;
@@ -55,10 +57,11 @@ document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
 
 function startResize(e: MouseEvent) {
   e.stopPropagation();
-  const target = e.target as HTMLElement;
+  const target = e.target as SVGElement;
   resizeDir = target.dataset.dir ?? null;
 
-  prevPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  cursorStartPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  elementStartSize = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
   document.addEventListener("mousemove", sendSizeRequest);
   document.addEventListener("mouseup", stopResize);
 }
@@ -69,7 +72,7 @@ function stopResize() {
   resizeDir = null;
 }
 
-function sendSizeRequest(e: MouseEvent) {
+function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
   if (whiteboard.getSelected().length <= 0 || !resizeDir) return;
   const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
   showBox(whiteboard.getSelected()[0] as SVGGraphicsElement);
@@ -80,45 +83,91 @@ function sendSizeRequest(e: MouseEvent) {
   let height = box.height;
 
   const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
-  const dx = current.x - prevPosition.x;
-  const dy = current.y - prevPosition.y;
-  prevPosition = current;
+
+  const dx = current.x - cursorStartPosition.x;
+  const dy = current.y - cursorStartPosition.y;
 
   switch (resizeDir) {
     case "br":
-      width += dx;
-      height += dy;
+      width = elementStartSize.width + dx;
+      height = elementStartSize.height + dy;
       break;
 
     case "tr":
-      width += dx;
-      height -= dy;
-      y += dy;
+      width = elementStartSize.width + dx;
+      height = elementStartSize.height - dy;
+      y = elementStartSize.y + (elementStartSize.height - height);
       break;
 
     case "bl":
-      width -= dx;
-      x += dx;
-      height += dy;
+      width = elementStartSize.width - dx;
+      height = elementStartSize.height + dy;
+      x = elementStartSize.x + (elementStartSize.width - width);
       break;
 
     case "tl":
-      width -= dx;
-      x += dx;
-      height -= dy;
-      y += dy;
+      width = elementStartSize.width - dx;
+      height = elementStartSize.height - dy;
+      x = elementStartSize.x + (elementStartSize.width - width);
+      y = elementStartSize.y + (elementStartSize.height - height);
       break;
   }
 
+  if (e.shiftKey) {
+    function getSnapStep(size: number, gridSize: number, minSize: number) {
+      let step = gridSize;
+
+      while (step / 2 >= minSize && size < step) {
+        if (size <= minSize) break;
+        step /= 2;
+      }
+
+      return step;
+    }
+
+    function snapToStep(value: number, offset: number, step: number) {
+      return Math.round((value - offset) / step) * step + offset;
+    }
+
+    const stepX = getSnapStep(width, grid.get().size, minSize);
+    const stepY = getSnapStep(height, grid.get().size, minSize);
+
+    if (resizeDir.includes("r")) {
+      const snappedX = snapToStep(x + width, grid.get().offset.x, stepX);
+      width = snappedX - x;
+    }
+
+    if (resizeDir.includes("l")) {
+      const snappedX = snapToStep(x, grid.get().offset.x, stepX);
+      const newX = snappedX;
+      width = width + (x - newX);
+      x = newX;
+    }
+
+    if (resizeDir.includes("b")) {
+      const snappedY = snapToStep(y + height, grid.get().offset.y, stepY);
+      height = snappedY - y;
+    }
+
+    if (resizeDir.includes("t")) {
+      const snappedY = snapToStep(y, grid.get().offset.y, stepY);
+      const newY = snappedY;
+      height = height + (y - newY);
+      y = newY;
+    }
+  }
+
   // Limit minimum width & height
-  if (width <= 8) {
+  if (width <= minSize) {
     x = box.x; // Prevent accidental shifting
-    width = 8;
+    width = minSize;
   }
-  if (height <= 8) {
+  if (height <= minSize) {
     y = box.y; // Prevent accidental shifting
-    height = 8;
+    height = minSize;
   }
+
+  console.log(width, height);
 
   server.send({
     type: "request_transform",
