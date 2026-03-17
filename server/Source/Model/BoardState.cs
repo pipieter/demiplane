@@ -40,13 +40,14 @@ public class ConcurrentBoardState
         }
     }
 
-    public void SetGrid(int size, int offsetX, int offsetY)
+    public bool SetGrid(int size, int offsetX, int offsetY)
     {
         lock (_lock)
         {
             _grid.size = size;
             _grid.offset.x = offsetX;
             _grid.offset.y = offsetY;
+            return true;
         }
     }
 
