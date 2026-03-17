@@ -36,7 +36,7 @@ public abstract class Token(string id, int x, int y, int w, int h)
     public int w = w;
     public int h = h;
 
-    public static Token? Create(dynamic create)
+    public static Token? Create(TokenCreateBody create)
     {
         string id = $"object-{Guid.NewGuid()}";
         int x = create.x;
@@ -44,26 +44,13 @@ public abstract class Token(string id, int x, int y, int w, int h)
         int w = create.w;
         int h = create.h;
 
-        if (create.type == "circle")
+        return create switch
         {
-            string color = create.color;
-
-            return new TokenCircle(id, color, x, y, w, h);
-        }
-
-        if (create.type == "rectangle")
-        {
-            string color = create.color;
-            return new TokenRectangle(id, color, x, y, w, h);
-        }
-
-        if (create.type == "image")
-        {
-            string href = create.href;
-            return new TokenImage(id, href, x, y, w, h);
-        }
-
-        return null;
+            TokenCreateImageBody image => new TokenImage(id, image.href, x, y, w, h),
+            TokenCreateCircleBody circle => new TokenCircle(id, circle.color, x, y, w, h),
+            TokenCreateRectangleBody rectangle => new TokenRectangle(id, rectangle.color, x, y, w, h),
+            _ => null,
+        };
     }
 }
 
