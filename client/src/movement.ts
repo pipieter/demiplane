@@ -4,7 +4,7 @@ import { transform } from "./transform";
 import socket from "./socket";
 import { getZoomTranslatedCoords } from "./viewport";
 
-export function cursorWithinElement(e: MouseEvent, element: Element): boolean {
+function cursorWithinElement(e: MouseEvent, element: Element): boolean {
   const { left, right, top, bottom } = element.getBoundingClientRect();
 
   return e.clientX >= left && e.clientX <= right && e.clientY >= top && e.clientY <= bottom;
@@ -13,7 +13,7 @@ export function cursorWithinElement(e: MouseEvent, element: Element): boolean {
 /**
  *  Mutates an SVGElement to get drag-behavior.
  */
-export function makeElementDraggable(element: SVGElement) {
+function makeDraggable(element: SVGElement) {
   element.onmousedown = mouseDown;
 
   function mouseDown(e: MouseEvent) {
@@ -63,3 +63,5 @@ export function makeElementDraggable(element: SVGElement) {
     }
   }
 }
+
+export const movement = { makeDraggable }

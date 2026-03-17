@@ -1,4 +1,4 @@
-import { makeElementDraggable } from "./movement";
+import { movement } from "./movement";
 import { transform } from "./transform";
 import { BackendURL } from "./socket";
 import type { Token } from "./token";
@@ -68,7 +68,7 @@ function createToken(token: Token) {
 
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  makeElementDraggable(element);
+  movement.makeDraggable(element);
 
   collection.appendChild(element);
   transform.setTransform(token.id, token.x, token.y, token.w, token.h);
