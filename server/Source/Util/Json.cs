@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Demiplane.Messages;
 using Demiplane.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,7 +18,12 @@ public static class Json
 
     public static T? Deserialize<T>(string value)
     {
-        JsonConverter[] converters = [new TokenJsonConverter()];
+        JsonConverter[] converters =
+        [
+            new TokenJsonConverter(),
+            new TokenCreateBodyJsonConverter(),
+            new MessageJsonConverter(),
+        ];
         JsonSerializerSettings settings = new() { TypeNameHandling = TypeNameHandling.Auto, Converters = converters };
         return JsonConvert.DeserializeObject<T>(value, settings);
     }
