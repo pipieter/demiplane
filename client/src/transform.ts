@@ -1,18 +1,20 @@
 import { whiteboard } from "./whiteboard";
 import { server } from "./server";
 import { viewport } from "./viewport";
+import { grid } from "./grid";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
 
-let prevPosition = { x: 0, y: 0 };
+let cursorStartPosition = { x: 0, y: 0 };
+let elementStartSize: DOMRect = new DOMRect(0, 0, 0, 0);
 
 function showBox(element: SVGGraphicsElement) {
   if (!resizeBox) return;
   const box = element.getBBox();
 
   if (resizeLayer) resizeLayer.style.display = "block";
-  const offset = 3;
+  const offset = 0;
   box.x -= offset;
   box.y -= offset;
   box.width += offset * 2;
@@ -55,10 +57,11 @@ document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
 
 function startResize(e: MouseEvent) {
   e.stopPropagation();
-  const target = e.target as HTMLElement;
+  const target = e.target as SVGElement;
   resizeDir = target.dataset.dir ?? null;
 
-  prevPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  cursorStartPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  elementStartSize = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
   document.addEventListener("mousemove", sendSizeRequest);
   document.addEventListener("mouseup", stopResize);
 }
@@ -80,33 +83,38 @@ function sendSizeRequest(e: MouseEvent) {
   let height = box.height;
 
   const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
-  const dx = current.x - prevPosition.x;
-  const dy = current.y - prevPosition.y;
-  prevPosition = current;
+  const dx = current.x - cursorStartPosition.x;
+  const dy = current.y - cursorStartPosition.y;
+
+  const snapSize = (v: number) => {
+    if (!e.shiftKey) return v;
+    const size = grid.get().size;
+    return Math.round(v / size) * size;
+  };
 
   switch (resizeDir) {
     case "br":
-      width += dx;
-      height += dy;
+      width = snapSize(elementStartSize.width + dx);
+      height = snapSize(elementStartSize.height + dy);
       break;
 
     case "tr":
-      width += dx;
-      height -= dy;
-      y += dy;
+      width = snapSize(elementStartSize.width + dx);
+      height = snapSize(elementStartSize.height - dy);
+      y = elementStartSize.y + (elementStartSize.height - height);
       break;
 
     case "bl":
-      width -= dx;
-      x += dx;
-      height += dy;
+      width = snapSize(elementStartSize.width - dx);
+      height = snapSize(elementStartSize.height + dy);
+      x = elementStartSize.x + (elementStartSize.width - width);
       break;
 
     case "tl":
-      width -= dx;
-      x += dx;
-      height -= dy;
-      y += dy;
+      width = snapSize(elementStartSize.width - dx);
+      height = snapSize(elementStartSize.height - dy);
+      x = elementStartSize.x + (elementStartSize.width - width);
+      y = elementStartSize.y + (elementStartSize.height - height);
       break;
   }
 
