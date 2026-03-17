@@ -6,6 +6,7 @@ import type { Token } from "./token";
 const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
 const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
 const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
+const drawingLayer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 let selected: SVGElement[] = [];
 
@@ -21,6 +22,8 @@ function setBackground(href: string | null, width: number, height: number) {
   backgroundLayer.setAttribute("height", `${height}px`);
   objectsLayer.setAttribute("width", `${width}px`);
   objectsLayer.setAttribute("height", `${height}px`);
+  drawingLayer.setAttribute("width", `${width}px`);
+  drawingLayer.setAttribute("height", `${height}px`);
   if (transform.resizeLayer) {
     transform.resizeLayer.setAttribute("width", `${width}px`);
     transform.resizeLayer.setAttribute("height", `${height}px`);
