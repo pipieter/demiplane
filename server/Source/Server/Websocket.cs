@@ -111,42 +111,42 @@ public partial class Server
         switch (body)
         {
             case CreateRequestMessage create:
-            {
-                Token token = Token.Create(create.create) ?? throw new Exception("Could not create token.");
+                {
+                    Token token = Token.Create(create.create) ?? throw new Exception("Could not create token.");
 
-                if (!_state.AddToken(token))
-                    throw new Exception("Could not add token.");
+                    if (!_state.AddToken(token))
+                        throw new Exception("Could not add token.");
 
-                CreateResponseMessage response = new(token);
-                await BroadcastMessage(JsonConvert.SerializeObject(response));
-                break;
-            }
+                    CreateResponseMessage response = new(token);
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
 
             case BackgroundRequestMessage background:
-            {
-                string href = background.href;
-                Background found = Background.FindFromHref(href) ?? throw new Exception("Resource not found.");
+                {
+                    string href = background.href;
+                    Background found = Background.FindFromHref(href) ?? throw new Exception("Resource not found.");
 
-                _state.SetBackground(found);
-                BackgroundResponseMessage response = new(_state.GetBackground());
-                await BroadcastMessage(JsonConvert.SerializeObject(response));
-                break;
-            }
+                    _state.SetBackground(found);
+                    BackgroundResponseMessage response = new(_state.GetBackground());
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
 
             case TransformRequestMessage transform:
-            {
-                string id = transform.transform.id;
-                int x = transform.transform.x;
-                int y = transform.transform.y;
-                int w = transform.transform.w;
-                int h = transform.transform.h;
-                if (!_state.TransformToken(id, x, y, w, h))
-                    throw new Exception("Could not transform token.");
+                {
+                    string id = transform.transform.id;
+                    int x = transform.transform.x;
+                    int y = transform.transform.y;
+                    int w = transform.transform.w;
+                    int h = transform.transform.h;
+                    if (!_state.TransformToken(id, x, y, w, h))
+                        throw new Exception("Could not transform token.");
 
-                TransformResponseMessage size = new(new Transform(id, x, y, w, h));
-                await BroadcastMessage(JsonConvert.SerializeObject(size));
-                break;
-            }
+                    TransformResponseMessage size = new(new Transform(id, x, y, w, h));
+                    await BroadcastMessage(JsonConvert.SerializeObject(size));
+                    break;
+                }
         }
     }
 }
