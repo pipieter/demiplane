@@ -4,7 +4,7 @@ namespace Demiplane.Model;
 
 public class Background(string? href, int width, int height)
 {
-    [JsonProperty(Required = Required.Always)]
+    [JsonProperty(Required = Required.AllowNull)]
     public string? href = href;
 
     [JsonProperty(Required = Required.Always)]
