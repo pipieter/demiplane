@@ -143,8 +143,18 @@ public partial class Server
                     if (!_state.TransformToken(id, x, y, w, h))
                         throw new Exception("Could not transform token.");
 
-                    TransformResponseMessage size = new(new Transform(id, x, y, w, h));
-                    await BroadcastMessage(JsonConvert.SerializeObject(size));
+                    TransformResponseMessage response = new(new Transform(id, x, y, w, h));
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
+
+            case GridRequestMessage grid:
+                {
+                    if (!_state.SetGrid(grid.grid.size, grid.grid.offset.x, grid.grid.offset.y))
+                        throw new Exception("Could not set grid.");
+
+                    GridResponseMessage response = new(_state.GetGrid());
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }
         }
