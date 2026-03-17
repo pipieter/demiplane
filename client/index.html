@@ -53,8 +53,9 @@
             <rect class="resize-handle" id="handle-br" data-dir="br" width="8" height="8" fill="white" stroke="black" />
           </svg>
           <svg id="whiteboard-drawing-layer" width="1024px" height="1024px" style="display: none; cursor: crosshair">
-            <!-- Note: this rectangle is required to ensure the layer has something to draw on -->
-            <rect fill="#FF000000" width="100%" height="100%" />
+            <!-- Note: this rectangle is required to ensure the layer has something to draw on. -->
+            <!-- It also adds a small color effect to when the user is drawing, so they know they are in drawing mode. -->
+            <rect fill="#44444411" width="100%" height="100%" />
             <path id="whiteboard-drawing-line" fill="none" stroke="black" stroke-width="10px" />
           </svg>
         </g>
