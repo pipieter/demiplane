@@ -1,4 +1,4 @@
-export async function readBase64(file: File): Promise<string | null> {
+async function readBase64(file: File): Promise<string | null> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -13,3 +13,5 @@ export async function readBase64(file: File): Promise<string | null> {
     reader.readAsDataURL(file);
   });
 }
+
+export const util = { readBase64 };

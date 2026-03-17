@@ -5,7 +5,7 @@ import type { BackgroundRequestMessage, CreateRequestMessage, ResponseMessage } 
 import socket, { uploadImageToBackend } from "./socket";
 import { transform } from "./transform";
 import { viewport } from "./viewport";
-import { readBase64 } from "./util";
+import { util } from "./util";
 
 whiteboard.initialize();
 header.initialize();
@@ -107,7 +107,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const base64 = await readBase64(file);
+  const base64 = await util.readBase64(file);
   if (!base64) {
     console.error("Could not read file.");
     return;
@@ -145,7 +145,7 @@ uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const base64 = await readBase64(file);
+  const base64 = await util.readBase64(file);
   if (!base64) {
     console.error("Could not read file.");
     return;
