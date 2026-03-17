@@ -124,15 +124,10 @@ public partial class Server
 
             case DeleteRequestMessage delete:
                 {
-                    List<string> deletedIds = [];
+                    if (!_state.DeleteTokens(delete.delete))
+                        throw new Exception("Could not delete tokens.");
 
-                    foreach (string id in delete.delete)
-                    {
-                        if (_state.DeleteToken(id))
-                            deletedIds.Add(id);
-                    }
-
-                    var response = new DeleteResponseMessage(deletedIds);
+                    var response = new DeleteResponseMessage(delete.delete);
                     await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }
