@@ -2,6 +2,32 @@ using Demiplane.Util;
 
 namespace Demiplane.Model;
 
+public abstract class TokenCreateBody(int x, int y, int w, int h)
+{
+    public int x = x;
+    public int y = y;
+    public int w = w;
+    public int h = h;
+}
+
+public class TokenCreateCircleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "circle";
+    public string color = color;
+}
+
+public class TokenCreateRectangleBody(string color, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "rectangle";
+    public string color = color;
+}
+
+public class TokenCreateImageBody(string href, int x, int y, int w, int h) : TokenCreateBody(x, y, w, h)
+{
+    public string type = "image";
+    public string href = href;
+}
+
 public abstract class Token(string id, int x, int y, int w, int h)
 {
     public string id = id;
@@ -57,6 +83,20 @@ public class TokenImage(string id, string href, int x, int y, int w, int h) : To
 {
     public string type = "image";
     public string href = href;
+}
+
+public class TokenCreateBodyJsonConverter : Json.TypeConverter<TokenCreateBody>
+{
+    public override Dictionary<string, Type> TypeMap
+    {
+        get =>
+            new()
+            {
+                ["image"] = typeof(TokenCreateImageBody),
+                ["circle"] = typeof(TokenCreateCircleBody),
+                ["rectangle"] = typeof(TokenCreateRectangleBody),
+            };
+    }
 }
 
 public class TokenJsonConverter : Json.TypeConverter<Token>
