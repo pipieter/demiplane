@@ -18,6 +18,22 @@ public class ConcurrentBoardState
         }
     }
 
+    public bool DeleteTokens(List<string> ids)
+    {
+        lock (_lock)
+        {
+            List<Token> tokensToRemove = [.. _tokens.Where(token => ids.Contains(token.id))];
+            if (tokensToRemove.Count != ids.Count)
+                return false;
+
+            foreach (Token token in tokensToRemove)
+            {
+                _tokens.Remove(token);
+            }
+            return true;
+        }
+    }
+
     public bool MoveToken(string id, int x, int y)
     {
         lock (_lock)

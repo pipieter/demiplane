@@ -167,8 +167,6 @@ function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
     height = minSize;
   }
 
-  console.log(width, height);
-
   server.send({
     type: "request_transform",
     transform: {

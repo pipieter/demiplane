@@ -56,6 +56,34 @@ function initialize() {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   const background = document.getElementById("whiteboard-background-layer") as SVGSVGElement;
   background.onclick = clearSelection;
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Delete") sendDeleteRequest();
+    if (event.key === "Backspace") sendDeleteRequest();
+  });
+}
+
+function sendDeleteRequest() {
+  if (selected.length <= 0) return;
+
+  const tokenIds: string[] = [];
+  for (const token of selected) {
+    const id = token.getAttribute("id");
+    if (id) tokenIds.push(id);
+  }
+
+  clearSelection();
+  transform.hideBox();
+
+  server.send({
+    type: "request_delete",
+    delete: tokenIds,
+  });
+}
+
+function deleteToken(id: string) {
+  const element = document.getElementById(id);
+  if (element) element?.remove();
 }
 
 function createToken(token: Token) {
@@ -89,6 +117,7 @@ function createToken(token: Token) {
 export const whiteboard = {
   initialize,
   createToken,
+  deleteToken,
   setBackground,
   container,
   clearSelection,

@@ -122,6 +122,16 @@ public partial class Server
                     break;
                 }
 
+            case DeleteRequestMessage delete:
+                {
+                    if (!_state.DeleteTokens(delete.delete))
+                        throw new Exception("Could not delete tokens.");
+
+                    var response = new DeleteResponseMessage(delete.delete);
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
+
             case BackgroundRequestMessage background:
                 {
                     string href = background.href;
