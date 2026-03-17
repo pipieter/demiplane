@@ -46,13 +46,25 @@ function set(newSize: number, offsetX: number, offsetY: number) {
   gridPatternElement.setAttribute("patternTransform", `translate(${offset.x}, ${offset.y})`);
 }
 
-function getGridLockedCoordinates(x: number, y: number): { x: number; y: number } {
-  const localX = x - offset.x;
-  const localY = y - offset.y;
+function getGridlockedCoords(x: number, y: number): { x: number; y: number } {
+  const snap = (value: number, offset: number) => {
+    const local = value - offset;
+    const start = Math.floor(local / size) * size + offset;
+    const end = start + size;
+    // threshold of 1/4th ensures equal snapping behavior.
+    const snapThreshold = size / 4;
+
+    if (local < start + snapThreshold) return start;
+    if (local > end - snapThreshold) return end;
+    return start + size / 2;
+  };
+
+  const snappedX = snap(x, offset.x);
+  const snappedY = snap(y, offset.y);
 
   return {
-    x: Math.floor(localX / size) * size + offset.x,
-    y: Math.floor(localY / size) * size + offset.y,
+    x: snappedX,
+    y: snappedY,
   };
 }
 
@@ -80,4 +92,4 @@ function initialize() {
   });
 }
 
-export const grid = { get, set, initialize, getGridLockedCoordinates };
+export const grid = { get, set, initialize, getGridlockedCoords };

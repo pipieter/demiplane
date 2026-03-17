@@ -32,13 +32,15 @@ function makeDraggable(element: SVGElement) {
     transform.hideBox();
     const cursor = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const bbox = (element as SVGGraphicsElement).getBBox();
-    const { x, y } = e.shiftKey
-      ? grid.getGridLockedCoordinates(cursor.x, cursor.y)
+    let { x, y } = e.shiftKey
+      ? grid.getGridlockedCoords(cursor.x, cursor.y)
       : {
-          x: cursor.x - bbox.width / 2,
-          y: cursor.y - bbox.height / 2,
+          x: cursor.x,
+          y: cursor.y,
         };
 
+    x -= bbox.width / 2;
+    y -= bbox.height / 2;
     if (!cursorWithinElement(e, whiteboard.container)) return;
 
     server.send({
