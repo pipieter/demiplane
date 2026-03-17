@@ -5,7 +5,7 @@
 import type { RequestMessage } from "./messages";
 
 const BackendURL = location.host.includes(".discordsays.com") ? "/server" : import.meta.env.VITE_SERVER_URL;
-const websocket = new WebSocket(BackendURL);
+const socket = new WebSocket(BackendURL);
 
 async function uploadImageToBackend(base64: string): Promise<string | null> {
   const url = BackendURL + "/images";
@@ -36,7 +36,7 @@ async function uploadImageToBackend(base64: string): Promise<string | null> {
 }
 
 function send(req: RequestMessage) {
-  websocket.send(JSON.stringify(req));
+  socket.send(JSON.stringify(req));
 }
 
-export const socket = { send, websocket, uploadImageToBackend, BackendURL };
+export const server = { send, socket, uploadImageToBackend, BackendURL };

@@ -1,7 +1,7 @@
 import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { transform } from "./transform";
-import { socket } from "./socket";
+import { server } from "./server";
 import { viewport } from "./viewport";
 
 function cursorWithinElement(e: MouseEvent, element: Element): boolean {
@@ -41,7 +41,7 @@ function makeDraggable(element: SVGElement) {
 
     if (!cursorWithinElement(e, whiteboard.container)) return;
 
-    socket.send({
+    server.send({
       type: "request_transform",
       transform: {
         id: element.id,

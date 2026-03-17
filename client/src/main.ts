@@ -5,14 +5,14 @@ import type { ResponseMessage } from "./messages";
 import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
-import { socket } from "./socket";
+import { server } from "./server";
 
 whiteboard.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
 
-socket.websocket.onmessage = function (event) {
+server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
@@ -66,7 +66,7 @@ function getRandomColor(): string {
 randomCircleButton.onclick = () => {
   const { x, y } = getRandomPosition();
 
-  socket.send({
+  server.send({
     type: "request_create",
     create: {
       type: "circle",
@@ -84,7 +84,7 @@ randomRectangleButton.onclick = () => {
   const w = grid.get().size;
   const h = grid.get().size;
 
-  socket.send({
+  server.send({
     type: "request_create",
     create: {
       type: "rectangle",
@@ -111,7 +111,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await socket.uploadImageToBackend(base64);
+  const href = await server.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
@@ -121,7 +121,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const w = grid.get().size;
   const h = grid.get().size;
 
-  socket.send({
+  server.send({
     type: "request_create",
     create: {
       type: "image",
@@ -148,13 +148,13 @@ uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await socket.uploadImageToBackend(base64);
+  const href = await server.uploadImageToBackend(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
   }
 
-  socket.send({
+  server.send({
     type: "request_background",
     href,
   });

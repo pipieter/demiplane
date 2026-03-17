@@ -1,4 +1,4 @@
-import { socket } from "./socket";
+import { server } from "./server";
 
 export interface GridData {
   size: number;
@@ -57,7 +57,7 @@ function getGridLockedCoordinates(x: number, y: number): { x: number; y: number 
 }
 
 function sendGridRequest() {
-  socket.send({
+  server.send({
     type: "request_grid",
     grid: get(),
   });

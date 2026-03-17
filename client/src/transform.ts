@@ -1,5 +1,5 @@
 import { whiteboard } from "./whiteboard";
-import { socket } from "./socket";
+import { server } from "./server";
 import { viewport } from "./viewport";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
@@ -120,7 +120,7 @@ function sendSizeRequest(e: MouseEvent) {
     height = 8;
   }
 
-  socket.send({
+  server.send({
     type: "request_transform",
     transform: {
       id: whiteboard.getSelected()[0].id,

@@ -1,6 +1,6 @@
 import { movement } from "./movement";
 import { transform } from "./transform";
-import { socket } from "./socket";
+import { server } from "./server";
 import type { Token } from "./token";
 
 const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
@@ -13,7 +13,7 @@ function setBackground(href: string | null, width: number, height: number) {
   if (href === null) {
     backgroundImage.removeAttribute("href");
   } else {
-    backgroundImage.setAttribute("href", socket.BackendURL + href);
+    backgroundImage.setAttribute("href", server.BackendURL + href);
   }
   backgroundImage.setAttribute("width", `${width}px`);
   backgroundImage.setAttribute("height", `${height}px`);
@@ -68,7 +68,7 @@ function createToken(token: Token) {
 
     element.setAttribute("fill", token.color);
   } else if (token.type === "image") {
-    const href = socket.BackendURL + token.href;
+    const href = server.BackendURL + token.href;
     element = document.createElementNS("http://www.w3.org/2000/svg", "image");
     element.setAttribute("href", href);
   } else {
