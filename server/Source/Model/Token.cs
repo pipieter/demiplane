@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Server.Tokens;
+namespace Demiplane.Model;
 
 public abstract class Token(string id, int x, int y, int w, int h)
 {
