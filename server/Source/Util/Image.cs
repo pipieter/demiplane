@@ -1,14 +1,8 @@
 using System.Runtime.CompilerServices;
 
-namespace Server.Util;
+namespace Demiplane.Util;
 
-public class ImageResult(string href, string localPath)
-{
-    public readonly string href = href;
-    public readonly string localPath = localPath;
-}
-
-public static class Image
+public class Image
 {
     private static bool ExtractImageDataFromBase64(string base64, out string type, out string data)
     {
@@ -32,20 +26,16 @@ public static class Image
         return true;
     }
 
-    public static ImageResult? SaveBase64Image(string name, string base64)
+    public static string? SaveBase64Image(string name, string directory, string base64)
     {
         if (!ExtractImageDataFromBase64(base64, out string extension, out string data))
             return null;
 
         string filename = $"{name}.{extension}";
-
-        // Note, due to how the ASP.NET Core works, static files need to be stored in wwwroot.
-        // The href will be a subdirectory in wwwroot.
-        string localPath = $"./wwwroot/images/{filename}";
-        string href = $"/images/{filename}";
+        string path = $"{directory}/{filename}";
         byte[] bytes = Convert.FromBase64String(data);
 
-        File.WriteAllBytes(localPath, bytes);
-        return new(href, localPath);
+        File.WriteAllBytes(path, bytes);
+        return filename;
     }
 }

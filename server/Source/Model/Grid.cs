@@ -1,4 +1,4 @@
-namespace Server.Grid;
+namespace Demiplane.Model;
 
 public class Offset(int x, int y)
 {

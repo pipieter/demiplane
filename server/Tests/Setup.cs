@@ -30,7 +30,7 @@ public class TestSocket : IDisposable
         var response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
         var message = System.Text.Encoding.UTF8.GetString(_buffer, 0, response.Count);
         T body =
-            Server.Util.Json.Deserialize<T>(message)
+            Util.Json.Deserialize<T>(message)
             ?? throw new Exception($"Could not parse {typeof(T).Name} from '{message}'");
         return body;
     }

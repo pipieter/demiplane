@@ -1,13 +1,13 @@
-using Server.Tokens;
+using Demiplane.Model;
 
-namespace Server.Messages;
+namespace Demiplane.Messages;
 
-public record struct SyncResponseMessage(Token[] tokens, Background background, Grid.Grid grid)
+public record struct SyncResponseMessage(Token[] tokens, Background background, Grid grid)
 {
     public string type = "sync";
     public Token[] tokens = tokens;
     public Background background = background;
-    public Grid.Grid grid = grid;
+    public Grid grid = grid;
 }
 
 public record struct CreateResponseMessage(Token create)
@@ -16,10 +16,10 @@ public record struct CreateResponseMessage(Token create)
     public Token create = create;
 }
 
-public record struct GridResponseMessage(Grid.Grid grid)
+public record struct GridResponseMessage(Grid grid)
 {
     public string type = "grid";
-    public Grid.Grid grid = grid;
+    public Grid grid = grid;
 }
 
 public record struct BackgroundResponseMessage(Background background)
