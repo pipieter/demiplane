@@ -1,4 +1,4 @@
-namespace Server;
+namespace Demiplane.Model;
 
 public class Background(string? href, int width, int height)
 {

@@ -1,12 +1,12 @@
-using Server.Tokens;
+using Demiplane.Model;
 
-namespace Server;
+namespace Demiplane;
 
 public class ConcurrentBoardState
 {
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
-    private readonly Grid.Grid _grid = new(64, 0, 0);
+    private readonly Grid _grid = new(64, 0, 0);
     private readonly Background _background = new(null, 1024, 1024);
 
     public bool AddToken(Token token)
@@ -50,7 +50,7 @@ public class ConcurrentBoardState
         }
     }
 
-    public Grid.Grid GetGrid()
+    public Grid GetGrid()
     {
         lock (_lock)
         {
