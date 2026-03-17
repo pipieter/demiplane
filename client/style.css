@@ -49,6 +49,7 @@ button:hover {
 }
 
 #whiteboard-container {
+    pointer-events: none;
     overflow: hidden;
     position: fixed;
     top: 0;
@@ -102,4 +103,8 @@ cursor: nwse-resize;
 #handle-tl,
 #handle-bl {
 cursor: nesw-resize;
+}
+
+#whiteboard-drawing-layer {
+    pointer-events: auto;
 }
