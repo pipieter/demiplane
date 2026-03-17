@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
@@ -11,25 +11,22 @@
         <button class="tab-button" data-tab="draw">Draw</button>
         <button class="tab-button" data-tab="settings">Settings</button>
       </nav>
-      
+
       <section id="tab-draw" class="tab-panel">
         <button id="random-circle-button">Add circle</button>
         <button id="random-rect-button">Add rectangle</button>
-        <button>
-          <input id="upload-token-button" type="file" accept="image/*">Upload a token</button>
-        </button>
-        <button>
-          <input id="upload-background-button" type="file" accept="image/*">Upload background</button>
-        </button>
+        <button id="begin-drawing-button">Begin drawing</button>
+        <button><input id="upload-token-button" type="file" accept="image/*" />Upload a token</button>
+        <button><input id="upload-background-button" type="file" accept="image/*" />Upload background</button>
       </section>
-      
+
       <section id="tab-settings" class="tab-panel" hidden>
         <label for="grid-size">size</label>
-        <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64">
+        <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
         <label for="grid-offset-X">offset X</label>
-        <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0">
+        <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
         <label for="grid-offset-Y">offset Y</label>
-        <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0">
+        <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
       </section>
     </header>
 
@@ -43,17 +40,23 @@
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#666" stroke-width="1" />
               </pattern>
             </defs>
-            <image id="whiteboard-background-image" width="1024px" height="1024px"/>
+            <image id="whiteboard-background-image" width="1024px" height="1024px" />
             <rect id="whiteboard-background-grid" fill="url(#grid-pattern)" width="100%" height="100%" />
           </svg>
           <svg id="whiteboard-objects-layer"></svg>
-          <svg id="whiteboard-resize" style="display: none;">
+          <svg id="whiteboard-resize" style="display: none">
             <rect id="resize-box" fill="none" stroke="#4da3ff" stroke-width="1" pointer-events="none" />
-          
+
             <rect class="resize-handle" id="handle-tr" data-dir="tl" width="8" height="8" fill="white" stroke="black" />
             <rect class="resize-handle" id="handle-tl" data-dir="tr" width="8" height="8" fill="white" stroke="black" />
             <rect class="resize-handle" id="handle-bl" data-dir="bl" width="8" height="8" fill="white" stroke="black" />
             <rect class="resize-handle" id="handle-br" data-dir="br" width="8" height="8" fill="white" stroke="black" />
+          </svg>
+          <svg id="whiteboard-drawing-layer" width="1024px" height="1024px" style="display: none; cursor: crosshair">
+            <!-- Note: this rectangle is required to ensure the layer has something to draw on. -->
+            <!-- It also adds a small color effect to when the user is drawing, so they know they are in drawing mode. -->
+            <rect fill="#44444411" width="100%" height="100%" />
+            <path id="whiteboard-drawing-line" fill="none" stroke="black" stroke-width="10px" />
           </svg>
         </g>
       </svg>
