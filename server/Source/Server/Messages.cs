@@ -1,5 +1,6 @@
 using Demiplane.Model;
 using Demiplane.Util;
+using Newtonsoft.Json;
 
 namespace Demiplane.Messages;
 
@@ -7,72 +8,115 @@ public abstract class Message { }
 
 public class ErrorResponseMessage(string message)
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "error";
+
+    [JsonProperty(Required = Required.Always)]
     public string message = message;
 }
 
 public class SyncResponseMessage(Token[] tokens, Background background, Grid grid) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "sync";
+
+    [JsonProperty(Required = Required.Always)]
     public Token[] tokens = tokens;
+
+    [JsonProperty(Required = Required.Always)]
     public Background background = background;
+
+    [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
 }
 
 public class CreateRequestMessage(TokenCreateBody create) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "request_create";
+
+    [JsonProperty(Required = Required.Always)]
     public TokenCreateBody create = create;
 }
 
 public class CreateResponseMessage(Token create) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "create";
+
+    [JsonProperty(Required = Required.Always)]
     public Token create = create;
 }
 
 public class GridRequestMessage(Grid grid) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "request_grid";
+
+    [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
 }
 
 public class GridResponseMessage(Grid grid) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "grid";
+
+    [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
 }
 
 public class BackgroundRequestMessage(string href) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "request_background";
+
+    [JsonProperty(Required = Required.Always)]
     public string href = href;
 }
 
 public class BackgroundResponseMessage(Background background) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "background";
+
+    [JsonProperty(Required = Required.Always)]
     public Background background = background;
 }
 
 public record struct Transform(string id, int x, int y, int w, int h)
 {
+    [JsonProperty(Required = Required.Always)]
     public string id = id;
+
+    [JsonProperty(Required = Required.Always)]
     public int x = x;
+
+    [JsonProperty(Required = Required.Always)]
     public int y = y;
+
+    [JsonProperty(Required = Required.Always)]
     public int w = w;
+
+    [JsonProperty(Required = Required.Always)]
     public int h = h;
 }
 
 public class TransformRequestMessage(Transform transform) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "request_transform";
+
+    [JsonProperty(Required = Required.Always)]
     public Transform transform = transform;
 }
 
 public class TransformResponseMessage(Transform transform) : Message
 {
+    [JsonProperty(Required = Required.Always)]
     public string type = "transform";
+
+    [JsonProperty(Required = Required.Always)]
     public Transform transform = transform;
 }
 
