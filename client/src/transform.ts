@@ -83,47 +83,60 @@ function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
   let height = box.height;
 
   const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+
   const dx = current.x - cursorStartPosition.x;
   const dy = current.y - cursorStartPosition.y;
 
-  const snapSize = (value: number) => {
-    if (!e.shiftKey) return value;
-    const gridSize = grid.get().size;
-
-    // If the size is smaller than a grid, snap to 1/2, 1/4, 1/8 of a grid
-    let step = gridSize;
-    while (step > 1 && value < step) {
-      if (step <= minSize) break;
-      step /= 2;
-    }
-
-    return Math.round(value / step) * step;
-  };
-
   switch (resizeDir) {
     case "br":
-      width = snapSize(elementStartSize.width + dx);
-      height = snapSize(elementStartSize.height + dy);
+      width = elementStartSize.width + dx;
+      height = elementStartSize.height + dy;
       break;
 
     case "tr":
-      width = snapSize(elementStartSize.width + dx);
-      height = snapSize(elementStartSize.height - dy);
+      width = (elementStartSize.width + dx);
+      height = (elementStartSize.height - dy);
       y = elementStartSize.y + (elementStartSize.height - height);
       break;
 
     case "bl":
-      width = snapSize(elementStartSize.width - dx);
-      height = snapSize(elementStartSize.height + dy);
+      width = (elementStartSize.width - dx);
+      height = (elementStartSize.height + dy);
       x = elementStartSize.x + (elementStartSize.width - width);
       break;
 
     case "tl":
-      width = snapSize(elementStartSize.width - dx);
-      height = snapSize(elementStartSize.height - dy);
+      width = (elementStartSize.width - dx);
+      height = (elementStartSize.height - dy);
       x = elementStartSize.x + (elementStartSize.width - width);
       y = elementStartSize.y + (elementStartSize.height - height);
       break;
+  }
+
+  if (e.shiftKey) {
+    if (resizeDir.includes("r")) {
+      const snapped = grid.getGridlockedCoords(x + width, y);
+      width = snapped.x - x;
+    }
+
+    if (resizeDir.includes("l")) {
+      const snapped = grid.getGridlockedCoords(x, y);
+      const newX = snapped.x;
+      width = width + (x - newX);
+      x = newX;
+    }
+
+    if (resizeDir.includes("b")) {
+      const snapped = grid.getGridlockedCoords(x, y + height);
+      height = snapped.y - y;
+    }
+
+    if (resizeDir.includes("t")) {
+      const snapped = grid.getGridlockedCoords(x, y);
+      const newY = snapped.y;
+      height = height + (y - newY);
+      y = newY;
+    }
   }
 
   // Limit minimum width & height
@@ -135,6 +148,9 @@ function sendSizeRequest(e: MouseEvent, minSize: number = 8) {
     y = box.y; // Prevent accidental shifting
     height = minSize;
   }
+
+  console.log(width, height);
+
 
   server.send({
     type: "request_transform",
