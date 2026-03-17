@@ -1,5 +1,4 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Demiplane.Util;
 
 namespace Demiplane.Model;
 
@@ -60,36 +59,16 @@ public class TokenImage(string id, string href, int x, int y, int w, int h) : To
     public string href = href;
 }
 
-public class TokenJsonConverter : JsonConverter
+public class TokenJsonConverter : Json.TypeConverter<Token>
 {
-    public override bool CanConvert(Type objectType)
+    public override Dictionary<string, Type> TypeMap
     {
-        return objectType == typeof(Token);
-    }
-
-    public override object? ReadJson(
-        JsonReader reader,
-        Type objectType,
-        object? existingValue,
-        JsonSerializer serializer
-    )
-    {
-        JObject? obj = JObject.Load(reader);
-
-        if (obj == null)
-            return null;
-
-        return obj["type"]?.Value<string>() switch
-        {
-            "image" => obj.ToObject<TokenImage>(),
-            "circle" => obj.ToObject<TokenCircle>(),
-            "rectangle" => obj.ToObject<TokenRectangle>(),
-            _ => null,
-        };
-    }
-
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-    {
-        throw new NotImplementedException();
+        get =>
+            new()
+            {
+                ["image"] = typeof(TokenImage),
+                ["circle"] = typeof(TokenCircle),
+                ["rectangle"] = typeof(TokenRectangle),
+            };
     }
 }
