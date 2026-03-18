@@ -43,19 +43,24 @@ function rotateMove(e: MouseEvent) {
   const dy = current.y - rotationCenter.y;
   const angleDeg = Math.floor((Math.atan2(dy, dx) * (180 / Math.PI)) + 90);
 
-  el.setAttribute("transform", `rotate(${angleDeg} 0 0)`);
-  if (resizeBox) resizeBox.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
-  document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
-    h.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
-  });
-  if (rotateHandle) rotateHandle.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
-  document.getElementById("rotate-line")?.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
+  const transform = `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`;
+  el.setAttribute("transform", transform);
+  rotateBox(transform);
 }
 
 function stopRotate() {
   isRotating = false;
   document.removeEventListener("mousemove", rotateMove);
   document.removeEventListener("mouseup", stopRotate);
+}
+
+function rotateBox(rotateTransform: string) {
+  if (resizeBox) resizeBox.setAttribute("transform", rotateTransform);
+  document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
+    h.setAttribute("transform", rotateTransform);
+  });
+  if (rotateHandle) rotateHandle.setAttribute("transform", rotateTransform);
+  document.getElementById("rotate-line")?.setAttribute("transform", rotateTransform);
 }
 
 function showBox(element: SVGGraphicsElement) {
@@ -75,6 +80,8 @@ function showBox(element: SVGGraphicsElement) {
   resizeBox.setAttribute("height", box.height.toString());
 
   positionHandles(box);
+  const transform = element.getAttribute("transform");
+  if (transform) rotateBox(transform);
 }
 
 function hideBox() {
