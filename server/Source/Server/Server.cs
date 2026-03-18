@@ -1,3 +1,4 @@
+using Demiplane.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ namespace Demiplane.Server;
 
 public partial class Server
 {
+    private readonly AssetService _assetService = new();
     private readonly ConcurrentBoardState _state = new();
 
     public void ConfigureServices(IServiceCollection services)

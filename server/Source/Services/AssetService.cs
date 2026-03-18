@@ -19,7 +19,7 @@ public class AssetService
         Directory.CreateDirectory(ImageRoot);
     }
 
-    public static Asset? UploadImage(string data)
+    public Asset? UploadImage(string data)
     {
         string name = $"image-{Guid.NewGuid()}";
         string? filename = Image.SaveBase64Image(name, ImageRoot, data);
@@ -29,6 +29,15 @@ public class AssetService
 
         string path = $"{ImageRoot}/{filename}";
         string href = $"/images/{filename}";
+        return new(path, href);
+    }
+
+    public Asset? Find(string href)
+    {
+        string path = $"{Root}{href}";
+        if (!File.Exists(path))
+            return null;
+
         return new(path, href);
     }
 }

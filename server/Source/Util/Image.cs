@@ -38,4 +38,25 @@ public class Image
         File.WriteAllBytes(path, bytes);
         return filename;
     }
+
+    public static bool IsImage(string path)
+    {
+        if (!File.Exists(path))
+            return false;
+        try
+        {
+            SixLabors.ImageSharp.Image.Load(path);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static (int, int) GetSize(string path)
+    {
+        SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(path);
+        return (image.Size.Width, image.Size.Height);
+    }
 }
