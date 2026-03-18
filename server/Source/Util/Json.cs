@@ -17,6 +17,9 @@ public static class Json
 
     public static T? Deserialize<T>(string value)
     {
+        if (value.Length == 0)
+            throw new JsonException("Cannot parse empty JSON string!");
+
         JsonConverter[] converters =
         [
             new TokenJsonConverter(),
