@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
+using Demiplane.Services;
 using Demiplane.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -134,8 +135,15 @@ public partial class Server
 
             case BackgroundRequestMessage background:
                 {
-                    string href = background.href;
-                    Background found = Background.FindFromHref(href) ?? throw new Exception("Resource not found.");
+                    Asset asset =
+                        _assetService.Find(background.href)
+                        ?? throw new FileNotFoundException($"Could not find {background.href}");
+
+                    if (!Image.IsImage(asset.Path))
+                        throw new FormatException($"File at {background.href} is not an image!");
+
+                    (int width, int height) = Image.GetSize(asset.Path);
+                    Background found = new(background.href, width, height);
 
                     _state.SetBackground(found);
                     BackgroundResponseMessage response = new(_state.GetBackground());

@@ -2,7 +2,6 @@ using System.Text;
 using Demiplane.Services;
 using Demiplane.Util;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace Demiplane.Server;
 
@@ -19,7 +18,7 @@ public partial class Server
             await HandleImageUpload(context);
     }
 
-    private static async Task HandleImageUpload(HttpContext context)
+    private async Task HandleImageUpload(HttpContext context)
     {
         context.Request.EnableBuffering();
         using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true);
@@ -46,7 +45,7 @@ public partial class Server
             return;
         }
 
-        Asset? asset = AssetService.UploadImage(contents.data);
+        Asset? asset = _assetService.UploadImage(contents.data);
         if (asset == null)
         {
             context.Response.ContentType = "application/json";
