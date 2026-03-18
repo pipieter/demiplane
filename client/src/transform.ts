@@ -41,8 +41,7 @@ function rotateMove(e: MouseEvent) {
   const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
   const dx = current.x - rotationCenter.x;
   const dy = current.y - rotationCenter.y;
-  const angleDeg = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
-  console.log(angleDeg);
+  const angleDeg = Math.floor((Math.atan2(dy, dx) * (180 / Math.PI)) + 90);
 
   el.setAttribute("transform", `rotate(${angleDeg} 0 0)`);
   if (resizeBox) resizeBox.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
