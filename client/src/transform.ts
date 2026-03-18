@@ -39,6 +39,7 @@ function positionHandles(box: DOMRect) {
   setHandle("handle-tl", box.x + box.width - size / 2, box.y - size / 2, size);
   setHandle("handle-bl", box.x - size / 2, box.y + box.height - size / 2, size);
   setHandle("handle-br", box.x + box.width - size / 2, box.y + box.height - size / 2, size);
+  setRotateHandle(box);
 }
 
 function setHandle(id: string, x: number, y: number, size: number) {
@@ -48,6 +49,31 @@ function setHandle(id: string, x: number, y: number, size: number) {
   h.setAttribute("y", y.toString());
   h.setAttribute("width", size.toString());
   h.setAttribute("height", size.toString());
+}
+
+function setRotateHandle(box: DOMRect) {
+  const handle = document.getElementById("rotate-handle");
+  const line = document.getElementById("rotate-line");
+
+  if (!handle) return;
+
+  const offset = 20;
+
+  const centerX = box.x + box.width / 2;
+  const topY = box.y;
+
+  const x = centerX;
+  const y = topY - offset;
+
+  handle.setAttribute("cx", x.toString());
+  handle.setAttribute("cy", y.toString());
+
+  if (line) {
+    line.setAttribute("x1", centerX.toString());
+    line.setAttribute("y1", topY.toString());
+    line.setAttribute("x2", x.toString());
+    line.setAttribute("y2", y.toString());
+  }
 }
 
 let resizeDir: string | null = null;
