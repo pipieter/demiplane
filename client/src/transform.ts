@@ -80,8 +80,8 @@ function showBox(element: SVGGraphicsElement) {
   resizeBox.setAttribute("height", box.height.toString());
 
   positionHandles(box);
-  const transform = element.getAttribute("transform");
-  if (transform) rotateBox(transform);
+  const transform = element.getAttribute("transform") ?? "rotate(0 0 0)";
+  rotateBox(transform);
 }
 
 function hideBox() {
