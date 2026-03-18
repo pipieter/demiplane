@@ -61,7 +61,7 @@ button:hover {
 }
 
 #whiteboard-objects-layer > * {
-    transition: transform 0.1s ease-out, filter 0.1s ease;
+    transition: filter 0.1s ease;
     transform-box: fill-box;
     transform-origin: center center;
     filter: drop-shadow(0 0 0 rgba(0,0,0,0));

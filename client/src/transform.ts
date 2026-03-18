@@ -5,9 +5,59 @@ import { grid } from "./grid";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");
+const rotateHandle = document.getElementById("rotate-handle");
 
+let resizeDir: string | null = null;
 let cursorStartPosition = { x: 0, y: 0 };
 let elementStartSize: DOMRect = new DOMRect(0, 0, 0, 0);
+let isRotating = false;
+let rotationCenter = { x: 0, y: 0 };
+
+document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
+  h.addEventListener("mousedown", startResize);
+});
+
+if (rotateHandle) {
+  rotateHandle.addEventListener("mousedown", (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
+    rotationCenter = {
+      x: box.x + box.width / 2,
+      y: box.y + box.height / 2
+    }
+
+    isRotating = true;
+    document.addEventListener("mousemove", rotateMove);
+    document.addEventListener("mouseup", stopRotate);
+  })
+}
+
+function rotateMove(e: MouseEvent) {
+  if (!isRotating) return;
+
+  const el = whiteboard.getSelected()[0] as SVGGraphicsElement;
+  const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+  const dx = current.x - rotationCenter.x;
+  const dy = current.y - rotationCenter.y;
+  const angleDeg = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
+  console.log(angleDeg);
+
+  el.setAttribute("transform", `rotate(${angleDeg} 0 0)`);
+  if (resizeBox) resizeBox.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
+  document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
+    h.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
+  });
+  if (rotateHandle) rotateHandle.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
+  document.getElementById("rotate-line")?.setAttribute("transform", `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`);
+}
+
+function stopRotate() {
+  isRotating = false;
+  document.removeEventListener("mousemove", rotateMove);
+  document.removeEventListener("mouseup", stopRotate);
+}
 
 function showBox(element: SVGGraphicsElement) {
   if (!resizeBox) return;
@@ -75,11 +125,6 @@ function setRotateHandle(box: DOMRect) {
     line.setAttribute("y2", y.toString());
   }
 }
-
-let resizeDir: string | null = null;
-document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
-  h.addEventListener("mousedown", startResize);
-});
 
 function startResize(e: MouseEvent) {
   e.stopPropagation();
