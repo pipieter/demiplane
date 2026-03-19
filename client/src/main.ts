@@ -68,11 +68,6 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-function getRandomColor(): string {
-  const colors = ["red", "blue", "orange", "yellow", "green", "purple", "pink", "black", "cyan", "lime"];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
 randomCircleButton.onclick = drawCircle.begin;
 randomRectangleButton.onclick = drawRectangle.begin;
 
