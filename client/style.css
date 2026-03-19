@@ -111,4 +111,5 @@ cursor: nesw-resize;
 
 #whiteboard-drawing-layer {
     pointer-events: auto;
+    cursor: none; /* A custom marker is used when drawing */
 }
