@@ -18,17 +18,10 @@ function begin() {
   points.splice(0);
   updateLine();
 
-  layer.onmousedown = (evt) => {
-    const { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);
-
-    mouseDown = true;
-    element.style.display = "";
-    points.push([x, y]);
-    updateLine();
-  };
-
+  layer.onmousedown = onmousedown;
   layer.onmouseup = end;
   layer.onmousemove = update;
+  document.onkeydown = onkeydown;
 }
 
 function update(evt: MouseEvent) {
@@ -51,17 +44,41 @@ function updateLine() {
   element.setAttribute("d", combined);
 }
 
-async function end() {
-  await upload();
+function onmousedown(evt: MouseEvent) {
+  // Cancel on right click
+  if (evt.buttons & 2) {
+    cancel();
+    return;
+  }
 
-  viewport.enable();
+  // Begin drawing on left click
+  if (evt.buttons & 1) {
+    const { x, y } = drawUtil.getEventCoordinates(evt);
+
+    mouseDown = true;
+    element.style.display = "";
+    points.push([x, y]);
+    updateLine();
+  }
+}
+
+function onkeydown(evt: KeyboardEvent) {
+  if (evt.key === "Escape") cancel();
+}
+
+function cancel() {
   layer.onmousedown = null;
   layer.onmouseup = null;
   layer.onmousemove = null;
+  document.onkeydown = null;
   layer.style.display = "none";
   element.style.display = "none";
+  viewport.enable();
+}
 
-  return;
+async function end() {
+  await upload();
+  cancel();
 }
 
 async function upload() {
