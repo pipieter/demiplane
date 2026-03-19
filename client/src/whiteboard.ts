@@ -1,4 +1,3 @@
-import { movement } from "./whiteboard/transform/movement";
 import { transform } from "./whiteboard/transform/transform";
 import { server } from "./server";
 import type { Token } from "./token";
@@ -109,7 +108,7 @@ function createToken(token: Token) {
 
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  movement.makeDraggable(element);
+  transform.makeDraggable(element);
 
   collection.appendChild(element);
   transform.set(token.id, token.x, token.y, token.w, token.h);

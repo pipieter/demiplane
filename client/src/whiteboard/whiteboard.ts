@@ -1,5 +1,5 @@
-import { movement } from "./transform/movement";
 import type { Token } from "../token";
+import { transform } from "./transform/transform";
 
 const objectLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 
@@ -17,7 +17,7 @@ function create(token: Token) {
   const element = document.createElementNS("http://www.w3.org/2000/svg", elementType);
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  movement.makeDraggable(element);
+  transform.makeDraggable(element);
   objectLayer.appendChild(element);
   draw(element, token);
 }
