@@ -1,5 +1,5 @@
-import { movement } from "./movement";
-import { transform } from "./transform";
+import { movement } from "./whiteboard/movement";
+import { transform } from "./whiteboard/transform";
 import { server } from "./server";
 import type { Token } from "./token";
 
