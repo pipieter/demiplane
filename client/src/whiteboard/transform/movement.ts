@@ -1,8 +1,8 @@
-import { whiteboard } from "../whiteboard";
-import { grid } from "../grid";
-import { transform } from "./transform";
-import { server } from "../server";
-import { viewport } from "../viewport";
+import { whiteboard } from "../../whiteboard";
+import { grid } from "../../grid";
+import { server } from "../../server";
+import { viewport } from "../../viewport";
+import { resizebox } from "./resizebox";
 
 function cursorWithinElement(e: MouseEvent, element: Element): boolean {
   const { left, right, top, bottom } = element.getBoundingClientRect();
@@ -25,11 +25,11 @@ function makeDraggable(element: SVGElement) {
     whiteboard.clearSelection();
     element.classList.add("selected");
     whiteboard.addSelected(element);
-    transform.showBox(element as SVGGraphicsElement);
+    resizebox.show(element as SVGGraphicsElement);
   }
 
   function dragElement(e: MouseEvent) {
-    transform.hideBox();
+    resizebox.hide();
     const cursor = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
     const bbox = (element as SVGGraphicsElement).getBBox();
     let { x, y } = e.shiftKey
@@ -59,7 +59,7 @@ function makeDraggable(element: SVGElement) {
     document.onmouseup = null;
     document.onmousemove = null;
     if (whiteboard.getSelected().length <= 0) {
-      transform.hideBox();
+      resizebox.hide();
     }
   }
 }

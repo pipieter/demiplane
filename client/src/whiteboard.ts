@@ -1,7 +1,8 @@
-import { movement } from "./whiteboard/movement";
-import { transform } from "./whiteboard/transform";
+import { movement } from "./whiteboard/transform/movement";
+import { transform } from "./whiteboard/transform/transform";
 import { server } from "./server";
 import type { Token } from "./token";
+import { resizebox } from "./whiteboard/transform/resizebox";
 
 const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
 const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
@@ -24,9 +25,9 @@ function setBackground(href: string | null, width: number, height: number) {
   objectsLayer.setAttribute("height", `${height}px`);
   drawingLayer.setAttribute("width", `${width}px`);
   drawingLayer.setAttribute("height", `${height}px`);
-  if (transform.resizeLayer) {
-    transform.resizeLayer.setAttribute("width", `${width}px`);
-    transform.resizeLayer.setAttribute("height", `${height}px`);
+  if (resizebox.layer) {
+    resizebox.layer.setAttribute("width", `${width}px`);
+    resizebox.layer.setAttribute("height", `${height}px`);
   }
 }
 
@@ -36,7 +37,7 @@ function clearSelection() {
   }
 
   selected = [];
-  transform.hideBox();
+  resizebox.hide();
 }
 
 function addSelected(element: SVGElement) {
@@ -73,7 +74,7 @@ function sendDeleteRequest() {
   }
 
   clearSelection();
-  transform.hideBox();
+  resizebox.hide();
 
   server.send({
     type: "request_delete",
@@ -111,7 +112,7 @@ function createToken(token: Token) {
   movement.makeDraggable(element);
 
   collection.appendChild(element);
-  transform.setTransform(token.id, token.x, token.y, token.w, token.h);
+  transform.set(token.id, token.x, token.y, token.w, token.h);
 }
 
 export const whiteboard = {
