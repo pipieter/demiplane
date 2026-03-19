@@ -1,7 +1,7 @@
-import { movement } from "./whiteboard/movement";
-import { transform } from "./whiteboard/transform";
+import { transform } from "./whiteboard/transform/transform";
 import { server } from "./server";
 import type { Token } from "./token";
+import { resizebox } from "./whiteboard/transform/resizebox";
 
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 let selected: SVGElement[] = [];
@@ -12,7 +12,7 @@ function clearSelection() {
   }
 
   selected = [];
-  transform.hideBox();
+  resizebox.hide();
 }
 
 function addSelected(element: SVGElement) {
@@ -49,7 +49,7 @@ function sendDeleteRequest() {
   }
 
   clearSelection();
-  transform.hideBox();
+  resizebox.hide();
 
   server.send({
     type: "request_delete",
@@ -84,10 +84,10 @@ function createToken(token: Token) {
 
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  movement.makeDraggable(element);
+  transform.makeDraggable(element);
 
   collection.appendChild(element);
-  transform.setTransform(token.id, token.x, token.y, token.w, token.h);
+  transform.set(token.id, token.x, token.y, token.w, token.h);
 }
 
 export const whiteboard = {
