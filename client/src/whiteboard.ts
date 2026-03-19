@@ -1,33 +1,27 @@
-import { movement } from "./whiteboard/movement";
-import { transform } from "./whiteboard/transform";
+import { transform } from "./whiteboard/transform/transform";
 import { server } from "./server";
 import type { Token } from "./token";
+import { resizebox } from "./whiteboard/transform/resizebox";
 import selection from "./whiteboard/selection";
 
-const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
-const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
-const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
-const drawingLayer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
+let selected: SVGElement[] = [];
 
-function setBackground(href: string | null, width: number, height: number) {
-  if (href === null) {
-    backgroundImage.removeAttribute("href");
-  } else {
-    backgroundImage.setAttribute("href", server.BackendURL + href);
+function clearSelection() {
+  for (const element of selected) {
+    if (element.classList.contains("selected")) element.classList.remove("selected");
   }
-  backgroundImage.setAttribute("width", `${width}px`);
-  backgroundImage.setAttribute("height", `${height}px`);
-  backgroundLayer.setAttribute("width", `${width}px`);
-  backgroundLayer.setAttribute("height", `${height}px`);
-  objectsLayer.setAttribute("width", `${width}px`);
-  objectsLayer.setAttribute("height", `${height}px`);
-  drawingLayer.setAttribute("width", `${width}px`);
-  drawingLayer.setAttribute("height", `${height}px`);
-  if (transform.resizeLayer) {
-    transform.resizeLayer.setAttribute("width", `${width}px`);
-    transform.resizeLayer.setAttribute("height", `${height}px`);
-  }
+
+  selected = [];
+  resizebox.hide();
+}
+
+function addSelected(element: SVGElement) {
+  selected.push(element);
+}
+
+function getSelected(): SVGElement[] {
+  return selected;
 }
 
 function getObjectsCollection(): SVGSVGElement {
@@ -50,7 +44,8 @@ function sendDeleteRequest() {
     tokenIds.push(id);
   }
 
-  selection.clear();
+  clearSelection();
+  resizebox.hide();
 
   server.send({
     type: "request_delete",
@@ -85,16 +80,15 @@ function createToken(token: Token) {
 
   element.setAttribute("id", token.id);
   element.setAttribute("tabindex", "-1"); // Makes object selectable
-  movement.makeDraggable(element);
+  transform.makeDraggable(element);
 
   collection.appendChild(element);
-  transform.setTransform(token.id, token.x, token.y, token.w, token.h);
+  transform.set(token.id, token.x, token.y, token.w, token.h);
 }
 
 export const whiteboard = {
   initialize,
   createToken,
   deleteToken,
-  setBackground,
   container,
 };

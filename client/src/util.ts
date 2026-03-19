@@ -14,4 +14,10 @@ async function readBase64(file: File): Promise<string | null> {
   });
 }
 
-export const util = { readBase64 };
+function mouseOnElement(e: MouseEvent, element: Element): boolean {
+  const { left, right, top, bottom } = element.getBoundingClientRect();
+
+  return e.clientX >= left && e.clientX <= right && e.clientY >= top && e.clientY <= bottom;
+}
+
+export const util = { readBase64, mouseOnElement };
