@@ -1,4 +1,4 @@
-import { movement } from "../movement";
+import { movement } from "./movement";
 import type { Token } from "../token";
 
 const objectLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;

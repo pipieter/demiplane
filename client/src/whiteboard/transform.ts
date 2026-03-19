@@ -1,7 +1,7 @@
-import { whiteboard } from "./whiteboard";
-import { server } from "./server";
-import { viewport } from "./viewport";
-import { grid } from "./grid";
+import { whiteboard } from "../whiteboard";
+import { server } from "../server";
+import { viewport } from "../viewport";
+import { grid } from "../grid";
 
 const resizeLayer = document.getElementById("whiteboard-resize");
 const resizeBox = document.getElementById("resize-box");

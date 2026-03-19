@@ -1,8 +1,8 @@
-import { whiteboard } from "./whiteboard";
-import { grid } from "./grid";
+import { whiteboard } from "../whiteboard";
+import { grid } from "../grid";
 import { transform } from "./transform";
-import { server } from "./server";
-import { viewport } from "./viewport";
+import { server } from "../server";
+import { viewport } from "../viewport";
 
 function cursorWithinElement(e: MouseEvent, element: Element): boolean {
   const { left, right, top, bottom } = element.getBoundingClientRect();
