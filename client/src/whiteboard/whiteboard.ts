@@ -1,5 +1,6 @@
 import { movement } from "./movement";
 import type { Token } from "../token";
+import { server } from "../server";
 
 const objectLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 
@@ -43,7 +44,7 @@ function draw(element: SVGElement, token: Token) {
       element.setAttribute("cx", (token.x + token.w / 2).toString());
       element.setAttribute("cy", (token.y + token.h / 2).toString());
       element.setAttribute("rx", (token.w / 2).toString());
-      element.setAttribute("ry", (token.w / 2).toString());
+      element.setAttribute("ry", (token.h / 2).toString());
       break;
 
     case "rectangle":
@@ -55,7 +56,7 @@ function draw(element: SVGElement, token: Token) {
       break;
 
     case "image":
-      element.setAttribute("href", token.href);
+      element.setAttribute("href", server.BackendURL + token.href);
       element.setAttribute("x", token.x.toString());
       element.setAttribute("y", token.y.toString());
       element.setAttribute("width", token.w.toString());
