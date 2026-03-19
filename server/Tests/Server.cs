@@ -26,6 +26,7 @@ public class ServerTests : ServerTestSetup
             'type': 'request_create',
             'create': {
                 'type': 'circle',
+                'id': '123',
                 'color': '#FF0000',
                 'x': 200,
                 'y': 200,

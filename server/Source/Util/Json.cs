@@ -20,12 +20,7 @@ public static class Json
         if (value.Length == 0)
             throw new JsonException("Cannot parse empty JSON string!");
 
-        JsonConverter[] converters =
-        [
-            new TokenJsonConverter(),
-            new TokenCreateBodyJsonConverter(),
-            new MessageJsonConverter(),
-        ];
+        JsonConverter[] converters = [new TokenJsonConverter(), new MessageJsonConverter()];
         JsonSerializerSettings settings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
