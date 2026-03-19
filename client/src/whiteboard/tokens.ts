@@ -1,7 +1,30 @@
+import { server } from "../server";
 import type { Token } from "../token";
+import selection from "./selection";
+import { resizebox } from "./transform/resizebox";
 import whiteboard from "./whiteboard";
 
 let all: Token[] = [];
+
+function initialize() {
+  function sendRemovalRequest() {
+    const ids = selection.get();
+    if (ids.length <= 0) return;
+
+    selection.clear();
+    resizebox.hide();
+
+    server.send({
+      type: "request_delete",
+      delete: ids,
+    });
+  }
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Delete") sendRemovalRequest();
+    if (event.key === "Backspace") sendRemovalRequest();
+  });
+}
 
 function create(token: Token) {
   if (all.find((existing) => existing.id === token.id)) {
@@ -31,5 +54,5 @@ function transform(id: string, x: number, y: number, w: number, h: number) {
   whiteboard.redraw(token);
 }
 
-const tokens = { create, transform, remove };
+const tokens = { create, transform, remove, initialize };
 export default tokens;
