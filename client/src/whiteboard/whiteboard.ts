@@ -1,4 +1,5 @@
 import type { Token } from "../token";
+import { server } from "../server";
 import { transform } from "./transform/transform";
 
 const objectLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
@@ -55,7 +56,7 @@ function draw(element: SVGElement, token: Token) {
       break;
 
     case "image":
-      element.setAttribute("href", token.href);
+      element.setAttribute("href", server.BackendURL + token.href);
       element.setAttribute("x", token.x.toString());
       element.setAttribute("y", token.y.toString());
       element.setAttribute("width", token.w.toString());

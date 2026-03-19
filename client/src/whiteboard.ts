@@ -3,32 +3,8 @@ import { server } from "./server";
 import type { Token } from "./token";
 import { resizebox } from "./whiteboard/transform/resizebox";
 
-const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
-const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
-const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
-const drawingLayer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 let selected: SVGElement[] = [];
-
-function setBackground(href: string | null, width: number, height: number) {
-  if (href === null) {
-    backgroundImage.removeAttribute("href");
-  } else {
-    backgroundImage.setAttribute("href", server.BackendURL + href);
-  }
-  backgroundImage.setAttribute("width", `${width}px`);
-  backgroundImage.setAttribute("height", `${height}px`);
-  backgroundLayer.setAttribute("width", `${width}px`);
-  backgroundLayer.setAttribute("height", `${height}px`);
-  objectsLayer.setAttribute("width", `${width}px`);
-  objectsLayer.setAttribute("height", `${height}px`);
-  drawingLayer.setAttribute("width", `${width}px`);
-  drawingLayer.setAttribute("height", `${height}px`);
-  if (resizebox.layer) {
-    resizebox.layer.setAttribute("width", `${width}px`);
-    resizebox.layer.setAttribute("height", `${height}px`);
-  }
-}
 
 function clearSelection() {
   for (const element of selected) {
@@ -118,7 +94,6 @@ export const whiteboard = {
   initialize,
   createToken,
   deleteToken,
-  setBackground,
   container,
   clearSelection,
   addSelected,
