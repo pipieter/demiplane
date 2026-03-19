@@ -119,6 +119,7 @@ async function upload() {
     type: "request_create",
     create: {
       type: "image",
+      id: crypto.randomUUID(),
       href,
       x: targetX,
       y: targetY,
