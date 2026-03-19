@@ -2,13 +2,13 @@ import { movement } from "./whiteboard/movement";
 import { transform } from "./whiteboard/transform";
 import { server } from "./server";
 import type { Token } from "./token";
+import selection from "./whiteboard/selection";
 
 const backgroundLayer = document.getElementById("whiteboard-background-layer") as unknown as SVGElement;
 const backgroundImage = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
 const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 const drawingLayer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
-let selected: SVGElement[] = [];
 
 function setBackground(href: string | null, width: number, height: number) {
   if (href === null) {
@@ -30,33 +30,12 @@ function setBackground(href: string | null, width: number, height: number) {
   }
 }
 
-function clearSelection() {
-  for (const element of selected) {
-    if (element.classList.contains("selected")) element.classList.remove("selected");
-  }
-
-  selected = [];
-  transform.hideBox();
-}
-
-function addSelected(element: SVGElement) {
-  selected.push(element);
-}
-
-function getSelected(): SVGElement[] {
-  return selected;
-}
-
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
   return document.getElementById("whiteboard-objects-layer");
 }
 
 function initialize() {
-  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  const background = document.getElementById("whiteboard-background-layer") as SVGSVGElement;
-  background.onclick = clearSelection;
-
   window.addEventListener("keydown", (event) => {
     if (event.key === "Delete") sendDeleteRequest();
     if (event.key === "Backspace") sendDeleteRequest();
@@ -64,16 +43,14 @@ function initialize() {
 }
 
 function sendDeleteRequest() {
-  if (selected.length <= 0) return;
+  if (selection.get().length <= 0) return;
 
   const tokenIds: string[] = [];
-  for (const token of selected) {
-    const id = token.getAttribute("id");
-    if (id) tokenIds.push(id);
+  for (const id of selection.get()) {
+    tokenIds.push(id);
   }
 
-  clearSelection();
-  transform.hideBox();
+  selection.clear();
 
   server.send({
     type: "request_delete",
@@ -120,7 +97,4 @@ export const whiteboard = {
   deleteToken,
   setBackground,
   container,
-  clearSelection,
-  addSelected,
-  getSelected,
 };
