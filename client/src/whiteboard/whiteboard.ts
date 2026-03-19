@@ -43,7 +43,7 @@ function draw(element: SVGElement, token: Token) {
       element.setAttribute("cx", (token.x + token.w / 2).toString());
       element.setAttribute("cy", (token.y + token.h / 2).toString());
       element.setAttribute("rx", (token.w / 2).toString());
-      element.setAttribute("ry", (token.w / 2).toString());
+      element.setAttribute("ry", (token.h / 2).toString());
       break;
 
     case "rectangle":
