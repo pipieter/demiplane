@@ -3,12 +3,7 @@ import { grid } from "../../grid";
 import { server } from "../../server";
 import { viewport } from "../../viewport";
 import { resizebox } from "./resizebox";
-
-function cursorWithinElement(e: MouseEvent, element: Element): boolean {
-  const { left, right, top, bottom } = element.getBoundingClientRect();
-
-  return e.clientX >= left && e.clientX <= right && e.clientY >= top && e.clientY <= bottom;
-}
+import { util } from "../../util";
 
 /**
  *  Mutates an SVGElement to get drag-behavior.
@@ -41,7 +36,7 @@ function makeDraggable(element: SVGElement) {
 
     x -= bbox.width / 2;
     y -= bbox.height / 2;
-    if (!cursorWithinElement(e, whiteboard.container)) return;
+    if (!util.mouseOnElement(e, whiteboard.container)) return;
 
     server.send({
       type: "request_transform",
