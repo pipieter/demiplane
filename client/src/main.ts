@@ -7,6 +7,7 @@ import { viewport } from "./viewport";
 import { util } from "./util";
 import { server } from "./server";
 import drawing from "./drawing";
+import drawCircle from "./whiteboard/drawing/circle";
 
 whiteboard.initialize();
 header.initialize();
@@ -71,21 +72,7 @@ function getRandomColor(): string {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-randomCircleButton.onclick = () => {
-  const { x, y } = getRandomPosition();
-
-  server.send({
-    type: "request_create",
-    create: {
-      type: "circle",
-      color: getRandomColor(),
-      x,
-      y,
-      w: grid.get().size,
-      h: grid.get().size,
-    },
-  });
-};
+randomCircleButton.onclick = drawCircle.begin;
 
 randomRectangleButton.onclick = () => {
   const { x, y } = getRandomPosition();
