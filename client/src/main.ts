@@ -2,13 +2,13 @@ import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
-import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
 import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
+import tokens from "./whiteboard/tokens";
 
 whiteboard.initialize();
 header.initialize();
@@ -20,12 +20,12 @@ server.socket.onmessage = function (event) {
 
   switch (data.type) {
     case "create":
-      whiteboard.createToken(data.create);
+      tokens.create(data.create);
       break;
 
     case "delete":
       for (const id of data.delete) {
-        whiteboard.deleteToken(id);
+        tokens.remove(id);
       }
       break;
 
@@ -39,14 +39,14 @@ server.socket.onmessage = function (event) {
     }
 
     case "transform":
-      transform.setTransform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
+      tokens.transform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
       break;
 
     case "sync":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       whiteboard.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
-        whiteboard.createToken(token);
+        tokens.create(token);
       }
       break;
 
