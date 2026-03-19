@@ -44,6 +44,8 @@ function getCurrentDimensions() {
 }
 
 function update(evt: MouseEvent) {
+  drawUtil.updateCursor(evt);
+
   if (!mouseDown) return;
 
   let { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);

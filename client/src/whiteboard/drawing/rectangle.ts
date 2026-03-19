@@ -43,6 +43,8 @@ function getCurrentDimensions() {
 }
 
 function update(evt: MouseEvent) {
+  drawUtil.updateCursor(evt);
+
   if (!mouseDown) return;
 
   {
