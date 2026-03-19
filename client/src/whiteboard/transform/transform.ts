@@ -1,10 +1,11 @@
-import { whiteboard } from "../../whiteboard";
 import { grid } from "../../grid";
 import { server } from "../../server";
 import { viewport } from "../viewport";
 import { resizebox } from "./resizebox";
 import { util } from "../../util";
 import selection from "../selection";
+
+const container = document.getElementById("whiteboard-container") as HTMLDivElement;
 
 /**
  *  Mutates an SVGElement to get drag-behavior.
@@ -37,7 +38,7 @@ function makeDraggable(element: SVGElement) {
 
     x -= bbox.width / 2;
     y -= bbox.height / 2;
-    if (!util.mouseOnElement(e, whiteboard.container)) return;
+    if (!util.mouseOnElement(e, container)) return;
 
     server.send({
       type: "request_transform",

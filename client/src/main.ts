@@ -1,4 +1,3 @@
-import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
@@ -12,8 +11,8 @@ import tokens from "./whiteboard/tokens";
 import background from "./whiteboard/background";
 import selection from "./whiteboard/selection";
 
+tokens.initialize();
 selection.initialize();
-whiteboard.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
