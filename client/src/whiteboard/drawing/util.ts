@@ -1,4 +1,4 @@
-import { grid } from "../../grid";
+import { grid } from "../grid";
 import { viewport } from "../viewport";
 
 const cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;

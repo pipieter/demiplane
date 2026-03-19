@@ -1,4 +1,4 @@
-import { grid } from "./grid";
+import { grid } from "./whiteboard/grid";
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
