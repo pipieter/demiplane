@@ -21,18 +21,15 @@ function begin() {
   element.setAttribute("rx", "0");
   element.setAttribute("ry", "0");
 
-  layer.onmousedown = (evt) => {
-    const { x, y } = drawUtil.getEventCoordinates(evt);
-
-    mouseDown = true;
-    start.x = x;
-    start.y = y;
-    current.x = x;
-    current.y = y;
-    element.style.display = "";
-  };
+  layer.onmousedown = onmousedown;
   layer.onmouseup = end;
   layer.onmousemove = update;
+
+  // Right-click is required to cancel the drawing, so context menus are temporarily disabled
+  document.oncontextmenu = (evt) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+  };
 }
 
 function getCurrentDimensions() {
@@ -65,14 +62,40 @@ function update(evt: MouseEvent) {
   element.setAttribute("ry", ry.toString());
 }
 
-function end() {
+function onmousedown(evt: MouseEvent) {
+  // Cancel on right click
+  if (evt.buttons & 2) {
+    cancel();
+    return;
+  }
+
+  // Begin drawing on left click
+  if (evt.buttons & 1) {
+    const { x, y } = drawUtil.getEventCoordinates(evt);
+
+    mouseDown = true;
+    start.x = x;
+    start.y = y;
+    current.x = x;
+    current.y = y;
+    element.style.display = "";
+    return;
+  }
+}
+
+function cancel() {
   mouseDown = false;
   element.style.display = "none";
   layer.style.display = "none";
   layer.onmousedown = null;
   layer.onmouseup = null;
   layer.onmousemove = null;
+  document.oncontextmenu = null;
   viewport.enable();
+}
+
+function end() {
+  cancel();
 
   const x = Math.min(start.x, current.x);
   const y = Math.min(start.y, current.y);
