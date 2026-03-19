@@ -2,26 +2,9 @@ import { transform } from "./whiteboard/transform/transform";
 import { server } from "./server";
 import type { Token } from "./token";
 import { resizebox } from "./whiteboard/transform/resizebox";
+import selection from "./whiteboard/selection";
 
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
-let selected: SVGElement[] = [];
-
-function clearSelection() {
-  for (const element of selected) {
-    if (element.classList.contains("selected")) element.classList.remove("selected");
-  }
-
-  selected = [];
-  resizebox.hide();
-}
-
-function addSelected(element: SVGElement) {
-  selected.push(element);
-}
-
-function getSelected(): SVGElement[] {
-  return selected;
-}
 
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
@@ -29,10 +12,6 @@ function getObjectsCollection(): SVGSVGElement {
 }
 
 function initialize() {
-  // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
-  const background = document.getElementById("whiteboard-background-layer") as SVGSVGElement;
-  background.onclick = clearSelection;
-
   window.addEventListener("keydown", (event) => {
     if (event.key === "Delete") sendDeleteRequest();
     if (event.key === "Backspace") sendDeleteRequest();
@@ -40,15 +19,14 @@ function initialize() {
 }
 
 function sendDeleteRequest() {
-  if (selected.length <= 0) return;
+  if (selection.get().length <= 0) return;
 
   const tokenIds: string[] = [];
-  for (const token of selected) {
-    const id = token.getAttribute("id");
-    if (id) tokenIds.push(id);
+  for (const id of selection.get()) {
+    tokenIds.push(id);
   }
 
-  clearSelection();
+  selection.clear();
   resizebox.hide();
 
   server.send({
@@ -95,7 +73,4 @@ export const whiteboard = {
   createToken,
   deleteToken,
   container,
-  clearSelection,
-  addSelected,
-  getSelected,
 };

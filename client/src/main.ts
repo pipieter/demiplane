@@ -10,7 +10,9 @@ import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 import tokens from "./whiteboard/tokens";
 import background from "./whiteboard/background";
+import selection from "./whiteboard/selection";
 
+selection.initialize();
 whiteboard.initialize();
 header.initialize();
 viewport.initialize();
