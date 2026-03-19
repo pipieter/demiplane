@@ -6,7 +6,9 @@ import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
 import { server } from "./server";
-import drawing from "./drawing";
+import drawFree from "./whiteboard/drawing/free";
+import drawCircle from "./whiteboard/drawing/circle";
+import drawRectangle from "./whiteboard/drawing/rectangle";
 
 whiteboard.initialize();
 header.initialize();
@@ -53,8 +55,8 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
-const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
+const beginCircleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
+const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
@@ -66,46 +68,9 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-function getRandomColor(): string {
-  const colors = ["red", "blue", "orange", "yellow", "green", "purple", "pink", "black", "cyan", "lime"];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-randomCircleButton.onclick = () => {
-  const { x, y } = getRandomPosition();
-
-  server.send({
-    type: "request_create",
-    create: {
-      type: "circle",
-      color: getRandomColor(),
-      x,
-      y,
-      w: grid.get().size,
-      h: grid.get().size,
-    },
-  });
-};
-
-randomRectangleButton.onclick = () => {
-  const { x, y } = getRandomPosition();
-  const w = grid.get().size;
-  const h = grid.get().size;
-
-  server.send({
-    type: "request_create",
-    create: {
-      type: "rectangle",
-      color: getRandomColor(),
-      x,
-      y,
-      w,
-      h,
-    },
-  });
-};
-
-beginDrawingButton.onclick = drawing.begin;
+beginCircleButton.onclick = drawCircle.begin;
+beginRectangleButton.onclick = drawRectangle.begin;
+beginDrawingButton.onclick = drawFree.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
   // @ts-expect-error Files should be a valid field

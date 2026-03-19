@@ -1,35 +1,32 @@
-import { viewport } from "./viewport";
-import { server } from "./server";
+import { viewport } from "../../viewport";
+import { server } from "../../server";
+import drawUtil from "./util";
 
 const layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
-const line = document.getElementById("whiteboard-drawing-line") as unknown as SVGPathElement;
-const points: [number, number][] = [];
+const element = document.getElementById("whiteboard-drawing-free") as unknown as SVGPathElement;
+
 let mouseDown = false;
-
-function updateLine() {
-  if (!points || points.length === 0) {
-    line.removeAttribute("d");
-    return;
-  }
-
-  const combined = "M " + points.map(([x, y]) => `${x} ${y}`).join(" L ");
-  line.setAttribute("d", combined);
-}
+const points: [number, number][] = [];
 
 function begin() {
+  viewport.disable();
   mouseDown = false;
   layer.style.display = "";
   layer.style.pointerEvents = "";
+  element.style.display = "none";
+
   points.splice(0);
   updateLine();
 
-  layer.onmousedown = () => (mouseDown = true);
+  layer.onmousedown = onmousedown;
   layer.onmouseup = end;
-  layer.onmousemove = addPoint;
-  viewport.disable();
+  layer.onmousemove = update;
+  document.onkeydown = onkeydown;
 }
 
-function addPoint(evt: MouseEvent) {
+function update(evt: MouseEvent) {
+  drawUtil.updateCursor(evt);
+
   if (!mouseDown) return;
 
   const { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);
@@ -37,19 +34,55 @@ function addPoint(evt: MouseEvent) {
   updateLine();
 }
 
-async function end() {
-  await create();
-  viewport.enable();
+function updateLine() {
+  if (!points || points.length === 0) {
+    element.removeAttribute("d");
+    return;
+  }
+
+  const combined = "M " + points.map(([x, y]) => `${x} ${y}`).join(" L ");
+  element.setAttribute("d", combined);
+}
+
+function onmousedown(evt: MouseEvent) {
+  // Cancel on right click
+  if (evt.buttons & 2) {
+    cancel();
+    return;
+  }
+
+  // Begin drawing on left click
+  if (evt.buttons & 1) {
+    const { x, y } = drawUtil.getEventCoordinates(evt);
+
+    mouseDown = true;
+    element.style.display = "";
+    points.push([x, y]);
+    updateLine();
+  }
+}
+
+function onkeydown(evt: KeyboardEvent) {
+  if (evt.key === "Escape") cancel();
+}
+
+function cancel() {
   layer.onmousedown = null;
   layer.onmouseup = null;
   layer.onmousemove = null;
+  document.onkeydown = null;
   layer.style.display = "none";
-
-  return;
+  element.style.display = "none";
+  viewport.enable();
 }
 
-async function create() {
-  const bbox = line.getBBox();
+async function end() {
+  await upload();
+  cancel();
+}
+
+async function upload() {
+  const bbox = element.getBBox();
   const x = bbox.x;
   const y = bbox.y;
   const width = bbox.width;
@@ -95,5 +128,5 @@ async function create() {
   });
 }
 
-const drawing = { begin };
-export default drawing;
+const drawFree = { begin };
+export default drawFree;
