@@ -1,4 +1,4 @@
-import type { GridData } from "./grid";
+import type { GridData } from "./whiteboard/grid";
 import type { Token } from "./token";
 
 /** Sync the current board state */

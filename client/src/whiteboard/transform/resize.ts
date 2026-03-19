@@ -1,4 +1,4 @@
-import { grid } from "../../grid";
+import { grid } from "../grid";
 import { server } from "../../server";
 import { viewport } from "../viewport";
 import selection from "../selection";
