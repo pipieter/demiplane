@@ -38,14 +38,15 @@ function redraw(token: Token) {
 }
 
 function draw(element: SVGElement, token: Token) {
+  let translate = `translate(${token.x} ${token.y})`;
+
   switch (token.type) {
     case "circle":
       {
         element.setAttribute("fill", token.color);
         const rx = token.w / 2;
         const ry = token.h / 2;
-        token.x += rx;
-        token.y += ry;
+        translate = `translate(${token.x + rx} ${token.y + ry})`;
         element.setAttribute("rx", rx.toString());
         element.setAttribute("ry", ry.toString());
         break;
@@ -63,7 +64,6 @@ function draw(element: SVGElement, token: Token) {
       element.setAttribute("height", token.h.toString());
   }
 
-  const translate = `translate(${token.x} ${token.y})`;
   element.setAttribute("transform", translate);
 }
 
