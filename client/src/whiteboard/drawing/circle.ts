@@ -24,12 +24,7 @@ function begin() {
   layer.onmousedown = onmousedown;
   layer.onmouseup = end;
   layer.onmousemove = update;
-
-  // Right-click is required to cancel the drawing, so context menus are temporarily disabled
-  document.oncontextmenu = (evt) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-  };
+  document.onkeydown = onkeydown;
 }
 
 function getCurrentDimensions() {
@@ -62,6 +57,10 @@ function update(evt: MouseEvent) {
   element.setAttribute("ry", ry.toString());
 }
 
+function onkeydown(evt: KeyboardEvent) {
+  if (evt.key === "Escape") cancel();
+}
+
 function onmousedown(evt: MouseEvent) {
   // Cancel on right click
   if (evt.buttons & 2) {
@@ -90,7 +89,7 @@ function cancel() {
   layer.onmousedown = null;
   layer.onmouseup = null;
   layer.onmousemove = null;
-  document.oncontextmenu = null;
+  document.onkeydown = null;
   viewport.enable();
 }
 
