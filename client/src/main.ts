@@ -8,6 +8,7 @@ import { util } from "./util";
 import { server } from "./server";
 import drawing from "./drawing";
 import drawCircle from "./whiteboard/drawing/circle";
+import drawRectangle from "./whiteboard/drawing/rectangle";
 
 whiteboard.initialize();
 header.initialize();
@@ -73,24 +74,7 @@ function getRandomColor(): string {
 }
 
 randomCircleButton.onclick = drawCircle.begin;
-
-randomRectangleButton.onclick = () => {
-  const { x, y } = getRandomPosition();
-  const w = grid.get().size;
-  const h = grid.get().size;
-
-  server.send({
-    type: "request_create",
-    create: {
-      type: "rectangle",
-      color: getRandomColor(),
-      x,
-      y,
-      w,
-      h,
-    },
-  });
-};
+randomRectangleButton.onclick = drawRectangle.begin;
 
 beginDrawingButton.onclick = drawing.begin;
 
