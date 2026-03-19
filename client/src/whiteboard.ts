@@ -5,24 +5,6 @@ import { resizebox } from "./whiteboard/transform/resizebox";
 import selection from "./whiteboard/selection";
 
 const container = document.getElementById("whiteboard-container") as HTMLDivElement;
-let selected: SVGElement[] = [];
-
-function clearSelection() {
-  for (const element of selected) {
-    if (element.classList.contains("selected")) element.classList.remove("selected");
-  }
-
-  selected = [];
-  resizebox.hide();
-}
-
-function addSelected(element: SVGElement) {
-  selected.push(element);
-}
-
-function getSelected(): SVGElement[] {
-  return selected;
-}
 
 function getObjectsCollection(): SVGSVGElement {
   // @ts-expect-error document.getElementById's typing returns an HTML element, but an SVGSVGElement is queried
@@ -44,7 +26,7 @@ function sendDeleteRequest() {
     tokenIds.push(id);
   }
 
-  clearSelection();
+  selection.clear();
   resizebox.hide();
 
   server.send({

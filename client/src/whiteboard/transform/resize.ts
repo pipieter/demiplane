@@ -1,7 +1,7 @@
 import { grid } from "../../grid";
 import { server } from "../../server";
 import { viewport } from "../../viewport";
-import { whiteboard } from "../../whiteboard";
+import selection from "../selection";
 import { resizebox } from "./resizebox";
 
 let cursorStartPosition = { x: 0, y: 0 };
@@ -13,8 +13,10 @@ function start(e: MouseEvent) {
   const target = e.target as SVGElement;
   direction = target.dataset.dir ?? null;
 
+  const element = selection.elements()[0];
+
   cursorStartPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
-  elementStartSize = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
+  elementStartSize = element.getBBox();
   document.addEventListener("mousemove", send);
   document.addEventListener("mouseup", stop);
 }
@@ -26,9 +28,11 @@ function stop() {
 }
 
 function send(e: MouseEvent, minSize: number = 8) {
-  if (whiteboard.getSelected().length <= 0 || !direction) return;
-  const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
-  resizebox.show(whiteboard.getSelected()[0] as SVGGraphicsElement);
+  const elements = selection.elements();
+
+  if (elements.length <= 0 || !direction) return;
+  const box = elements[0].getBBox();
+  resizebox.show(elements[0]);
 
   let x = box.x;
   let y = box.y;
@@ -123,7 +127,7 @@ function send(e: MouseEvent, minSize: number = 8) {
   server.send({
     type: "request_transform",
     transform: {
-      id: whiteboard.getSelected()[0].id,
+      id: elements[0].getAttribute("id")!,
       x,
       y,
       w: width,

@@ -22,6 +22,10 @@ function get() {
   return [...selected];
 }
 
+function elements() {
+  return [...selected].map((selected) => document.getElementById(selected) as unknown as SVGGraphicsElement);
+}
+
 function add(id: string) {
   selected.add(id);
   document.getElementById(id)?.classList.add("selected");
@@ -34,5 +38,5 @@ function select(ids: string[]) {
   }
 }
 
-const selection = { initialize, clear, get, add, select };
+const selection = { initialize, clear, get, add, select, elements };
 export default selection;

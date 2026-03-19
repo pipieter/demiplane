@@ -4,6 +4,7 @@ import { server } from "../../server";
 import { viewport } from "../../viewport";
 import { resizebox } from "./resizebox";
 import { util } from "../../util";
+import selection from "../selection";
 
 /**
  *  Mutates an SVGElement to get drag-behavior.
@@ -17,9 +18,9 @@ function makeDraggable(element: SVGElement) {
     document.onmouseup = deselect;
     document.onmousemove = drag;
 
-    whiteboard.clearSelection();
+    selection.clear();
     element.classList.add("selected");
-    whiteboard.addSelected(element);
+    selection.add(element.getAttribute("id")!);
     resizebox.show(element as SVGGraphicsElement);
   }
 
@@ -53,7 +54,7 @@ function makeDraggable(element: SVGElement) {
   function deselect() {
     document.onmouseup = null;
     document.onmousemove = null;
-    if (whiteboard.getSelected().length <= 0) {
+    if (selection.get().length <= 0) {
       resizebox.hide();
     }
   }
