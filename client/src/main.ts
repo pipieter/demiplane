@@ -55,8 +55,8 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const randomCircleButton = document.getElementById("random-circle-button") as HTMLButtonElement;
-const randomRectangleButton = document.getElementById("random-rect-button") as HTMLButtonElement;
+const beginCircleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
+const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
@@ -68,8 +68,8 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-randomCircleButton.onclick = drawCircle.begin;
-randomRectangleButton.onclick = drawRectangle.begin;
+beginCircleButton.onclick = drawCircle.begin;
+beginRectangleButton.onclick = drawRectangle.begin;
 beginDrawingButton.onclick = drawFree.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
