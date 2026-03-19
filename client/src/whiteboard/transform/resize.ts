@@ -1,6 +1,6 @@
 import { grid } from "../../grid";
 import { server } from "../../server";
-import { viewport } from "../../viewport";
+import { viewport } from "../viewport";
 import selection from "../selection";
 import { resizebox } from "./resizebox";
 
