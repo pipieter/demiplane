@@ -40,28 +40,31 @@ function redraw(token: Token) {
 function draw(element: SVGElement, token: Token) {
   switch (token.type) {
     case "circle":
-      element.setAttribute("fill", token.color);
-      element.setAttribute("cx", (token.x + token.w / 2).toString());
-      element.setAttribute("cy", (token.y + token.h / 2).toString());
-      element.setAttribute("rx", (token.w / 2).toString());
-      element.setAttribute("ry", (token.h / 2).toString());
-      break;
+      {
+        element.setAttribute("fill", token.color);
+        const rx = token.w / 2;
+        const ry = token.h / 2;
+        token.x += rx;
+        token.y += ry;
+        element.setAttribute("rx", rx.toString());
+        element.setAttribute("ry", ry.toString());
+        break;
+      }
 
     case "rectangle":
       element.setAttribute("fill", token.color);
-      element.setAttribute("x", token.x.toString());
-      element.setAttribute("y", token.y.toString());
       element.setAttribute("width", token.w.toString());
       element.setAttribute("height", token.h.toString());
       break;
 
     case "image":
       element.setAttribute("href", server.BackendURL + token.href);
-      element.setAttribute("x", token.x.toString());
-      element.setAttribute("y", token.y.toString());
       element.setAttribute("width", token.w.toString());
       element.setAttribute("height", token.h.toString());
   }
+
+  const translate = `translate(${token.x} ${token.y})`;
+  element.setAttribute("transform", translate);
 }
 
 const whiteboard = { create, remove, redraw };
