@@ -1,7 +1,7 @@
 import { whiteboard } from "../../whiteboard";
 import { grid } from "../../grid";
 import { server } from "../../server";
-import { viewport } from "../../viewport";
+import { viewport } from "../viewport";
 import { resizebox } from "./resizebox";
 import { util } from "../../util";
 import selection from "../selection";

@@ -1,6 +1,6 @@
 import { grid } from "../../grid";
 import { server } from "../../server";
-import { viewport } from "../../viewport";
+import { viewport } from "../viewport";
 import drawUtil from "./util";
 
 const layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;

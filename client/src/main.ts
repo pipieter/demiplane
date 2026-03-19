@@ -2,7 +2,7 @@ import { whiteboard } from "./whiteboard";
 import { grid } from "./grid";
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
-import { viewport } from "./viewport";
+import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
 import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";

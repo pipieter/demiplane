@@ -1,4 +1,4 @@
-import { viewport } from "../../viewport";
+import { viewport } from "../viewport";
 import { server } from "../../server";
 import drawUtil from "./util";
 
