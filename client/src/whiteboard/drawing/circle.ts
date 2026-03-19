@@ -1,6 +1,7 @@
 import { grid } from "../../grid";
 import { server } from "../../server";
 import { viewport } from "../../viewport";
+import drawUtil from "./util";
 
 const layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
 const element = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
@@ -21,12 +22,7 @@ function begin() {
   element.setAttribute("ry", "0");
 
   layer.onmousedown = (evt) => {
-    let { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);
-    if (evt.shiftKey) {
-      const gridLocked = grid.getGridlockedCoords(x, y);
-      x = gridLocked.x;
-      y = gridLocked.y;
-    }
+    const { x, y } = drawUtil.getEventCoordinates(evt);
 
     mouseDown = true;
     start.x = x;
