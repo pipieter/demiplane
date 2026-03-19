@@ -30,9 +30,9 @@ function makeDraggable(element: SVGElement) {
     let { x, y } = e.shiftKey
       ? grid.getGridlockedCoords(cursor.x, cursor.y)
       : {
-        x: cursor.x,
-        y: cursor.y,
-      };
+          x: cursor.x,
+          y: cursor.y,
+        };
 
     x -= bbox.width / 2;
     y -= bbox.height / 2;
