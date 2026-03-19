@@ -106,6 +106,7 @@ function end() {
     type: "request_create",
     create: {
       type: "circle",
+      id: crypto.randomUUID(),
       color,
       x,
       y,

@@ -30,13 +30,13 @@ public class SyncResponseMessage(Token[] tokens, Background background, Grid gri
     public Grid grid = grid;
 }
 
-public class CreateRequestMessage(TokenCreateBody create) : Message
+public class CreateRequestMessage(Token create) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "request_create";
 
     [JsonProperty(Required = Required.Always)]
-    public TokenCreateBody create = create;
+    public Token create = create;
 }
 
 public class CreateResponseMessage(Token create) : Message

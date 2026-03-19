@@ -13,6 +13,9 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
+            if (_tokens.Find(existing => existing.id == token.id) != null)
+                return false;
+
             _tokens.Add(token);
             return true;
         }

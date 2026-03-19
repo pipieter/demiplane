@@ -99,6 +99,7 @@ function end() {
     type: "request_create",
     create: {
       type: "rectangle",
+      id: crypto.randomUUID(),
       color,
       x,
       y,

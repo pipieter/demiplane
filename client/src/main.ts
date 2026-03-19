@@ -100,6 +100,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     type: "request_create",
     create: {
       type: "image",
+      id: crypto.randomUUID(),
       href,
       x,
       y,

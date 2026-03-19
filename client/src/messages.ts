@@ -1,5 +1,5 @@
 import type { GridData } from "./grid";
-import type { Token, CreationData } from "./token";
+import type { Token } from "./token";
 
 /** Sync the current board state */
 export interface SyncResponseMessage {
@@ -16,7 +16,7 @@ export interface SyncResponseMessage {
 /** Request to create a token on the whiteboard */
 export interface CreateRequestMessage {
   type: "request_create";
-  create: CreationData;
+  create: Token;
 }
 
 /** Create a token on the whiteboard */

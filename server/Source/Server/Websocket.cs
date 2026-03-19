@@ -113,12 +113,10 @@ public partial class Server
         {
             case CreateRequestMessage create:
                 {
-                    Token token = Token.Create(create.create) ?? throw new Exception("Could not create token.");
-
-                    if (!_state.AddToken(token))
+                    if (!_state.AddToken(create.create))
                         throw new Exception("Could not add token.");
 
-                    CreateResponseMessage response = new(token);
+                    CreateResponseMessage response = new(create.create);
                     await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }
