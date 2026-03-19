@@ -115,3 +115,15 @@ cursor: nesw-resize;
 #whiteboard-drawing-layer {
     pointer-events: auto;
 }
+
+/* 
+    Important note:
+    We want transformation to happen relative to the center of the object.
+    This simplifies logic, making it so we don't have to recalculate the absolute center.
+    Every time rotation is changed, CSS will handle the hard part for us.
+*/
+#whiteboard-objects-layer > *,
+#whiteboard-resize > * {
+    transform-origin: center center;
+    transform-box: fill-box;
+}

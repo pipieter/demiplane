@@ -25,13 +25,13 @@ if (rotateHandle) {
     const box = (whiteboard.getSelected()[0] as SVGGraphicsElement).getBBox();
     rotationCenter = {
       x: box.x + box.width / 2,
-      y: box.y + box.height / 2
-    }
+      y: box.y + box.height / 2,
+    };
 
     isRotating = true;
     document.addEventListener("mousemove", rotateMove);
     document.addEventListener("mouseup", stopRotate);
-  })
+  });
 }
 
 function rotateMove(e: MouseEvent) {
@@ -41,11 +41,11 @@ function rotateMove(e: MouseEvent) {
   const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
   const dx = current.x - rotationCenter.x;
   const dy = current.y - rotationCenter.y;
-  const angleDeg = Math.floor((Math.atan2(dy, dx) * (180 / Math.PI)) + 90);
+  const angleDeg = Math.floor(Math.atan2(dy, dx) * (180 / Math.PI) + 90);
 
-  const transform = `rotate(${angleDeg} ${rotationCenter.x} ${rotationCenter.y})`;
+  const transform = `rotate(${angleDeg} 0 0)`;
   el.setAttribute("transform", transform);
-  rotateBox(transform);
+  showBox(el);
 }
 
 function stopRotate() {
@@ -54,13 +54,11 @@ function stopRotate() {
   document.removeEventListener("mouseup", stopRotate);
 }
 
-function rotateBox(rotateTransform: string) {
-  if (resizeBox) resizeBox.setAttribute("transform", rotateTransform);
-  document.querySelectorAll<SVGRectElement>(".resize-handle").forEach((h) => {
-    h.setAttribute("transform", rotateTransform);
-  });
-  if (rotateHandle) rotateHandle.setAttribute("transform", rotateTransform);
-  document.getElementById("rotate-line")?.setAttribute("transform", rotateTransform);
+function getElementRotationDegree(element: SVGGraphicsElement): number {
+  const transform = element.getAttribute("transform");
+  if (!transform) return 0;
+  const match = transform.match(/rotate\(([-\d.]+)/);
+  return match ? parseFloat(match[1]) : 0;
 }
 
 function showBox(element: SVGGraphicsElement) {
@@ -73,62 +71,100 @@ function showBox(element: SVGGraphicsElement) {
   box.y -= offset;
   box.width += offset * 2;
   box.height += offset * 2;
+  const angle = getElementRotationDegree(element);
 
   resizeBox.setAttribute("x", box.x.toString());
   resizeBox.setAttribute("y", box.y.toString());
   resizeBox.setAttribute("width", box.width.toString());
   resizeBox.setAttribute("height", box.height.toString());
+  resizeBox.setAttribute("transform", `rotate(${angle} 0 0)`);
 
-  positionHandles(box);
-  const transform = element.getAttribute("transform") ?? "rotate(0 0 0)";
-  rotateBox(transform);
+  positionHandles(box, angle);
 }
 
 function hideBox() {
   if (resizeLayer) resizeLayer.style.display = "none";
 }
 
-function positionHandles(box: DOMRect) {
-  const size = 8;
+function rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
+  const angle = (angleDeg * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
 
-  setHandle("handle-tr", box.x - size / 2, box.y - size / 2, size);
-  setHandle("handle-tl", box.x + box.width - size / 2, box.y - size / 2, size);
-  setHandle("handle-bl", box.x - size / 2, box.y + box.height - size / 2, size);
-  setHandle("handle-br", box.x + box.width - size / 2, box.y + box.height - size / 2, size);
-  setRotateHandle(box);
+  const dx = px - cx;
+  const dy = py - cy;
+
+  const x = cx + dx * cos - dy * sin;
+  const y = cy + dx * sin + dy * cos;
+
+  return { x, y };
 }
 
-function setHandle(id: string, x: number, y: number, size: number) {
+function positionHandles(box: DOMRect, angle: number = 0) {
+  const size = 8;
+  const centerX = box.x + box.width / 2;
+  const centerY = box.y + box.height / 2;
+
+  const points: Record<string, { x: number; y: number }> = {
+    "handle-tr": { x: box.x + box.width, y: box.y },
+    "handle-tl": { x: box.x, y: box.y },
+    "handle-bl": { x: box.x, y: box.y + box.height },
+    "handle-br": { x: box.x + box.width, y: box.y + box.height },
+  };
+
+  for (const id in points) {
+    const rotated = rotatePoint(points[id].x, points[id].y, centerX, centerY, angle);
+    setHandle(id, rotated.x - size / 2, rotated.y - size / 2, size);
+  }
+
+  setHandle("handle-tr", box.x - size / 2, box.y - size / 2, size, angle, centerX, centerY);
+  setHandle("handle-tl", box.x + box.width - size / 2, box.y - size / 2, size, angle, centerX, centerY);
+  setHandle("handle-bl", box.x - size / 2, box.y + box.height - size / 2, size, angle, centerX, centerY);
+  setHandle("handle-br", box.x + box.width - size / 2, box.y + box.height - size / 2, size, angle, centerX, centerY);
+  setRotateHandle(box, centerX, centerY, angle);
+}
+
+function setHandle(
+  id: string,
+  x: number,
+  y: number,
+  size: number,
+  angle: number = 0,
+  centerX?: number,
+  centerY?: number,
+) {
   const h = document.getElementById(id);
   if (!h) return;
   h.setAttribute("x", x.toString());
   h.setAttribute("y", y.toString());
   h.setAttribute("width", size.toString());
   h.setAttribute("height", size.toString());
+
+  if (centerX !== undefined && centerY !== undefined) {
+    h.setAttribute("transform", `rotate(${angle} ${centerX - x - size / 2} ${centerY - y - size / 2})`);
+  } else {
+    h.removeAttribute("transform");
+  }
 }
 
-function setRotateHandle(box: DOMRect) {
+function setRotateHandle(box: DOMRect, centerX: number, centerY: number, angle: number) {
   const handle = document.getElementById("rotate-handle");
   const line = document.getElementById("rotate-line");
 
   if (!handle) return;
 
-  const offset = 20;
+  const topCenterX = box.x + box.width / 2;
+  const topCenterY = box.y - 20; // offset
 
-  const centerX = box.x + box.width / 2;
-  const topY = box.y;
-
-  const x = centerX;
-  const y = topY - offset;
-
-  handle.setAttribute("cx", x.toString());
-  handle.setAttribute("cy", y.toString());
+  const rotated = rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
+  handle.setAttribute("cx", rotated.x.toString());
+  handle.setAttribute("cy", rotated.y.toString());
 
   if (line) {
     line.setAttribute("x1", centerX.toString());
-    line.setAttribute("y1", topY.toString());
-    line.setAttribute("x2", x.toString());
-    line.setAttribute("y2", y.toString());
+    line.setAttribute("y1", centerY.toString());
+    line.setAttribute("x2", rotated.x.toString());
+    line.setAttribute("y2", rotated.y.toString());
   }
 }
 
