@@ -20,18 +20,10 @@ function begin() {
   element.setAttribute("width", "0");
   element.setAttribute("height", "0");
 
-  layer.onmousedown = (evt) => {
-    const { x, y } = drawUtil.getEventCoordinates(evt);
-
-    mouseDown = true;
-    start.x = x;
-    start.y = y;
-    current.x = x;
-    current.y = y;
-    element.style.display = "";
-  };
+  layer.onmousedown = onmousedown;
   layer.onmouseup = end;
   layer.onmousemove = update;
+  document.onkeydown = onkeydown;
 }
 
 function getCurrentDimensions() {
@@ -62,15 +54,44 @@ function update(evt: MouseEvent) {
   }
 }
 
-function end() {
+function onkeydown(evt: KeyboardEvent) {
+  if (evt.key === "Escape") cancel();
+}
+
+function onmousedown(evt: MouseEvent) {
+  // Cancel on right click
+  if (evt.buttons & 2) {
+    cancel();
+    return;
+  }
+
+  // Begin drawing on left click
+  if (evt.buttons & 1) {
+    const { x, y } = drawUtil.getEventCoordinates(evt);
+
+    mouseDown = true;
+    start.x = x;
+    start.y = y;
+    current.x = x;
+    current.y = y;
+    element.style.display = "";
+    return;
+  }
+}
+
+function cancel() {
   mouseDown = false;
   element.style.display = "none";
   layer.style.display = "none";
   layer.onmousedown = null;
   layer.onmouseup = null;
   layer.onmousemove = null;
+  document.oncontextmenu = null;
   viewport.enable();
+}
 
+function end() {
+  cancel();
   const { x, y, w, h } = getCurrentDimensions();
   const color = "#00FF00"; // TODO
 
