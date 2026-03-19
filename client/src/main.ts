@@ -6,7 +6,7 @@ import { transform } from "./transform";
 import { viewport } from "./viewport";
 import { util } from "./util";
 import { server } from "./server";
-import drawing from "./drawing";
+import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 
@@ -70,8 +70,7 @@ function getRandomPosition(): { x: number; y: number } {
 
 randomCircleButton.onclick = drawCircle.begin;
 randomRectangleButton.onclick = drawRectangle.begin;
-
-beginDrawingButton.onclick = drawing.begin;
+beginDrawingButton.onclick = drawFree.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
   // @ts-expect-error Files should be a valid field
