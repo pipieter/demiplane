@@ -4,6 +4,40 @@
 
 import type { RequestMessage } from "./messages";
 
+export class Server {
+  public url: string;
+  public socket: WebSocket;
+
+  constructor(url: string, socket: WebSocket) {
+    this.url = url;
+    this.socket = socket;
+  }
+
+  public async uploadImage(base64: string): Promise<string> {
+    const url = `${this.url}/images`;
+    const body = JSON.stringify({ data: base64 });
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    };
+
+    const response = await fetch(url, options);
+    if (!response) throw `Could not send image to backend.`;
+
+    const data = await response.json();
+    if (data?.status !== "success") throw `Could not upload image: ${data?.message}`;
+
+    return data.href;
+  }
+
+  public send(req: RequestMessage) {
+    this.socket.send(JSON.stringify(req));
+  }
+}
+
 const BackendURL = location.host.includes(".discordsays.com") ? "/server" : import.meta.env.VITE_SERVER_URL;
 const socket = new WebSocket(BackendURL);
 

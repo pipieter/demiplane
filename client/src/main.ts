@@ -3,19 +3,28 @@ import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
-import { server } from "./server";
+import { Server, server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 import tokens from "./whiteboard/tokens";
 import background from "./whiteboard/background";
 import selection from "./whiteboard/selection";
+import Background from "./models/background";
+import BackgroundView from "./views/background";
+import BackgroundController from "./controllers/background";
 
 tokens.initialize();
 selection.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
+
+const server_ = new Server(server.BackendURL, server.socket);
+
+const backgroundModel = new Background();
+const backgroundView = new BackgroundView();
+const backgroundController = new BackgroundController(server_, backgroundModel, backgroundView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -36,7 +45,7 @@ server.socket.onmessage = function (event) {
       break;
 
     case "background": {
-      background.set(data.background.href, data.background.width, data.background.height);
+      backgroundController.set(data.background.href, data.background.width, data.background.height);
       break;
     }
 
@@ -61,7 +70,6 @@ const beginCircleButton = document.getElementById("begin-circle-button") as HTML
 const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
-const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
 
 function getRandomPosition(): { x: number; y: number } {
   return {
@@ -109,31 +117,5 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       w,
       h,
     },
-  });
-});
-
-uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
-  // @ts-expect-error Files should be a valid field
-  const file = evt.target?.files[0];
-  if (!file) {
-    console.error("Could not open file.");
-    return;
-  }
-
-  const base64 = await util.readBase64(file);
-  if (!base64) {
-    console.error("Could not read file.");
-    return;
-  }
-
-  const href = await server.uploadImageToBackend(base64);
-  if (!href) {
-    console.error("Could not upload image to server.");
-    return;
-  }
-
-  server.send({
-    type: "request_background",
-    href,
   });
 });
