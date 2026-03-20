@@ -8,7 +8,6 @@ import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 import tokens from "./whiteboard/tokens";
-import background from "./whiteboard/background";
 import selection from "./whiteboard/selection";
 import Background from "./models/background";
 import BackgroundView from "./views/background";
@@ -55,7 +54,7 @@ server.socket.onmessage = function (event) {
 
     case "sync":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
-      background.set(data.background.href, data.background.width, data.background.height);
+      backgroundController.set(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
         tokens.create(token);
       }
