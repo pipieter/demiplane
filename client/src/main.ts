@@ -13,8 +13,10 @@ import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
 import Store from "./store";
+import TokenView from "./views/token";
+import TokenController from "./controllers/token";
 
-tokens.initialize();
+//tokens.initialize();
 selection.initialize();
 header.initialize();
 viewport.initialize();
@@ -23,16 +25,18 @@ grid.initialize();
 const store = new Store(server.BackendURL, server.socket);
 const state = new State();
 
+const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
 
 new BackgroundController(store, state, backgroundView);
+new TokenController(store, state, tokenView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
     case "create":
-      tokens.create(data.create);
+      state.createToken(data.create);
       break;
 
     case "delete":

@@ -1,5 +1,5 @@
 import type { GridData } from "./whiteboard/grid";
-import type { Token } from "./token";
+import type { Token } from "./models/token";
 
 /** Sync the current board state */
 export interface SyncResponseMessage {

@@ -1,7 +1,9 @@
 import Background from "./models/background";
+import type { Token } from "./models/token";
 
 interface StateCallbackKeyMap {
   background_change: Background;
+  token_create: Token;
 }
 
 class Listeners {
@@ -10,6 +12,7 @@ class Listeners {
   constructor() {
     this.map = new Map();
     this.map.set("background_change", []);
+    this.map.set("token_create", []);
   }
 
   private listeners<K extends keyof StateCallbackKeyMap>(type: K): ((value: StateCallbackKeyMap[K]) => void)[] {
@@ -26,11 +29,13 @@ class Listeners {
 }
 
 class State {
+  private tokens: Token[];
   private background: Background;
 
   private listeners: Listeners;
 
   constructor() {
+    this.tokens = [];
     this.background = new Background();
     this.listeners = new Listeners();
   }
@@ -42,6 +47,11 @@ class State {
   public setBackground(href: string | null, width: number, height: number) {
     this.background.set(href, width, height);
     this.listeners.emit("background_change", this.background);
+  }
+
+  public createToken(token: Token) {
+    this.tokens.push(token);
+    this.listeners.emit("token_create", token);
   }
 }
 

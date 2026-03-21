@@ -1,5 +1,5 @@
 import { server } from "../server";
-import type { Token } from "../token";
+import type { Token } from "../models/token";
 import selection from "./selection";
 import { resizebox } from "./transform/resizebox";
 import whiteboard from "./whiteboard";
