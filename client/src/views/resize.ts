@@ -25,9 +25,6 @@ class ResizeView {
 
   private listeners: ResizeViewListeners;
 
-  private mouseMoveEvent: (evt: MouseEvent) => void;
-  private mouseUpEvent: (evt: MouseEvent) => void;
-
   constructor() {
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
     this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
@@ -39,9 +36,6 @@ class ResizeView {
     this.selected = [];
 
     this.listeners = new ResizeViewListeners();
-
-    this.mouseMoveEvent = (evt) => this.resize(evt);
-    this.mouseUpEvent = () => this.stop();
 
     this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.start(evt)));
   }
@@ -104,13 +98,13 @@ class ResizeView {
 
     this.cursorStartPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
     this.elementStartSize = element.getBBox();
-    document.addEventListener("mousemove", this.mouseMoveEvent);
-    document.addEventListener("mouseup", this.mouseUpEvent);
+    document.onmousemove = (evt) => this.resize(evt);
+    document.onmouseup = () => this.stop();
   }
 
   private stop() {
-    document.removeEventListener("mousemove", this.mouseMoveEvent);
-    document.removeEventListener("mouseup", this.mouseUpEvent);
+    document.onmousemove = null;
+    document.onmouseup = null;
     this.direction = null;
   }
 

@@ -21,16 +21,10 @@ class TransformView {
   private background: SVGSVGElement;
   private listeners: TransformViewListeners;
 
-  private mouseMoveEvent: (evt: MouseEvent) => void;
-  private mouseUpEvent: (evt: MouseEvent) => void;
-
   constructor() {
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
     this.listeners = new TransformViewListeners();
-
-    this.mouseMoveEvent = () => {};
-    this.mouseUpEvent = () => {};
 
     this.background.onclick = () => this.drop();
   }
@@ -46,16 +40,13 @@ class TransformView {
 
     this.listeners.emit("tokens_select", [id]);
 
-    this.mouseMoveEvent = (evt) => this.drag(evt, id);
-    this.mouseUpEvent = () => this.drop();
-
-    document.addEventListener("mousemove", this.mouseMoveEvent);
-    document.addEventListener("mouseup", this.mouseUpEvent);
+    document.onmousemove = (evt) => this.drag(evt, id);
+    document.onmouseup = () => this.drop();
   }
 
   private drop() {
-    document.removeEventListener("mousemove", this.mouseMoveEvent);
-    document.removeEventListener("mouseup", this.mouseUpEvent);
+    document.onmousemove = null;
+    document.onmouseup = null;
   }
 
   private drag(event: MouseEvent, id: string) {
