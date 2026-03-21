@@ -2,16 +2,11 @@ import type { Transform } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
 import type TransformView from "../views/transform";
+import Controller from "./controller";
 
-class TransformController {
-  private store: Store;
-  private state: State;
-  private view: TransformView;
-
-  constructor(store: Store, state: State, transformView: TransformView) {
-    this.store = store;
-    this.state = state;
-    this.view = transformView;
+class TransformController extends Controller<TransformView> {
+  constructor(store: Store, state: State, view: TransformView) {
+    super(store, state, view);
 
     this.view.listen("tokens_select", (ids) => this.select(ids));
     this.view.listen("token_transform", (transform) => this.ontransform(transform));

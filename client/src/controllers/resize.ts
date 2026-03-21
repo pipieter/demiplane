@@ -2,16 +2,11 @@ import type { Transform } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
 import type ResizeView from "../views/resize";
+import Controller from "./controller";
 
-class ResizeController {
-  private store: Store;
-  private state: State;
-  private view: ResizeView;
-
+class ResizeController extends Controller<ResizeView> {
   constructor(store: Store, state: State, view: ResizeView) {
-    this.store = store;
-    this.state = state;
-    this.view = view;
+    super(store, state, view);
 
     this.view.listen("token_transform", (transform) => this.ontransform(transform));
     this.state.listen("token_select", ([_, tokens]) => this.update(tokens));

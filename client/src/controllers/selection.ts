@@ -1,16 +1,11 @@
 import type State from "../state";
 import type Store from "../store";
 import type SelectionView from "../views/selection";
+import Controller from "./controller";
 
-class SelectionController {
-  private store: Store;
-  private state: State;
-  private view: SelectionView;
-
+class SelectionController extends Controller<SelectionView> {
   constructor(store: Store, state: State, view: SelectionView) {
-    this.store = store;
-    this.state = state;
-    this.view = view;
+    super(store, state, view);
 
     this.state.listen("token_select", ([previous, current]) => this.select(previous, current));
     this.view.listen("clear_selection", () => this.clear());

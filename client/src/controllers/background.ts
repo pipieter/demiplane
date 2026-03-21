@@ -3,16 +3,11 @@ import type State from "../state";
 import type Store from "../store";
 import { util } from "../util";
 import type BackgroundView from "../views/background";
+import Controller from "./controller";
 
-class BackgroundController {
-  private store: Store;
-  private state: State;
-  private view: BackgroundView;
-
+class BackgroundController extends Controller<BackgroundView> {
   constructor(store: Store, state: State, view: BackgroundView) {
-    this.store = store;
-    this.state = state;
-    this.view = view;
+    super(store, state, view);
 
     this.view.listen("background_upload", (file) => this.upload(file));
     this.state.listen("background_change", (background) => this.update(background));

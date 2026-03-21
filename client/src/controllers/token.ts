@@ -2,16 +2,11 @@ import type { Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
 import type TokenView from "../views/token";
+import Controller from "./controller";
 
-class TokenController {
-  private store: Store;
-  private state: State;
-  private view: TokenView;
-
+class TokenController extends Controller<TokenView> {
   constructor(store: Store, state: State, view: TokenView) {
-    this.store = store;
-    this.state = state;
-    this.view = view;
+    super(store, state, view);
 
     this.state.listen("token_create", (token) => this.create(token));
     this.state.listen("token_transform", ([token, _]) => this.redraw(token));

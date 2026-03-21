@@ -1,16 +1,11 @@
 import type State from "../state";
 import type Store from "../store";
 import type TokenDrawView from "../views/tokendraw";
+import Controller from "./controller";
 
-class TokenDrawController {
-  private store: Store;
-  private state: State;
-  private view: TokenDrawView;
-
+class TokenDrawController extends Controller<TokenDrawView> {
   constructor(store: Store, state: State, view: TokenDrawView) {
-    this.store = store;
-    this.state = state;
-    this.view = view;
+    super(store, state, view);
 
     this.view.listen("circle_create", ({ x, y, w, h }) => this.createCircle(x, y, w, h));
     this.view.listen("rectangle_create", ({ x, y, w, h }) => this.createRectangle(x, y, w, h));
