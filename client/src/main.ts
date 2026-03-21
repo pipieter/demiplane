@@ -3,7 +3,7 @@ import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
-import { Server, server } from "./server";
+import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
@@ -12,6 +12,7 @@ import selection from "./whiteboard/selection";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
+import Store from "./store";
 
 tokens.initialize();
 selection.initialize();
@@ -19,12 +20,12 @@ header.initialize();
 viewport.initialize();
 grid.initialize();
 
-const server_ = new Server(server.BackendURL, server.socket);
+const store = new Store(server.BackendURL, server.socket);
 const state = new State();
 
 const backgroundView = new BackgroundView();
 
-new BackgroundController(server_, state, backgroundView);
+new BackgroundController(store, state, backgroundView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
