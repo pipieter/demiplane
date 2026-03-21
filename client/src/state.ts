@@ -76,8 +76,6 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
   }
 
   public selectTokens(ids: string[]) {
-    // Temporary console.log until resizebox is re-implemented
-    console.log(`Selected [${ids}]`);
     const previous = [...this.selected];
     this.selected = [...ids];
     this.emit("token_select", [previous, ids]);
