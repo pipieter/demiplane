@@ -3,13 +3,12 @@ import type { Token } from "../models/token";
 import { server } from "../server";
 
 interface TokenViewListenerMap {
-  dom_create: Token;
   request_remove: null;
 }
 
 class TokenViewListener extends Listeners<TokenViewListenerMap> {
   protected override keys(): (keyof TokenViewListenerMap)[] {
-    return ["request_remove", "dom_create"];
+    return ["request_remove"];
   }
 }
 
@@ -41,8 +40,6 @@ class TokenView {
     element.setAttribute("tabindex", "-1"); // Makes object selectable
     this.layer.appendChild(element);
     this.draw(element, token);
-
-    this.listeners.emit("dom_create", token);
   }
 
   public redraw(token: Token) {
