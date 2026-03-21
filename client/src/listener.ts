@@ -1,4 +1,5 @@
 export abstract class Listener<T> {
+  // eslint-disable-next-line
   private map: Map<keyof T, any[]>;
 
   constructor() {

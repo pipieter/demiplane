@@ -138,7 +138,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private onmousemove(evt: MouseEvent) {
-    let { x, y } = this.getCoordinates(evt);
+    const { x, y } = this.getCoordinates(evt);
     this.updateCursor(x, y);
 
     if (!this.mouseDown) return;
