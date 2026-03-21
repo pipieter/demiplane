@@ -5,7 +5,6 @@ import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
 import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
-import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
@@ -19,6 +18,8 @@ import SelectionView from "./views/selection";
 import SelectionController from "./controllers/selection";
 import ResizeView from "./views/resize";
 import ResizeController from "./controllers/resize";
+import TokenDrawView from "./views/tokendraw";
+import TokenDrawController from "./controllers/tokendraw";
 
 header.initialize();
 viewport.initialize();
@@ -32,12 +33,14 @@ const backgroundView = new BackgroundView();
 const transformView = new TransformView();
 const selectionView = new SelectionView();
 const resizeView = new ResizeView();
+const tokenDrawView = new TokenDrawView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
 new ResizeController(store, state, resizeView);
+new TokenDrawController(store, state, tokenDrawView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -77,7 +80,6 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const beginCircleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
 const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
@@ -89,7 +91,6 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-beginCircleButton.onclick = drawCircle.begin;
 beginRectangleButton.onclick = drawRectangle.begin;
 beginDrawingButton.onclick = drawFree.begin;
 
