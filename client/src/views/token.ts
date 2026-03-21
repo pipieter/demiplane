@@ -1,24 +1,25 @@
 import Listeners from "../listener";
 import type { Token } from "../models/token";
 import { server } from "../server";
+import View from "./view";
 
-interface TokenViewListenerMap {
+interface TokenViewMap {
   request_remove: null;
 }
 
-class TokenViewListener extends Listeners<TokenViewListenerMap> {
-  protected override keys(): (keyof TokenViewListenerMap)[] {
+class TokenViewListener extends Listeners<TokenViewMap> {
+  protected override keys(): (keyof TokenViewMap)[] {
     return ["request_remove"];
   }
 }
 
-class TokenView {
+class TokenView extends View<TokenViewListener, TokenViewMap> {
   private layer: SVGSVGElement;
-  private listeners: TokenViewListener;
 
   constructor() {
+    super(new TokenViewListener());
+
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
-    this.listeners = new TokenViewListener();
 
     window.addEventListener("keydown", (event) => {
       const keys = ["Delete", "Backspace"];
@@ -83,10 +84,6 @@ class TokenView {
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
     }
-  }
-
-  public listen<K extends keyof TokenViewListenerMap>(type: K, listener: (value: TokenViewListenerMap[K]) => void) {
-    this.listeners.listen(type, listener);
   }
 }
 

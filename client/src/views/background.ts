@@ -1,11 +1,25 @@
+import Listeners from "../listener";
 import { server } from "../server";
+import View from "./view";
 
-class BackgroundView {
+interface BackgroundViewMap {
+  background_upload: File;
+}
+
+class BackgroundViewListeners extends Listeners<BackgroundViewMap> {
+  protected override keys(): (keyof BackgroundViewMap)[] {
+    return ["background_upload"];
+  }
+}
+
+class BackgroundView extends View<BackgroundViewListeners, BackgroundViewMap> {
   public input: HTMLInputElement;
   public image: SVGImageElement;
   public layers: SVGSVGElement[];
 
   constructor() {
+    super(new BackgroundViewListeners());
+
     this.input = document.getElementById("upload-background-button") as HTMLInputElement;
     this.image = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
     this.layers = [
@@ -14,6 +28,12 @@ class BackgroundView {
       document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement,
       document.getElementById("whiteboard-resize") as unknown as SVGSVGElement,
     ];
+
+    this.input.onchange = (evt) => {
+      // @ts-expect-error Files should be a valid field
+      const file = evt.target?.files[0];
+      this.listeners.emit("background_upload", file);
+    };
   }
 
   public set(href: string | null, width: number, height: number) {
@@ -29,14 +49,6 @@ class BackgroundView {
       layer.setAttribute("width", `${width}px`);
       layer.setAttribute("height", `${height}px`);
     }
-  }
-
-  public listen(_type: "background_upload", listener: (file: File) => void) {
-    this.input.addEventListener("change", async (evt: Event) => {
-      // @ts-expect-error Files should be a valid field
-      const file = evt.target?.files[0];
-      listener(file);
-    });
   }
 }
 

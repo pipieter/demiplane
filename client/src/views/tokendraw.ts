@@ -1,6 +1,7 @@
 import Listeners from "../listener";
 import type Grid from "../models/grid";
 import { viewport } from "../whiteboard/viewport";
+import View from "./view";
 
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number };
@@ -16,7 +17,7 @@ class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
 
 type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
-class TokenDrawView {
+class TokenDrawView extends View<TokenDrawViewListeners, TokenDrawViewMap> {
   private grid: Grid;
 
   private readonly layer: SVGSVGElement;
@@ -35,9 +36,9 @@ class TokenDrawView {
   private readonly start: { x: number; y: number };
   private readonly current: { x: number; y: number };
 
-  private listeners: TokenDrawViewListeners;
-
   constructor(grid: Grid) {
+    super(new TokenDrawViewListeners());
+
     this.grid = grid;
 
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
@@ -293,10 +294,6 @@ class TokenDrawView {
       w: targetWidth,
       h: targetHeight,
     };
-  }
-
-  public listen<K extends keyof TokenDrawViewMap>(type: K, listener: (value: TokenDrawViewMap[K]) => void) {
-    this.listeners.listen(type, listener);
   }
 }
 
