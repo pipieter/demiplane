@@ -1,6 +1,6 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
-import { viewport } from "../whiteboard/viewport";
+import type Viewport from "../models/viewport";
 
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number };
@@ -18,6 +18,7 @@ type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
 class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawViewMap> {
   private grid: Grid;
+  private viewport: Viewport;
 
   private readonly layer: SVGSVGElement;
   private readonly circle: SVGCircleElement;
@@ -35,10 +36,11 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly start: { x: number; y: number };
   private readonly current: { x: number; y: number };
 
-  constructor(grid: Grid) {
+  constructor(grid: Grid, viewport: Viewport) {
     super(new TokenDrawViewListeners());
 
     this.grid = grid;
+    this.viewport = viewport;
 
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
@@ -62,7 +64,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private begin(type: TokenDrawType) {
-    viewport.disable();
+    this.viewport.disable();
     this.mouseDown = false;
     this.cursor.style.display = "";
     this.layer.style.display = "";
@@ -217,7 +219,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private getCoordinates(evt: MouseEvent) {
-    let { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);
+    let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
     if (evt.shiftKey) {
       const gridLocked = this.grid.getLockedCoordinates(x, y);
       x = gridLocked.x;
@@ -236,8 +238,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.layer.onmousedown = null;
     this.layer.onmouseup = null;
     this.layer.onmousemove = null;
+    this.viewport.enable();
     document.onkeydown = null;
-    viewport.enable();
   }
 
   private updateFreedrawLine() {

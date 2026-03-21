@@ -2,8 +2,8 @@ import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
+import type Viewport from "../models/viewport";
 import { util } from "../util";
-import { viewport } from "../whiteboard/viewport";
 
 interface TransformViewMap {
   tokens_select: string[];
@@ -18,13 +18,16 @@ class TransformViewListeners extends Listener<TransformViewMap> {
 
 class TransformView extends ListenerContainer<TransformViewListeners, TransformViewMap> {
   private grid: Grid;
+  private viewport: Viewport;
 
   private container: HTMLDivElement;
   private background: SVGSVGElement;
 
-  constructor(grid: Grid) {
+  constructor(grid: Grid, viewport: Viewport) {
     super(new TransformViewListeners());
+
     this.grid = grid;
+    this.viewport = viewport;
 
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
@@ -54,7 +57,7 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
 
   private drag(event: MouseEvent, id: string) {
     const element = document.getElementById(id) as unknown as SVGGraphicsElement;
-    const cursor = viewport.getZoomTranslatedCoords(event.offsetX, event.offsetY);
+    const cursor = this.viewport.getTranslatedCoords(event.offsetX, event.offsetY);
 
     const bbox = element.getBBox();
     const w = bbox.width;

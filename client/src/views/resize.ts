@@ -1,7 +1,7 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Transform } from "../models/transform";
-import { viewport } from "../whiteboard/viewport";
+import type Viewport from "../models/viewport";
 
 interface ResizeViewMap {
   token_transform: Transform;
@@ -15,6 +15,7 @@ class ResizeViewListeners extends Listener<ResizeViewMap> {
 
 class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private grid: Grid;
+  private viewport: Viewport;
 
   private layer: SVGSVGElement;
   private box: SVGRectElement;
@@ -25,10 +26,11 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private direction: string | null;
   private selected: string[];
 
-  constructor(grid: Grid) {
+  constructor(grid: Grid, viewport: Viewport) {
     super(new ResizeViewListeners());
 
     this.grid = grid;
+    this.viewport = viewport;
 
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
     this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
@@ -98,7 +100,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     const element = this.elements()[0];
 
-    this.cursorStartPosition = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+    this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
     this.elementStartSize = element.getBBox();
     document.onmousemove = (evt) => this.resize(evt);
     document.onmouseup = () => this.stop();
@@ -122,7 +124,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     let width = box.width;
     let height = box.height;
 
-    const current = viewport.getZoomTranslatedCoords(e.offsetX, e.offsetY);
+    const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
 
     const dx = current.x - this.cursorStartPosition.x;
     const dy = current.y - this.cursorStartPosition.y;
