@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import type { Token } from "../models/token";
 import { server } from "../server";
 import View from "./view";
@@ -7,7 +7,7 @@ interface TokenViewMap {
   request_remove: null;
 }
 
-class TokenViewListener extends Listeners<TokenViewMap> {
+class TokenViewListener extends Listener<TokenViewMap> {
   protected override keys(): (keyof TokenViewMap)[] {
     return ["request_remove"];
   }

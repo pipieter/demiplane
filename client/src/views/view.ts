@@ -1,6 +1,6 @@
-import type Listeners from "../listener";
+import type Listener from "../listener";
 
-abstract class View<L extends Listeners<T>, T> {
+abstract class View<L extends Listener<T>, T> {
   protected listeners: L;
 
   constructor(listeners: L) {

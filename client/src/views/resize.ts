@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import type Grid from "../models/grid";
 import type { Transform } from "../models/transform";
 import { viewport } from "../whiteboard/viewport";
@@ -8,7 +8,7 @@ interface ResizeViewMap {
   token_transform: Transform;
 }
 
-class ResizeViewListeners extends Listeners<ResizeViewMap> {
+class ResizeViewListeners extends Listener<ResizeViewMap> {
   protected override keys(): (keyof ResizeViewMap)[] {
     return ["token_transform"];
   }

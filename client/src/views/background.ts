@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import { server } from "../server";
 import View from "./view";
 
@@ -6,7 +6,7 @@ interface BackgroundViewMap {
   background_upload: File;
 }
 
-class BackgroundViewListeners extends Listeners<BackgroundViewMap> {
+class BackgroundViewListeners extends Listener<BackgroundViewMap> {
   protected override keys(): (keyof BackgroundViewMap)[] {
     return ["background_upload"];
   }

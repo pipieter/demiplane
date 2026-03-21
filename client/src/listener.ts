@@ -1,4 +1,4 @@
-abstract class Listeners<T> {
+abstract class Listener<T> {
   private map: Map<keyof T, any[]>;
 
   constructor() {
@@ -23,4 +23,6 @@ abstract class Listeners<T> {
   }
 }
 
-export default Listeners;
+
+
+export default Listener;

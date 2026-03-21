@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import type Grid from "../models/grid";
 import { viewport } from "../whiteboard/viewport";
 import View from "./view";
@@ -9,7 +9,7 @@ interface TokenDrawViewMap {
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
-class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
+class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
   protected override keys(): (keyof TokenDrawViewMap)[] {
     return ["circle_create", "rectangle_create", "freedraw_create"];
   }

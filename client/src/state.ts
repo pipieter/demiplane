@@ -1,4 +1,4 @@
-import Listeners from "./listener";
+import Listener from "./listener";
 import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
@@ -13,7 +13,7 @@ interface StateListenerMap {
   token_delete: string[];
 }
 
-class StateListeners extends Listeners<StateListenerMap> {
+class StateListeners extends Listener<StateListenerMap> {
   protected override keys(): (keyof StateListenerMap)[] {
     return ["background_change", "grid_change", "token_create", "token_select", "token_transform", "token_delete"];
   }

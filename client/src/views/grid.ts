@@ -1,11 +1,11 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import View from "./view";
 
 interface GridViewMap {
   grid_change: { size: number; offsetX: number; offsetY: number };
 }
 
-class GridViewListeners extends Listeners<GridViewMap> {
+class GridViewListeners extends Listener<GridViewMap> {
   protected override keys(): (keyof GridViewMap)[] {
     return ["grid_change"];
   }

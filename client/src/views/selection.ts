@@ -1,11 +1,11 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import View from "./view";
 
 interface SelectionViewMap {
   clear_selection: null;
 }
 
-class SelectionViewListeners extends Listeners<SelectionViewMap> {
+class SelectionViewListeners extends Listener<SelectionViewMap> {
   protected keys(): (keyof SelectionViewMap)[] {
     return ["clear_selection"];
   }

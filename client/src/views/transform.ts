@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import Listener from "../listener";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
@@ -11,7 +11,7 @@ interface TransformViewMap {
   token_transform: Transform;
 }
 
-class TransformViewListeners extends Listeners<TransformViewMap> {
+class TransformViewListeners extends Listener<TransformViewMap> {
   protected override keys(): (keyof TransformViewMap)[] {
     return ["tokens_select", "token_transform"];
   }
