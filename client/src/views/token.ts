@@ -1,14 +1,24 @@
+import Listeners from "../listener";
 import type { Token } from "../models/token";
 import { server } from "../server";
 import { transform } from "../whiteboard/transform/transform";
 
+interface TokenViewListenerMap {
+  select_tokens: string[];
+  create_token: Token;
+}
+
+class TokenViewListener extends Listeners<TokenViewListenerMap> {
+  protected override keys: (keyof TokenViewListenerMap)[] = ["select_tokens", "create_token"];
+}
+
 class TokenView {
   private layer: SVGSVGElement;
-  private selectListeners: ((ids: string[]) => void)[];
+  private listeners: TokenViewListener;
 
   constructor() {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
-    this.selectListeners = [];
+    this.listeners = new TokenViewListener();
   }
 
   public create(token: Token) {
@@ -55,11 +65,11 @@ class TokenView {
   }
 
   private select(id: string) {
-    this.selectListeners.forEach((listener) => listener([id]));
+    this.listeners.emit("select_tokens", [id]);
   }
 
-  public listen(_type: "select_tokens", listener: (ids: string[]) => void) {
-    this.selectListeners.push(listener);
+  public listen<K extends keyof TokenViewListenerMap>(type: K, listener: (value: TokenViewListenerMap[K]) => void) {
+    this.listeners.listen(type, listener);
   }
 }
 
