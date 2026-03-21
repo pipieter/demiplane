@@ -1,4 +1,3 @@
-import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { util } from "./util";
 import { server } from "./server";
@@ -18,8 +17,8 @@ import TokenDrawView from "./views/tokendraw";
 import TokenDrawController from "./controllers/tokendraw";
 import GridView from "./views/grid";
 import GridController from "./controllers/grid";
-
-header.initialize();
+import HeaderView from "./views/header";
+import HeaderController from "./controllers/header";
 
 const store = new Store(server.BackendURL, server.socket);
 const state = new State();
@@ -34,6 +33,7 @@ const selectionView = new SelectionView();
 const resizeView = new ResizeView(grid, viewport);
 const tokenDrawView = new TokenDrawView(grid, viewport);
 const gridView = new GridView();
+const headerView = new HeaderView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
@@ -42,6 +42,7 @@ new SelectionController(store, state, selectionView);
 new ResizeController(store, state, resizeView);
 new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
+new HeaderController(store, state, headerView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
