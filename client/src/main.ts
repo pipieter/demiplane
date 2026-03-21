@@ -103,7 +103,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await server.uploadImageToBackend(base64);
+  const href = await store.uploadImage(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
@@ -113,7 +113,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const w = grid.size;
   const h = grid.size;
 
-  server.send({
+  store.send({
     type: "request_create",
     create: {
       type: "image",
