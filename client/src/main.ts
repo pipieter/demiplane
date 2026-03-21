@@ -72,9 +72,7 @@ server.socket.onmessage = function (event) {
     case "sync":
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
-      for (const token of data.tokens) {
-        state.createToken(token);
-      }
+      state.createTokens(data.tokens);
       break;
 
     default:

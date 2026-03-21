@@ -44,6 +44,12 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.emit("token_create", token);
   }
 
+  public createTokens(tokens: Token[]) {
+    for (const token of tokens) {
+      this.createToken(token);
+    }
+  }
+
   public removeTokens(ids: string | string[]) {
     if (typeof ids === "string") ids = [ids];
 
