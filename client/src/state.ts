@@ -13,7 +13,7 @@ interface StateListenerMap {
 
 class StateListeners extends Listeners<StateListenerMap> {
   protected override keys(): (keyof StateListenerMap)[] {
-    return ["background_change", "token_create", "token_select", "token_transform"];
+    return ["background_change", "token_create", "token_select", "token_transform", "token_delete"];
   }
 }
 
@@ -48,9 +48,12 @@ class State {
   public removeTokens(ids: string | string[]) {
     if (typeof ids === "string") ids = [ids];
 
+    const previousSelected = [...this.selected];
+
     this.tokens = this.tokens.filter((token) => !ids.includes(token.id));
     this.selected = this.selected.filter((id) => !ids.includes(id));
     this.listeners.emit("token_delete", ids);
+    this.listeners.emit("token_select", [previousSelected, this.selected]);
   }
 
   public transformToken(transform: Transform) {
@@ -66,7 +69,7 @@ class State {
 
   public selectTokens(ids: string[]) {
     // Temporary console.log until resizebox is re-implemented
-    console.log(`Selected [${ids}]`)
+    console.log(`Selected [${ids}]`);
     const previous = [...this.selected];
     this.selected = [...ids];
     this.listeners.emit("token_select", [previous, ids]);
