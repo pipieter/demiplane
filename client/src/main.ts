@@ -3,41 +3,46 @@ import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
-import { Server, server } from "./server";
+import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
-import tokens from "./whiteboard/tokens";
 import selection from "./whiteboard/selection";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
+import Store from "./store";
+import TokenView from "./views/token";
+import TokenController from "./controllers/token";
+import TransformController from "./controllers/transform";
+import TransformView from "./views/transform";
 
-tokens.initialize();
 selection.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
 
-const server_ = new Server(server.BackendURL, server.socket);
+const store = new Store(server.BackendURL, server.socket);
 const state = new State();
 
+const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
+const transformView = new TransformView();
 
-new BackgroundController(server_, state, backgroundView);
+new BackgroundController(store, state, backgroundView);
+new TokenController(store, state, tokenView);
+new TransformController(store, state, transformView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
     case "create":
-      tokens.create(data.create);
+      state.createToken(data.create);
       break;
 
     case "delete":
-      for (const id of data.delete) {
-        tokens.remove(id);
-      }
+      state.removeTokens(data.delete);
       break;
 
     case "grid":
@@ -50,14 +55,14 @@ server.socket.onmessage = function (event) {
     }
 
     case "transform":
-      tokens.transform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
+      state.transformToken(data.transform);
       break;
 
     case "sync":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
-        tokens.create(token);
+        state.createToken(token);
       }
       break;
 

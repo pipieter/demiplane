@@ -1,4 +1,4 @@
-import type { Token } from "../token";
+import type { Token } from "../models/token";
 import { server } from "../server";
 import { transform } from "./transform/transform";
 

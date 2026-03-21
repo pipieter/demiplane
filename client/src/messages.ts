@@ -1,5 +1,6 @@
 import type { GridData } from "./whiteboard/grid";
-import type { Token } from "./token";
+import type { Token } from "./models/token";
+import type { Transform } from "./models/transform";
 
 /** Sync the current board state */
 export interface SyncResponseMessage {
@@ -40,25 +41,13 @@ export interface DeleteResponseMessage {
 /** Request to resize a token on the whiteboard */
 export interface TransformRequestMessage {
   type: "request_transform";
-  transform: {
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  };
+  transform: Transform;
 }
 
 /** Resize a token on the board */
 export interface TransformResponseMessage {
   type: "transform";
-  transform: {
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  };
+  transform: Transform;
 }
 
 /** Request the grid to be adjusted */

@@ -1,16 +1,16 @@
 import type Background from "../models/background";
-import type { Server } from "../server";
 import type State from "../state";
+import type Store from "../store";
 import { util } from "../util";
 import type BackgroundView from "../views/background";
 
 class BackgroundController {
-  private server: Server;
+  private store: Store;
   private state: State;
   private view: BackgroundView;
 
-  constructor(server: Server, state: State, view: BackgroundView) {
-    this.server = server;
+  constructor(store: Store, state: State, view: BackgroundView) {
+    this.store = store;
     this.state = state;
     this.view = view;
 
@@ -26,8 +26,8 @@ class BackgroundController {
     const base64 = await util.readBase64(file);
     if (!base64) throw `Could not read file data.`;
 
-    const href = await this.server.uploadImage(base64);
-    this.server.send({ type: "request_background", href });
+    const href = await this.store.uploadImage(base64);
+    this.store.send({ type: "request_background", href });
   }
 }
 
