@@ -29,7 +29,6 @@ class ResizeController {
   }
 
   private ontransform(transform: Transform) {
-    console.log(transform)
     this.store.send({
       type: "request_transform",
       transform,
