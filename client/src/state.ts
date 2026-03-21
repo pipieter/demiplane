@@ -3,6 +3,7 @@ import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
+import Viewport from "./models/viewport";
 
 interface StateListenerMap {
   background_change: Background;
@@ -24,6 +25,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private selected: string[];
   private background: Background;
   private grid: Grid;
+  private viewport: Viewport;
 
   constructor() {
     super(new StateListeners());
@@ -31,6 +33,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.tokens = [];
     this.selected = [];
     this.grid = new Grid();
+    this.viewport = new Viewport();
     this.background = new Background();
   }
 
@@ -93,6 +96,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.grid.offset.x = grid.offset.x;
     this.grid.offset.y = grid.offset.y;
     this.emit("grid_change", this.grid);
+  }
+
+  public getViewport(): Viewport {
+    return this.viewport;
   }
 }
 

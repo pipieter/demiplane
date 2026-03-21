@@ -1,6 +1,5 @@
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
-import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
 import { server } from "./server";
 import BackgroundView from "./views/background";
@@ -21,19 +20,19 @@ import GridView from "./views/grid";
 import GridController from "./controllers/grid";
 
 header.initialize();
-viewport.initialize();
 
 const store = new Store(server.BackendURL, server.socket);
 const state = new State();
 
 const grid = state.getGrid();
+const viewport = state.getViewport();
 
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
-const transformView = new TransformView(grid);
+const transformView = new TransformView(grid, viewport);
 const selectionView = new SelectionView();
-const resizeView = new ResizeView(grid);
-const tokenDrawView = new TokenDrawView(grid);
+const resizeView = new ResizeView(grid, viewport);
+const tokenDrawView = new TokenDrawView(grid, viewport);
 const gridView = new GridView();
 
 new BackgroundController(store, state, backgroundView);
