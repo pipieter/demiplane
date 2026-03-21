@@ -7,7 +7,6 @@ import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
-import tokens from "./whiteboard/tokens";
 import selection from "./whiteboard/selection";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
@@ -18,7 +17,6 @@ import TokenController from "./controllers/token";
 import TransformController from "./controllers/transform";
 import TransformView from "./views/transform";
 
-//tokens.initialize();
 selection.initialize();
 header.initialize();
 viewport.initialize();
@@ -44,9 +42,7 @@ server.socket.onmessage = function (event) {
       break;
 
     case "delete":
-      for (const id of data.delete) {
-        tokens.remove(id);
-      }
+      state.removeTokens(data.delete);
       break;
 
     case "grid":

@@ -12,7 +12,7 @@ interface TransformViewListenerMap {
 
 class TransformViewListeners extends Listeners<TransformViewListenerMap> {
   protected override keys(): (keyof TransformViewListenerMap)[] {
-    return ["tokens_select"];
+    return ["tokens_select", "token_transform"];
   }
 }
 
@@ -30,18 +30,22 @@ class TransformView {
   }
 
   public makeDraggable(token: Token) {
-    document.onmouseup = () => this.deselect;
-    document.onmousedown = (evt) => this.select(evt, token.id);
+    const element = document.getElementById(token.id) as unknown as SVGElement;
+
+    element.onmousedown = (evt) => this.select(evt, token.id);
   }
 
   private select(event: MouseEvent, id: string) {
     event.preventDefault();
 
     this.listeners.emit("tokens_select", [id]);
-    document.onmousedown = (evt) => this.drag(evt, id);
+    document.onmousemove = (evt) => this.drag(evt, id);
+    document.onmouseup = () => this.deselect();
   }
 
   private deselect() {
+    document.onmouseup = null;
+    document.onmousemove = null;
     this.listeners.emit("tokens_select", []);
   }
 
@@ -70,7 +74,10 @@ class TransformView {
     this.listeners.emit("token_transform", { id, x, y, w, h });
   }
 
-  public listen<K extends keyof TransformViewListenerMap>(type: K, listener: (value: TransformViewListenerMap[K]) => void) {
+  public listen<K extends keyof TransformViewListenerMap>(
+    type: K,
+    listener: (value: TransformViewListenerMap[K]) => void,
+  ) {
     this.listeners.listen(type, listener);
   }
 }

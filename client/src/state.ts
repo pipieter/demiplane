@@ -8,6 +8,7 @@ interface StateListenerMap {
   token_create: Token;
   token_select: [string[], string[]];
   token_transform: [Token, Transform];
+  token_delete: string[];
 }
 
 class StateListeners extends Listeners<StateListenerMap> {
@@ -44,6 +45,14 @@ class State {
     this.listeners.emit("token_create", token);
   }
 
+  public removeTokens(ids: string | string[]) {
+    if (typeof ids === "string") ids = [ids];
+
+    this.tokens = this.tokens.filter((token) => !ids.includes(token.id));
+    this.selected = this.selected.filter((id) => !ids.includes(id));
+    this.listeners.emit("token_delete", ids);
+  }
+
   public transformToken(transform: Transform) {
     const token = this.tokens.find((token) => token.id === transform.id);
     if (token) {
@@ -56,9 +65,15 @@ class State {
   }
 
   public selectTokens(ids: string[]) {
+    // Temporary console.log until resizebox is re-implemented
+    console.log(`Selected [${ids}]`)
     const previous = [...this.selected];
     this.selected = [...ids];
     this.listeners.emit("token_select", [previous, ids]);
+  }
+
+  public getSelected(): string[] {
+    return [...this.selected];
   }
 }
 

@@ -8,13 +8,14 @@ class TransformController {
   private state: State;
   private view: TransformView;
 
-  constructor(store: Store, state: State, view: TransformView) {
+  constructor(store: Store, state: State, transformView: TransformView) {
     this.store = store;
     this.state = state;
-    this.view = view;
+    this.view = transformView;
 
     this.view.listen("tokens_select", (ids) => this.select(ids));
     this.view.listen("token_transform", (transform) => this.ontransform(transform));
+    this.state.listen("token_create", (token) => this.view.makeDraggable(token));
   }
 
   private select(ids: string[]) {

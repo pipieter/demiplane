@@ -1,15 +1,15 @@
 import Listeners from "../listener";
 import type { Token } from "../models/token";
 import { server } from "../server";
-import { transform } from "../whiteboard/transform/transform";
 
 interface TokenViewListenerMap {
-  create_token: Token;
+  dom_create: Token;
+  request_remove: null;
 }
 
 class TokenViewListener extends Listeners<TokenViewListenerMap> {
   protected override keys(): (keyof TokenViewListenerMap)[] {
-    return ["create_token"];
+    return ["request_remove", "dom_create"];
   }
 }
 
@@ -20,6 +20,13 @@ class TokenView {
   constructor() {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
     this.listeners = new TokenViewListener();
+
+    window.addEventListener("keydown", (event) => {
+      const keys = ["Delete", "Backspace"];
+      if (keys.includes(event.key)) {
+        this.listeners.emit("request_remove", null);
+      }
+    });
   }
 
   public create(token: Token) {
@@ -32,9 +39,10 @@ class TokenView {
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
     element.setAttribute("id", token.id);
     element.setAttribute("tabindex", "-1"); // Makes object selectable
-    transform.makeDraggable(element);
     this.layer.appendChild(element);
     this.draw(element, token);
+
+    this.listeners.emit("dom_create", token);
   }
 
   public redraw(token: Token) {
@@ -45,6 +53,12 @@ class TokenView {
     }
 
     this.draw(element, token);
+  }
+
+  public remove(ids: string[]) {
+    for (const id of ids) {
+      document.getElementById(id)?.remove();
+    }
   }
 
   private draw(element: SVGElement, token: Token) {
