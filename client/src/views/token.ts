@@ -9,7 +9,9 @@ interface TokenViewListenerMap {
 }
 
 class TokenViewListener extends Listeners<TokenViewListenerMap> {
-  protected override keys: (keyof TokenViewListenerMap)[] = ["select_tokens", "create_token"];
+  protected override keys(): (keyof TokenViewListenerMap)[] {
+    return ["select_tokens", "create_token"];
+  }
 }
 
 class TokenView {

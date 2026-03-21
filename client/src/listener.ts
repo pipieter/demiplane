@@ -1,13 +1,14 @@
 abstract class Listeners<T> {
-  protected readonly keys: (keyof T)[] = [];
   private map: Map<keyof T, any[]>;
 
   constructor() {
     this.map = new Map();
-    for (const key of this.keys) {
+    for (const key of this.keys()) {
       this.map.set(key, []);
     }
   }
+
+  protected abstract keys(): (keyof T)[];
 
   private listeners<K extends keyof T>(type: K): ((value: T[K]) => void)[] {
     return this.map.get(type) ?? [];

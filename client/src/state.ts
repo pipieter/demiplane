@@ -9,7 +9,9 @@ interface StateListenerMap {
 }
 
 class StateListeners extends Listeners<StateListenerMap> {
-  protected override keys: (keyof StateListenerMap)[] = ["background_change", "token_create", "token_select"];
+  protected override keys(): (keyof StateListenerMap)[] {
+    return ["background_change", "token_create", "token_select"];
+  }
 }
 
 class State {
