@@ -26,7 +26,7 @@ class TransformView {
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
     this.listeners = new TransformViewListeners();
 
-    this.background.onclick = () => this.deselect();
+    this.background.onclick = () => this.drop();
   }
 
   public makeDraggable(token: Token) {
@@ -39,14 +39,14 @@ class TransformView {
     event.preventDefault();
 
     this.listeners.emit("tokens_select", [id]);
+
     document.onmousemove = (evt) => this.drag(evt, id);
-    document.onmouseup = () => this.deselect();
+    document.onmouseup = () => this.drop();
   }
 
-  private deselect() {
-    document.onmouseup = null;
+  private drop() {
     document.onmousemove = null;
-    this.listeners.emit("tokens_select", []);
+    document.onmouseup = null;
   }
 
   private drag(event: MouseEvent, id: string) {
