@@ -4,7 +4,6 @@ import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
 import { server } from "./server";
-import drawFree from "./whiteboard/drawing/free";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
