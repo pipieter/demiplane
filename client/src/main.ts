@@ -79,7 +79,6 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 
 function getRandomPosition(): { x: number; y: number } {
@@ -88,8 +87,6 @@ function getRandomPosition(): { x: number; y: number } {
     y: Math.floor(Math.random() * 600),
   };
 }
-
-beginDrawingButton.onclick = drawFree.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
   // @ts-expect-error Files should be a valid field

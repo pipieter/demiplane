@@ -5,28 +5,31 @@ import { viewport } from "../whiteboard/viewport";
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number };
   rectangle_create: { x: number; y: number; w: number; h: number };
-  free_draw_create: { base64: string; x: number; y: number; w: number; h: number };
+  freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
 class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
   protected override keys(): (keyof TokenDrawViewMap)[] {
-    return ["circle_create", "rectangle_create", "free_draw_create"];
+    return ["circle_create", "rectangle_create", "freedraw_create"];
   }
 }
 
-type TokenDrawType = "circle" | "rectangle";
+type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
 class TokenDrawView {
   private readonly layer: SVGSVGElement;
   private readonly circle: SVGCircleElement;
   private readonly rectangle: SVGRectElement;
+  private readonly freedraw: SVGPathElement;
   private readonly cursor: SVGCircleElement;
 
   private readonly circleButton: HTMLButtonElement;
   private readonly rectangleButton: HTMLButtonElement;
+  private readonly freedrawButton: HTMLButtonElement;
 
   private type: TokenDrawType | null;
   private mouseDown: boolean;
+  private freedrawPoints: [number, number][];
   private readonly start: { x: number; y: number };
   private readonly current: { x: number; y: number };
 
@@ -37,19 +40,23 @@ class TokenDrawView {
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
     this.circle = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
     this.rectangle = document.getElementById("whiteboard-drawing-rectangle") as unknown as SVGRectElement;
+    this.freedraw = document.getElementById("whiteboard-drawing-free") as unknown as SVGPathElement;
 
     this.circleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
+    this.freedrawButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 
     this.type = null;
     this.mouseDown = false;
     this.start = { x: 0, y: 0 };
     this.current = { x: 0, y: 0 };
+    this.freedrawPoints = [];
 
     this.listeners = new TokenDrawViewListeners();
 
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
+    this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
   }
 
   private begin(type: TokenDrawType) {
@@ -73,12 +80,19 @@ class TokenDrawView {
         this.circle.setAttribute("rx", "0");
         this.circle.setAttribute("ry", "0");
         break;
+
       case "rectangle":
         this.rectangle.style.display = "none";
         this.rectangle.setAttribute("x", "0");
         this.rectangle.setAttribute("y", "0");
         this.rectangle.setAttribute("width", "0");
         this.rectangle.setAttribute("height", "0");
+        break;
+
+      case "freedraw":
+        this.freedraw.style.display = "none";
+        this.freedrawPoints = [];
+        this.updateFreedrawLine();
         break;
     }
   }
@@ -107,6 +121,12 @@ class TokenDrawView {
 
         case "rectangle":
           this.rectangle.style.display = "";
+          break;
+
+        case "freedraw":
+          this.freedraw.style.display = "";
+          this.freedrawPoints.push([x, y]);
+          this.updateFreedrawLine();
           break;
       }
       return;
@@ -144,6 +164,13 @@ class TokenDrawView {
         this.rectangle.setAttribute("y", y.toString());
         this.rectangle.setAttribute("width", w.toString());
         this.rectangle.setAttribute("height", h.toString());
+        break;
+      }
+
+      case "freedraw": {
+        this.freedrawPoints.push([x, y]);
+        this.updateFreedrawLine();
+        break;
       }
     }
   }
@@ -165,6 +192,12 @@ class TokenDrawView {
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
         this.listeners.emit("rectangle_create", { x, y, w, h });
+        break;
+      }
+
+      case "freedraw": {
+        const rasterized = this.rasterizeFreedraw();
+        this.listeners.emit("freedraw_create", rasterized);
         break;
       }
     }
@@ -202,6 +235,59 @@ class TokenDrawView {
     this.layer.onmousemove = null;
     document.onkeydown = null;
     viewport.enable();
+  }
+
+  private updateFreedrawLine() {
+    if (!this.freedrawPoints) {
+      this.freedraw.removeAttribute("d");
+      return;
+    }
+
+    const combined = "M " + this.freedrawPoints.map(([x, y]) => `${x} ${y}`).join(" L ");
+    this.freedraw.setAttribute("d", combined);
+  }
+
+  private rasterizeFreedraw() {
+    const bbox = this.freedraw.getBBox();
+    const x = bbox.x;
+    const y = bbox.y;
+    const width = bbox.width;
+    const height = bbox.height;
+    const lineWidth = 10;
+
+    const canvas = document.createElement("canvas");
+
+    // A small addition is required to ensure that the line doesn't get cut off at the borders
+    canvas.width = width + 2 * lineWidth;
+    canvas.height = height + 2 * lineWidth;
+
+    const ctx = canvas.getContext("2d")!;
+    ctx.translate(-x + lineWidth, -y + lineWidth);
+    ctx.lineWidth = lineWidth;
+
+    if (this.freedrawPoints.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(this.freedrawPoints[0][0], this.freedrawPoints[0][1]);
+      for (let i = 1; i < this.freedrawPoints.length; i++) {
+        ctx.lineTo(this.freedrawPoints[i][0], this.freedrawPoints[i][1]);
+      }
+      ctx.stroke();
+    }
+
+    const base64 = canvas.toDataURL();
+    // Because the image is slightly larger due to the line padding, a small shift is required
+    const targetX = x - lineWidth;
+    const targetY = y - lineWidth;
+    const targetWidth = width + 2 * lineWidth;
+    const targetHeight = height + 2 * lineWidth;
+
+    return {
+      base64,
+      x: targetX,
+      y: targetY,
+      w: targetWidth,
+      h: targetHeight,
+    };
   }
 
   public listen<K extends keyof TokenDrawViewMap>(type: K, listener: (value: TokenDrawViewMap[K]) => void) {
