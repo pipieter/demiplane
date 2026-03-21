@@ -4,13 +4,12 @@ import { server } from "../server";
 import { transform } from "../whiteboard/transform/transform";
 
 interface TokenViewListenerMap {
-  select_tokens: string[];
   create_token: Token;
 }
 
 class TokenViewListener extends Listeners<TokenViewListenerMap> {
   protected override keys(): (keyof TokenViewListenerMap)[] {
-    return ["select_tokens", "create_token"];
+    return ["create_token"];
   }
 }
 
@@ -33,9 +32,18 @@ class TokenView {
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
     element.setAttribute("id", token.id);
     element.setAttribute("tabindex", "-1"); // Makes object selectable
-    element.onclick = () => this.select(token.id);
     transform.makeDraggable(element);
     this.layer.appendChild(element);
+    this.draw(element, token);
+  }
+
+  public redraw(token: Token) {
+    const element = document.getElementById(token.id) as unknown as SVGElement | null;
+
+    if (!element) {
+      throw `Cannot redraw token with id ${token.id} because it does not exist!`;
+    }
+
     this.draw(element, token);
   }
 
@@ -64,10 +72,6 @@ class TokenView {
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
     }
-  }
-
-  private select(id: string) {
-    this.listeners.emit("select_tokens", [id]);
   }
 
   public listen<K extends keyof TokenViewListenerMap>(type: K, listener: (value: TokenViewListenerMap[K]) => void) {

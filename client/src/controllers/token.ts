@@ -14,10 +14,15 @@ class TokenController {
     this.view = view;
 
     this.state.listen("token_create", (token) => this.create(token));
+    this.state.listen("token_transform", ([token, _]) => this.redraw(token));
   }
 
   public create(token: Token) {
     this.view.create(token);
+  }
+
+  public redraw(token: Token) {
+    this.view.redraw(token);
   }
 }
 

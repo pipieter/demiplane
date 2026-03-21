@@ -15,7 +15,8 @@ import State from "./state";
 import Store from "./store";
 import TokenView from "./views/token";
 import TokenController from "./controllers/token";
-import SelectionController from "./controllers/selection";
+import TransformController from "./controllers/transform";
+import TransformView from "./views/transform";
 
 //tokens.initialize();
 selection.initialize();
@@ -28,10 +29,11 @@ const state = new State();
 
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
+const transformView = new TransformView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
-new SelectionController(store, state, tokenView);
+new TransformController(store, state, transformView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -57,14 +59,14 @@ server.socket.onmessage = function (event) {
     }
 
     case "transform":
-      tokens.transform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
+      state.transformToken(data.transform);
       break;
 
     case "sync":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
-        tokens.create(token);
+        state.createToken(token);
       }
       break;
 
