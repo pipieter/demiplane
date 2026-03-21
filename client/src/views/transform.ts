@@ -1,34 +1,33 @@
-import Listeners from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import { util } from "../util";
 import { viewport } from "../whiteboard/viewport";
 
-interface TransformViewListenerMap {
+interface TransformViewMap {
   tokens_select: string[];
   token_transform: Transform;
 }
 
-class TransformViewListeners extends Listeners<TransformViewListenerMap> {
-  protected override keys(): (keyof TransformViewListenerMap)[] {
+class TransformViewListeners extends Listener<TransformViewMap> {
+  protected override keys(): (keyof TransformViewMap)[] {
     return ["tokens_select", "token_transform"];
   }
 }
 
-class TransformView {
+class TransformView extends ListenerContainer<TransformViewListeners, TransformViewMap> {
   private grid: Grid;
 
   private container: HTMLDivElement;
   private background: SVGSVGElement;
-  private listeners: TransformViewListeners;
 
   constructor(grid: Grid) {
+    super(new TransformViewListeners());
     this.grid = grid;
 
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
-    this.listeners = new TransformViewListeners();
 
     this.background.onclick = () => this.drop();
   }
@@ -42,7 +41,7 @@ class TransformView {
   private select(event: MouseEvent, id: string) {
     event.preventDefault();
 
-    this.listeners.emit("tokens_select", [id]);
+    this.emit("tokens_select", [id]);
 
     document.onmousemove = (evt) => this.drag(evt, id);
     document.onmouseup = () => this.drop();
@@ -75,14 +74,7 @@ class TransformView {
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.listeners.emit("token_transform", { id, x, y, w, h });
-  }
-
-  public listen<K extends keyof TransformViewListenerMap>(
-    type: K,
-    listener: (value: TransformViewListenerMap[K]) => void,
-  ) {
-    this.listeners.listen(type, listener);
+    this.emit("token_transform", { id, x, y, w, h });
   }
 }
 

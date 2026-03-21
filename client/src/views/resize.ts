@@ -1,19 +1,19 @@
-import Listeners from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Transform } from "../models/transform";
 import { viewport } from "../whiteboard/viewport";
 
-interface ResizeViewListenerMap {
+interface ResizeViewMap {
   token_transform: Transform;
 }
 
-class ResizeViewListeners extends Listeners<ResizeViewListenerMap> {
-  protected override keys(): (keyof ResizeViewListenerMap)[] {
+class ResizeViewListeners extends Listener<ResizeViewMap> {
+  protected override keys(): (keyof ResizeViewMap)[] {
     return ["token_transform"];
   }
 }
 
-class ResizeView {
+class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private grid: Grid;
 
   private layer: SVGSVGElement;
@@ -25,9 +25,9 @@ class ResizeView {
   private direction: string | null;
   private selected: string[];
 
-  private listeners: ResizeViewListeners;
-
   constructor(grid: Grid) {
+    super(new ResizeViewListeners());
+
     this.grid = grid;
 
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
@@ -38,8 +38,6 @@ class ResizeView {
     this.elementStartSize = new DOMRect(0, 0, 0, 0);
     this.direction = null;
     this.selected = [];
-
-    this.listeners = new ResizeViewListeners();
 
     this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.start(evt)));
   }
@@ -209,17 +207,15 @@ class ResizeView {
       height = minSize;
     }
 
-    this.listeners.emit("token_transform", {
-      id: elements[0].getAttribute("id")!,
+    const id = elements[0].getAttribute("id")!;
+
+    this.emit("token_transform", {
+      id,
       x,
       y,
       w: width,
       h: height,
     });
-  }
-
-  public listen<K extends keyof ResizeViewListenerMap>(type: K, listener: (value: ResizeViewListenerMap[K]) => void) {
-    this.listeners.listen(type, listener);
   }
 }
 

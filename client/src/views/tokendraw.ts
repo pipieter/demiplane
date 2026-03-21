@@ -1,4 +1,4 @@
-import Listeners from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import { viewport } from "../whiteboard/viewport";
 
@@ -8,7 +8,7 @@ interface TokenDrawViewMap {
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
-class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
+class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
   protected override keys(): (keyof TokenDrawViewMap)[] {
     return ["circle_create", "rectangle_create", "freedraw_create"];
   }
@@ -16,7 +16,7 @@ class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
 
 type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
-class TokenDrawView {
+class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawViewMap> {
   private grid: Grid;
 
   private readonly layer: SVGSVGElement;
@@ -35,9 +35,9 @@ class TokenDrawView {
   private readonly start: { x: number; y: number };
   private readonly current: { x: number; y: number };
 
-  private listeners: TokenDrawViewListeners;
-
   constructor(grid: Grid) {
+    super(new TokenDrawViewListeners());
+
     this.grid = grid;
 
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
@@ -55,8 +55,6 @@ class TokenDrawView {
     this.start = { x: 0, y: 0 };
     this.current = { x: 0, y: 0 };
     this.freedrawPoints = [];
-
-    this.listeners = new TokenDrawViewListeners();
 
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
@@ -186,7 +184,7 @@ class TokenDrawView {
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.listeners.emit("circle_create", { x, y, w, h });
+        this.emit("circle_create", { x, y, w, h });
         break;
       }
 
@@ -195,13 +193,13 @@ class TokenDrawView {
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.listeners.emit("rectangle_create", { x, y, w, h });
+        this.emit("rectangle_create", { x, y, w, h });
         break;
       }
 
       case "freedraw": {
         const rasterized = this.rasterizeFreedraw();
-        this.listeners.emit("freedraw_create", rasterized);
+        this.emit("freedraw_create", rasterized);
         break;
       }
     }
@@ -293,10 +291,6 @@ class TokenDrawView {
       w: targetWidth,
       h: targetHeight,
     };
-  }
-
-  public listen<K extends keyof TokenDrawViewMap>(type: K, listener: (value: TokenDrawViewMap[K]) => void) {
-    this.listeners.listen(type, listener);
   }
 }
 

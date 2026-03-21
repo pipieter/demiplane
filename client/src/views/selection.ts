@@ -1,23 +1,22 @@
-import Listeners from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 
-interface SelectionViewListenersMap {
+interface SelectionViewMap {
   clear_selection: null;
 }
 
-class SelectionViewListeners extends Listeners<SelectionViewListenersMap> {
-  protected keys(): (keyof SelectionViewListenersMap)[] {
+class SelectionViewListeners extends Listener<SelectionViewMap> {
+  protected keys(): (keyof SelectionViewMap)[] {
     return ["clear_selection"];
   }
 }
 
-class SelectionView {
+class SelectionView extends ListenerContainer<SelectionViewListeners, SelectionViewMap> {
   private background: SVGSVGElement;
-  private listeners: SelectionViewListeners;
 
   constructor() {
-    this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
-    this.listeners = new SelectionViewListeners();
+    super(new SelectionViewListeners());
 
+    this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
     this.background.onclick = () => this.clear();
   }
 
@@ -32,14 +31,7 @@ class SelectionView {
   }
 
   public clear() {
-    this.listeners.emit("clear_selection", null);
-  }
-
-  public listen<K extends keyof SelectionViewListenersMap>(
-    type: K,
-    listener: (value: SelectionViewListenersMap[K]) => void,
-  ) {
-    this.listeners.listen(type, listener);
+    this.emit("clear_selection", null);
   }
 }
 
