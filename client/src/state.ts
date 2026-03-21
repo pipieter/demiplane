@@ -4,6 +4,7 @@ import type { Token } from "./models/token";
 interface StateCallbackKeyMap {
   background_change: Background;
   token_create: Token;
+  token_select: Token[];
 }
 
 class Listeners {
@@ -13,6 +14,7 @@ class Listeners {
     this.map = new Map();
     this.map.set("background_change", []);
     this.map.set("token_create", []);
+    this.map.set("token_select", []);
   }
 
   private listeners<K extends keyof StateCallbackKeyMap>(type: K): ((value: StateCallbackKeyMap[K]) => void)[] {
@@ -30,12 +32,14 @@ class Listeners {
 
 class State {
   private tokens: Token[];
+  private selected: Token[];
   private background: Background;
 
   private listeners: Listeners;
 
   constructor() {
     this.tokens = [];
+    this.selected = [];
     this.background = new Background();
     this.listeners = new Listeners();
   }
@@ -52,6 +56,11 @@ class State {
   public createToken(token: Token) {
     this.tokens.push(token);
     this.listeners.emit("token_create", token);
+  }
+
+  public selectTokens(ids: string[]) {
+    this.selected = this.tokens.filter((token) => ids.includes(token.id));
+    this.listeners.emit("token_select", this.selected);
   }
 }
 

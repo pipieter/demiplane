@@ -4,9 +4,11 @@ import { transform } from "../whiteboard/transform/transform";
 
 class TokenView {
   private layer: SVGSVGElement;
+  private selectListeners: ((ids: string[]) => void)[];
 
   constructor() {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
+    this.selectListeners = [];
   }
 
   public create(token: Token) {
@@ -19,6 +21,7 @@ class TokenView {
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
     element.setAttribute("id", token.id);
     element.setAttribute("tabindex", "-1"); // Makes object selectable
+    element.onclick = () => this.select(token.id);
     transform.makeDraggable(element);
     this.layer.appendChild(element);
     this.draw(element, token);
@@ -49,6 +52,14 @@ class TokenView {
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
     }
+  }
+
+  private select(id: string) {
+    this.selectListeners.forEach((listener) => listener([id]));
+  }
+
+  public listen(_type: "select_tokens", listener: (ids: string[]) => void) {
+    this.selectListeners.push(listener);
   }
 }
 

@@ -15,6 +15,7 @@ import State from "./state";
 import Store from "./store";
 import TokenView from "./views/token";
 import TokenController from "./controllers/token";
+import SelectionController from "./controllers/selection";
 
 //tokens.initialize();
 selection.initialize();
@@ -30,6 +31,7 @@ const backgroundView = new BackgroundView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
+new SelectionController(store, state, tokenView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
