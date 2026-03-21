@@ -16,6 +16,8 @@ import TokenView from "./views/token";
 import TokenController from "./controllers/token";
 import TransformController from "./controllers/transform";
 import TransformView from "./views/transform";
+import SelectionView from "./views/selection";
+import SelectionController from "./controllers/selection";
 
 selection.initialize();
 header.initialize();
@@ -28,10 +30,12 @@ const state = new State();
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
 const transformView = new TransformView();
+const selectionView = new SelectionView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
 new TransformController(store, state, transformView);
+new SelectionController(store, state, selectionView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;

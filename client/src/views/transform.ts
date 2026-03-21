@@ -46,7 +46,6 @@ class TransformView {
   private deselect() {
     document.onmouseup = null;
     document.onmousemove = null;
-    this.listeners.emit("tokens_select", []);
   }
 
   private drag(event: MouseEvent, id: string) {
