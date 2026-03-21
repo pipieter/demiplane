@@ -19,6 +19,7 @@
         "Newtonsoft",
         "ontransform",
         "resizebox",
+        "tokendraw",
         "wwwroot"
     ],
     "ignoreWords": [],
