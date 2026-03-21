@@ -31,11 +31,11 @@ class BackgroundView {
     }
   }
 
-  public bindBackgroundUpload(callback: (file: File) => void) {
+  public listen(_type: "background_upload", listener: (file: File) => void) {
     this.input.addEventListener("change", async (evt: Event) => {
       // @ts-expect-error Files should be a valid field
       const file = evt.target?.files[0];
-      callback(file);
+      listener(file);
     });
   }
 }

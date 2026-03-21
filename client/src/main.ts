@@ -9,9 +9,9 @@ import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
 import tokens from "./whiteboard/tokens";
 import selection from "./whiteboard/selection";
-import Background from "./models/background";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
+import State from "./state";
 
 tokens.initialize();
 selection.initialize();
@@ -20,10 +20,11 @@ viewport.initialize();
 grid.initialize();
 
 const server_ = new Server(server.BackendURL, server.socket);
+const state = new State();
 
-const backgroundModel = new Background();
 const backgroundView = new BackgroundView();
-const backgroundController = new BackgroundController(server_, backgroundModel, backgroundView);
+
+new BackgroundController(server_, state, backgroundView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -44,7 +45,7 @@ server.socket.onmessage = function (event) {
       break;
 
     case "background": {
-      backgroundController.set(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.href, data.background.width, data.background.height);
       break;
     }
 
@@ -54,7 +55,7 @@ server.socket.onmessage = function (event) {
 
     case "sync":
       grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
-      backgroundController.set(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
         tokens.create(token);
       }
