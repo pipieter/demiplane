@@ -13,6 +13,7 @@ class TokenDrawController {
     this.view = view;
 
     this.view.listen("circle_create", ({ x, y, w, h }) => this.createCircle(x, y, w, h));
+    this.view.listen("rectangle_create", ({ x, y, w, h }) => this.createRectangle(x, y, w, h));
   }
 
   private createCircle(x: number, y: number, w: number, h: number) {
@@ -22,6 +23,23 @@ class TokenDrawController {
       type: "request_create",
       create: {
         type: "circle",
+        id: crypto.randomUUID(),
+        color,
+        x,
+        y,
+        w,
+        h,
+      },
+    });
+  }
+
+  private createRectangle(x: number, y: number, w: number, h: number) {
+    const color = "#00FF00"; //TODO
+
+    this.store.send({
+      type: "request_create",
+      create: {
+        type: "rectangle",
         id: crypto.randomUUID(),
         color,
         x,

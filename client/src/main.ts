@@ -5,7 +5,6 @@ import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
 import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
-import drawRectangle from "./whiteboard/drawing/rectangle";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
@@ -80,7 +79,6 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 
@@ -91,7 +89,6 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-beginRectangleButton.onclick = drawRectangle.begin;
 beginDrawingButton.onclick = drawFree.begin;
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {

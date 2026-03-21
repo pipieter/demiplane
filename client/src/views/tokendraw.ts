@@ -14,14 +14,16 @@ class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
   }
 }
 
-type TokenDrawType = "circle";
+type TokenDrawType = "circle" | "rectangle";
 
 class TokenDrawView {
   private readonly layer: SVGSVGElement;
   private readonly circle: SVGCircleElement;
+  private readonly rectangle: SVGRectElement;
   private readonly cursor: SVGCircleElement;
 
   private readonly circleButton: HTMLButtonElement;
+  private readonly rectangleButton: HTMLButtonElement;
 
   private type: TokenDrawType | null;
   private mouseDown: boolean;
@@ -32,10 +34,12 @@ class TokenDrawView {
 
   constructor() {
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
-    this.circle = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
+    this.circle = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
+    this.rectangle = document.getElementById("whiteboard-drawing-rectangle") as unknown as SVGRectElement;
 
     this.circleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
+    this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
 
     this.type = null;
     this.mouseDown = false;
@@ -45,6 +49,7 @@ class TokenDrawView {
     this.listeners = new TokenDrawViewListeners();
 
     this.circleButton.addEventListener("click", () => this.begin("circle"));
+    this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
   }
 
   private begin(type: TokenDrawType) {
@@ -62,10 +67,18 @@ class TokenDrawView {
 
     switch (type) {
       case "circle":
+        this.circle.style.display = "none";
         this.circle.setAttribute("cx", "0");
         this.circle.setAttribute("cy", "0");
         this.circle.setAttribute("rx", "0");
         this.circle.setAttribute("ry", "0");
+        break;
+      case "rectangle":
+        this.rectangle.style.display = "none";
+        this.rectangle.setAttribute("x", "0");
+        this.rectangle.setAttribute("y", "0");
+        this.rectangle.setAttribute("width", "0");
+        this.rectangle.setAttribute("height", "0");
         break;
     }
   }
@@ -91,6 +104,10 @@ class TokenDrawView {
         case "circle":
           this.circle.style.display = "";
           break;
+
+        case "rectangle":
+          this.rectangle.style.display = "";
+          break;
       }
       return;
     }
@@ -106,7 +123,7 @@ class TokenDrawView {
     this.current.y = y;
 
     switch (this.type) {
-      case "circle":
+      case "circle": {
         const cx = (this.start.x + this.current.x) / 2;
         const cy = (this.start.y + this.current.y) / 2;
         const rx = Math.abs((this.start.x - this.current.x) / 2);
@@ -116,18 +133,40 @@ class TokenDrawView {
         this.circle.setAttribute("rx", rx.toString());
         this.circle.setAttribute("ry", ry.toString());
         break;
+      }
+
+      case "rectangle": {
+        const x = Math.min(this.start.x, this.current.x);
+        const y = Math.min(this.start.y, this.current.y);
+        const w = Math.abs(this.start.x - this.current.x);
+        const h = Math.abs(this.start.y - this.current.y);
+        this.rectangle.setAttribute("x", x.toString());
+        this.rectangle.setAttribute("y", y.toString());
+        this.rectangle.setAttribute("width", w.toString());
+        this.rectangle.setAttribute("height", h.toString());
+      }
     }
   }
 
   private onmouseup() {
     switch (this.type) {
-      case "circle":
+      case "circle": {
         const x = Math.min(this.start.x, this.current.x);
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
         this.listeners.emit("circle_create", { x, y, w, h });
         break;
+      }
+
+      case "rectangle": {
+        const x = Math.min(this.start.x, this.current.x);
+        const y = Math.min(this.start.y, this.current.y);
+        const w = Math.abs(this.start.x - this.current.x);
+        const h = Math.abs(this.start.y - this.current.y);
+        this.listeners.emit("rectangle_create", { x, y, w, h });
+        break;
+      }
     }
 
     this.cancel();
@@ -156,6 +195,7 @@ class TokenDrawView {
     this.mouseDown = false;
     this.cursor.style.display = "none";
     this.circle.style.display = "none";
+    this.rectangle.style.display = "none";
     this.layer.style.display = "none";
     this.layer.onmousedown = null;
     this.layer.onmouseup = null;
