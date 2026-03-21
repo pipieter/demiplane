@@ -1,10 +1,12 @@
 import Listeners from "./listener";
 import Background from "./models/background";
+import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
 
 interface StateListenerMap {
   background_change: Background;
+  grid_change: GridData;
   token_create: Token;
   token_select: [string[], string[]];
   token_transform: [Token, Transform];
@@ -13,7 +15,7 @@ interface StateListenerMap {
 
 class StateListeners extends Listeners<StateListenerMap> {
   protected override keys(): (keyof StateListenerMap)[] {
-    return ["background_change", "token_create", "token_select", "token_transform", "token_delete"];
+    return ["background_change", "grid_change", "token_create", "token_select", "token_transform", "token_delete"];
   }
 }
 
@@ -21,12 +23,14 @@ class State {
   private tokens: Token[];
   private selected: string[];
   private background: Background;
+  private grid: Grid;
 
   private listeners: StateListeners;
 
   constructor() {
     this.tokens = [];
     this.selected = [];
+    this.grid = new Grid();
     this.background = new Background();
     this.listeners = new StateListeners();
   }
@@ -77,6 +81,17 @@ class State {
 
   public getSelected(): string[] {
     return [...this.selected];
+  }
+
+  public getGrid(): Grid {
+    return this.grid;
+  }
+
+  public setGrid(grid: GridData) {
+    this.grid.size = grid.size;
+    this.grid.offset.x = grid.offset.x;
+    this.grid.offset.y = grid.offset.y;
+    this.listeners.emit("grid_change", this.grid);
   }
 }
 

@@ -1,4 +1,3 @@
-import { grid } from "./whiteboard/grid";
 import { header } from "./header";
 import type { ResponseMessage } from "./messages";
 import { viewport } from "./whiteboard/viewport";
@@ -18,20 +17,24 @@ import ResizeView from "./views/resize";
 import ResizeController from "./controllers/resize";
 import TokenDrawView from "./views/tokendraw";
 import TokenDrawController from "./controllers/tokendraw";
+import GridView from "./views/grid";
+import GridController from "./controllers/grid";
 
 header.initialize();
 viewport.initialize();
-grid.initialize();
 
 const store = new Store(server.BackendURL, server.socket);
 const state = new State();
 
+const grid = state.getGrid();
+
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
-const transformView = new TransformView();
+const transformView = new TransformView(grid);
 const selectionView = new SelectionView();
-const resizeView = new ResizeView();
-const tokenDrawView = new TokenDrawView();
+const resizeView = new ResizeView(grid);
+const tokenDrawView = new TokenDrawView(grid);
+const gridView = new GridView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
@@ -39,6 +42,7 @@ new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
 new ResizeController(store, state, resizeView);
 new TokenDrawController(store, state, tokenDrawView);
+new GridController(store, state, gridView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -53,7 +57,7 @@ server.socket.onmessage = function (event) {
       break;
 
     case "grid":
-      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
+      state.setGrid(data.grid);
       break;
 
     case "background": {
@@ -66,7 +70,7 @@ server.socket.onmessage = function (event) {
       break;
 
     case "sync":
-      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
+      state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       for (const token of data.tokens) {
         state.createToken(token);
@@ -108,8 +112,8 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   }
 
   const { x, y } = getRandomPosition();
-  const w = grid.get().size;
-  const h = grid.get().size;
+  const w = grid.size;
+  const h = grid.size;
 
   server.send({
     type: "request_create",

@@ -1,5 +1,5 @@
 import Listeners from "../listener";
-import { grid } from "../whiteboard/grid";
+import type Grid from "../models/grid";
 import { viewport } from "../whiteboard/viewport";
 
 interface TokenDrawViewMap {
@@ -17,6 +17,8 @@ class TokenDrawViewListeners extends Listeners<TokenDrawViewMap> {
 type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
 class TokenDrawView {
+  private grid: Grid;
+
   private readonly layer: SVGSVGElement;
   private readonly circle: SVGCircleElement;
   private readonly rectangle: SVGRectElement;
@@ -35,7 +37,9 @@ class TokenDrawView {
 
   private listeners: TokenDrawViewListeners;
 
-  constructor() {
+  constructor(grid: Grid) {
+    this.grid = grid;
+
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
     this.circle = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
@@ -217,7 +221,7 @@ class TokenDrawView {
   private getCoordinates(evt: MouseEvent) {
     let { x, y } = viewport.getZoomTranslatedCoords(evt.offsetX, evt.offsetY);
     if (evt.shiftKey) {
-      const gridLocked = grid.getGridlockedCoords(x, y);
+      const gridLocked = this.grid.getLockedCoordinates(x, y);
       x = gridLocked.x;
       y = gridLocked.y;
     }

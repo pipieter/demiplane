@@ -1,4 +1,4 @@
-import type { GridData } from "./whiteboard/grid";
+import type { GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
 

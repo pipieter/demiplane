@@ -1,6 +1,6 @@
 import Listeners from "../listener";
+import type Grid from "../models/grid";
 import type { Transform } from "../models/transform";
-import { grid } from "../whiteboard/grid";
 import { viewport } from "../whiteboard/viewport";
 
 interface ResizeViewListenerMap {
@@ -14,6 +14,8 @@ class ResizeViewListeners extends Listeners<ResizeViewListenerMap> {
 }
 
 class ResizeView {
+  private grid: Grid;
+
   private layer: SVGSVGElement;
   private box: SVGRectElement;
   private handles: SVGRectElement[];
@@ -25,7 +27,9 @@ class ResizeView {
 
   private listeners: ResizeViewListeners;
 
-  constructor() {
+  constructor(grid: Grid) {
+    this.grid = grid;
+
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
     this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
     this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
@@ -167,28 +171,28 @@ class ResizeView {
         return Math.round((value - offset) / step) * step + offset;
       }
 
-      const stepX = getSnapStep(width, grid.get().size, minSize);
-      const stepY = getSnapStep(height, grid.get().size, minSize);
+      const stepX = getSnapStep(width, this.grid.size, minSize);
+      const stepY = getSnapStep(height, this.grid.size, minSize);
 
       if (this.direction.includes("r")) {
-        const snappedX = snapToStep(x + width, grid.get().offset.x, stepX);
+        const snappedX = snapToStep(x + width, this.grid.offset.x, stepX);
         width = snappedX - x;
       }
 
       if (this.direction.includes("l")) {
-        const snappedX = snapToStep(x, grid.get().offset.x, stepX);
+        const snappedX = snapToStep(x, this.grid.offset.x, stepX);
         const newX = snappedX;
         width = width + (x - newX);
         x = newX;
       }
 
       if (this.direction.includes("b")) {
-        const snappedY = snapToStep(y + height, grid.get().offset.y, stepY);
+        const snappedY = snapToStep(y + height, this.grid.offset.y, stepY);
         height = snappedY - y;
       }
 
       if (this.direction.includes("t")) {
-        const snappedY = snapToStep(y, grid.get().offset.y, stepY);
+        const snappedY = snapToStep(y, this.grid.offset.y, stepY);
         const newY = snappedY;
         height = height + (y - newY);
         y = newY;

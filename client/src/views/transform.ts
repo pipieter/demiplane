@@ -1,8 +1,8 @@
 import Listeners from "../listener";
+import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import { util } from "../util";
-import { grid } from "../whiteboard/grid";
 import { viewport } from "../whiteboard/viewport";
 
 interface TransformViewListenerMap {
@@ -17,11 +17,15 @@ class TransformViewListeners extends Listeners<TransformViewListenerMap> {
 }
 
 class TransformView {
+  private grid: Grid;
+
   private container: HTMLDivElement;
   private background: SVGSVGElement;
   private listeners: TransformViewListeners;
 
-  constructor() {
+  constructor(grid: Grid) {
+    this.grid = grid;
+
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
     this.listeners = new TransformViewListeners();
@@ -61,7 +65,7 @@ class TransformView {
     let y = cursor.y;
 
     if (event.shiftKey) {
-      const locked = grid.getGridlockedCoords(cursor.x, cursor.y);
+      const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
       x = locked.x;
       y = locked.y;
     }
