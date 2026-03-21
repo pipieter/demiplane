@@ -1,7 +1,6 @@
-import Listener from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import { viewport } from "../whiteboard/viewport";
-import View from "./view";
 
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number };
@@ -17,7 +16,7 @@ class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
 
 type TokenDrawType = "circle" | "rectangle" | "freedraw";
 
-class TokenDrawView extends View<TokenDrawViewListeners, TokenDrawViewMap> {
+class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawViewMap> {
   private grid: Grid;
 
   private readonly layer: SVGSVGElement;
@@ -56,8 +55,6 @@ class TokenDrawView extends View<TokenDrawViewListeners, TokenDrawViewMap> {
     this.start = { x: 0, y: 0 };
     this.current = { x: 0, y: 0 };
     this.freedrawPoints = [];
-
-    this.listeners = new TokenDrawViewListeners();
 
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
@@ -187,7 +184,7 @@ class TokenDrawView extends View<TokenDrawViewListeners, TokenDrawViewMap> {
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.listeners.emit("circle_create", { x, y, w, h });
+        this.emit("circle_create", { x, y, w, h });
         break;
       }
 
@@ -196,13 +193,13 @@ class TokenDrawView extends View<TokenDrawViewListeners, TokenDrawViewMap> {
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.listeners.emit("rectangle_create", { x, y, w, h });
+        this.emit("rectangle_create", { x, y, w, h });
         break;
       }
 
       case "freedraw": {
         const rasterized = this.rasterizeFreedraw();
-        this.listeners.emit("freedraw_create", rasterized);
+        this.emit("freedraw_create", rasterized);
         break;
       }
     }

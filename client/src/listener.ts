@@ -1,4 +1,4 @@
-abstract class Listener<T> {
+export abstract class Listener<T> {
   private map: Map<keyof T, any[]>;
 
   constructor() {
@@ -23,6 +23,18 @@ abstract class Listener<T> {
   }
 }
 
+export abstract class ListenerContainer<L extends Listener<T>, T> {
+  private listeners: L;
 
+  constructor(listeners: L) {
+    this.listeners = listeners;
+  }
 
-export default Listener;
+  public listen<K extends keyof T>(type: K, listener: (value: T[K]) => void) {
+    this.listeners.listen(type, listener);
+  }
+
+  public emit<K extends keyof T>(type: K, value: T[K]) {
+    this.listeners.emit(type, value);
+  }
+}

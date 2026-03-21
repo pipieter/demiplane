@@ -1,7 +1,6 @@
-import Listener from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type { Token } from "../models/token";
 import { server } from "../server";
-import View from "./view";
 
 interface TokenViewMap {
   request_remove: null;
@@ -13,7 +12,7 @@ class TokenViewListener extends Listener<TokenViewMap> {
   }
 }
 
-class TokenView extends View<TokenViewListener, TokenViewMap> {
+class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
   private layer: SVGSVGElement;
 
   constructor() {
@@ -24,7 +23,7 @@ class TokenView extends View<TokenViewListener, TokenViewMap> {
     window.addEventListener("keydown", (event) => {
       const keys = ["Delete", "Backspace"];
       if (keys.includes(event.key)) {
-        this.listeners.emit("request_remove", null);
+        this.emit("request_remove", null);
       }
     });
   }

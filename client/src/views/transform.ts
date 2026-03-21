@@ -1,10 +1,9 @@
-import Listener from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import { util } from "../util";
 import { viewport } from "../whiteboard/viewport";
-import View from "./view";
 
 interface TransformViewMap {
   tokens_select: string[];
@@ -17,7 +16,7 @@ class TransformViewListeners extends Listener<TransformViewMap> {
   }
 }
 
-class TransformView extends View<TransformViewListeners, TransformViewMap> {
+class TransformView extends ListenerContainer<TransformViewListeners, TransformViewMap> {
   private grid: Grid;
 
   private container: HTMLDivElement;
@@ -42,7 +41,7 @@ class TransformView extends View<TransformViewListeners, TransformViewMap> {
   private select(event: MouseEvent, id: string) {
     event.preventDefault();
 
-    this.listeners.emit("tokens_select", [id]);
+    this.emit("tokens_select", [id]);
 
     document.onmousemove = (evt) => this.drag(evt, id);
     document.onmouseup = () => this.drop();
@@ -75,7 +74,7 @@ class TransformView extends View<TransformViewListeners, TransformViewMap> {
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.listeners.emit("token_transform", { id, x, y, w, h });
+    this.emit("token_transform", { id, x, y, w, h });
   }
 }
 

@@ -1,5 +1,4 @@
-import Listener from "../listener";
-import View from "./view";
+import { Listener, ListenerContainer } from "../listener";
 
 interface SelectionViewMap {
   clear_selection: null;
@@ -11,7 +10,7 @@ class SelectionViewListeners extends Listener<SelectionViewMap> {
   }
 }
 
-class SelectionView extends View<SelectionViewListeners, SelectionViewMap> {
+class SelectionView extends ListenerContainer<SelectionViewListeners, SelectionViewMap> {
   private background: SVGSVGElement;
 
   constructor() {
@@ -32,7 +31,7 @@ class SelectionView extends View<SelectionViewListeners, SelectionViewMap> {
   }
 
   public clear() {
-    this.listeners.emit("clear_selection", null);
+    this.emit("clear_selection", null);
   }
 }
 

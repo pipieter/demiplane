@@ -1,5 +1,4 @@
-import Listener from "../listener";
-import View from "./view";
+import { Listener, ListenerContainer } from "../listener";
 
 interface GridViewMap {
   grid_change: { size: number; offsetX: number; offsetY: number };
@@ -11,7 +10,7 @@ class GridViewListeners extends Listener<GridViewMap> {
   }
 }
 
-class GridView extends View<GridViewListeners, GridViewMap> {
+class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
   private sizeInput: HTMLInputElement;
   private offsetXInput: HTMLInputElement;
   private offsetYInput: HTMLInputElement;
@@ -36,7 +35,7 @@ class GridView extends View<GridViewListeners, GridViewMap> {
     const size = parseInt(this.sizeInput.value);
     const offsetX = parseInt(this.offsetXInput.value);
     const offsetY = parseInt(this.offsetYInput.value);
-    this.listeners.emit("grid_change", { size, offsetX, offsetY });
+    this.emit("grid_change", { size, offsetX, offsetY });
   }
 
   public set(size: number, offsetX: number, offsetY: number) {

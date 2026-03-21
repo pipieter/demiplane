@@ -1,8 +1,7 @@
-import Listener from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type { Transform } from "../models/transform";
 import { viewport } from "../whiteboard/viewport";
-import View from "./view";
 
 interface ResizeViewMap {
   token_transform: Transform;
@@ -14,7 +13,7 @@ class ResizeViewListeners extends Listener<ResizeViewMap> {
   }
 }
 
-class ResizeView extends View<ResizeViewListeners, ResizeViewMap> {
+class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private grid: Grid;
 
   private layer: SVGSVGElement;
@@ -208,8 +207,10 @@ class ResizeView extends View<ResizeViewListeners, ResizeViewMap> {
       height = minSize;
     }
 
-    this.listeners.emit("token_transform", {
-      id: elements[0].getAttribute("id")!,
+    const id = elements[0].getAttribute("id")!;
+
+    this.emit("token_transform", {
+      id,
       x,
       y,
       w: width,

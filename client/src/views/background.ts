@@ -1,6 +1,5 @@
-import Listener from "../listener";
+import { Listener, ListenerContainer } from "../listener";
 import { server } from "../server";
-import View from "./view";
 
 interface BackgroundViewMap {
   background_upload: File;
@@ -12,7 +11,7 @@ class BackgroundViewListeners extends Listener<BackgroundViewMap> {
   }
 }
 
-class BackgroundView extends View<BackgroundViewListeners, BackgroundViewMap> {
+class BackgroundView extends ListenerContainer<BackgroundViewListeners, BackgroundViewMap> {
   public input: HTMLInputElement;
   public image: SVGImageElement;
   public layers: SVGSVGElement[];
@@ -32,7 +31,7 @@ class BackgroundView extends View<BackgroundViewListeners, BackgroundViewMap> {
     this.input.onchange = (evt) => {
       // @ts-expect-error Files should be a valid field
       const file = evt.target?.files[0];
-      this.listeners.emit("background_upload", file);
+      this.emit("background_upload", file);
     };
   }
 
