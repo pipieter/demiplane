@@ -7,7 +7,6 @@ import { server } from "./server";
 import drawFree from "./whiteboard/drawing/free";
 import drawCircle from "./whiteboard/drawing/circle";
 import drawRectangle from "./whiteboard/drawing/rectangle";
-import selection from "./whiteboard/selection";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
@@ -18,8 +17,9 @@ import TransformController from "./controllers/transform";
 import TransformView from "./views/transform";
 import SelectionView from "./views/selection";
 import SelectionController from "./controllers/selection";
+import ResizeView from "./views/resize";
+import ResizeController from "./controllers/resize";
 
-selection.initialize();
 header.initialize();
 viewport.initialize();
 grid.initialize();
@@ -31,11 +31,13 @@ const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
 const transformView = new TransformView();
 const selectionView = new SelectionView();
+const resizeView = new ResizeView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
+new ResizeController(store, state, resizeView);
 
 server.socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
