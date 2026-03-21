@@ -229,6 +229,7 @@ class TokenDrawView {
     this.cursor.style.display = "none";
     this.circle.style.display = "none";
     this.rectangle.style.display = "none";
+    this.freedraw.style.display = "none";
     this.layer.style.display = "none";
     this.layer.onmousedown = null;
     this.layer.onmouseup = null;
