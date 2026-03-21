@@ -13,6 +13,7 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
+      // Ignore variables with names that start with an underscore
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
