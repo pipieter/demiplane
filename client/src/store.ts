@@ -32,10 +32,6 @@ class Store {
   public send(req: RequestMessage) {
     this.socket.send(JSON.stringify(req));
   }
-
-  public fullURL(href: string) {
-    return this.url + href;
-  }
 }
 
 export default Store;
