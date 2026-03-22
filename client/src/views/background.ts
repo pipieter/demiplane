@@ -1,5 +1,5 @@
 import { Listener, ListenerContainer } from "../listener";
-import { server } from "../server";
+import server from "../server";
 
 interface BackgroundViewMap {
   background_upload: File;
@@ -39,7 +39,7 @@ class BackgroundView extends ListenerContainer<BackgroundViewListeners, Backgrou
     if (href === null) {
       this.image.removeAttribute("href");
     } else {
-      this.image.setAttribute("href", server.BackendURL + href);
+      this.image.setAttribute("href", server.url + href);
     }
 
     this.image.setAttribute("width", `${width}px`);

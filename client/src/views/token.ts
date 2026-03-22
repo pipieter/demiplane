@@ -1,6 +1,6 @@
 import { Listener, ListenerContainer } from "../listener";
 import type { Token } from "../models/token";
-import { server } from "../server";
+import server from "../server";
 
 interface TokenViewMap {
   request_remove: null;
@@ -77,7 +77,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         break;
 
       case "image":
-        element.setAttribute("href", server.BackendURL + token.href);
+        element.setAttribute("href", server.url + token.href);
         element.setAttribute("x", token.x.toString());
         element.setAttribute("y", token.y.toString());
         element.setAttribute("width", token.w.toString());

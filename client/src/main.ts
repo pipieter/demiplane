@@ -1,6 +1,6 @@
 import type { ResponseMessage } from "./messages";
 import { util } from "./util";
-import { server } from "./server";
+import server from "./server";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
@@ -20,7 +20,8 @@ import GridController from "./controllers/grid";
 import HeaderView from "./views/header";
 import HeaderController from "./controllers/header";
 
-const store = new Store(server.BackendURL, server.socket);
+const socket = new WebSocket(server.url);
+const store = new Store(server.url, socket);
 const state = new State();
 
 const grid = state.getGrid();
@@ -44,7 +45,7 @@ new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
 new HeaderController(store, state, headerView);
 
-server.socket.onmessage = function (event) {
+socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
