@@ -10,6 +10,7 @@
       <nav class="tabs">
         <button class="tab-button" data-tab="draw">Draw</button>
         <button class="tab-button" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="token">Token</button>
       </nav>
 
       <section id="tab-draw" class="tab-panel">
@@ -31,6 +32,17 @@
         <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
         <label for="grid-offset-Y">offset Y</label>
         <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
+      </section>
+
+      <section id="tab-token" class="tab-panel" hidden>
+        <label for="token-edit-x">x</label>
+        <input id="token-edit-x" type="number" name="token-edit-x" min="0" max="2048" step="1" value="64" disabled />
+        <label for="token-edit-y">y</label>
+        <input id="token-edit-y" type="number" name="token-edit-y" min="0" max="2048" step="1" value="64" disabled />
+        <label for="token-edit-w">width</label>
+        <input id="token-edit-w" type="number" name="token-edit-w" min="8" max="256" step="1" value="64" disabled />
+        <label for="token-edit-h">height</label>
+        <input id="token-edit-h" type="number" name="token-edit-h" min="8" max="256" step="1" value="64" disabled />
       </section>
     </header>
 
