@@ -61,11 +61,28 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
   private draw(element: SVGElement, token: Token) {
     switch (token.type) {
       case "circle":
-        element.setAttribute("fill", token.color);
-        element.setAttribute("cx", (token.x + token.w / 2).toString());
-        element.setAttribute("cy", (token.y + token.h / 2).toString());
-        element.setAttribute("rx", (token.w / 2).toString());
-        element.setAttribute("ry", (token.h / 2).toString());
+        let cx = token.x + token.w / 2;
+        let cy = token.y + token.h / 2;
+        let rx = token.w / 2;
+        let ry = token.h / 2;
+
+        if (token.border) {
+          rx -= token.border / 2;
+          ry -= token.border / 2;
+          element.setAttribute("fill", "none");
+          element.setAttribute("stroke", token.color);
+          element.setAttribute("stroke-width", `${token.border}px`);
+        } else {
+          element.setAttribute("fill", token.color);
+          element.setAttribute("stroke", "none");
+        }
+
+        console.log(cx, cy, rx, ry);
+
+        element.setAttribute("cx", cx.toString());
+        element.setAttribute("cy", cy.toString());
+        element.setAttribute("rx", rx.toString());
+        element.setAttribute("ry", ry.toString());
         break;
 
       case "rectangle":

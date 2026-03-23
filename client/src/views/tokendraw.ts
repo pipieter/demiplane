@@ -3,8 +3,8 @@ import type Grid from "../models/grid";
 import type Viewport from "../models/viewport";
 
 interface TokenDrawViewMap {
-  circle_create: { x: number; y: number; w: number; h: number };
-  rectangle_create: { x: number; y: number; w: number; h: number };
+  circle_create: { x: number; y: number; w: number; h: number; border: number | null };
+  rectangle_create: { x: number; y: number; w: number; h: number; border: number | null };
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
@@ -30,6 +30,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly rectangleButton: HTMLButtonElement;
   private readonly freedrawButton: HTMLButtonElement;
 
+  private readonly borderCheckbox: HTMLInputElement;
+  private readonly borderNumber: HTMLInputElement;
+
   private type: TokenDrawType | null;
   private mouseDown: boolean;
   private freedrawPoints: [number, number][];
@@ -51,6 +54,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.circleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
     this.freedrawButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
+
+    this.borderCheckbox = document.getElementById("draw-border-checkbox") as HTMLInputElement;
+    this.borderNumber = document.getElementById("draw-border-number") as HTMLInputElement;
 
     this.type = null;
     this.mouseDown = false;
@@ -186,7 +192,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.emit("circle_create", { x, y, w, h });
+        const border = this.getBorder();
+        this.emit("circle_create", { x, y, w, h, border });
         break;
       }
 
@@ -195,7 +202,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
-        this.emit("rectangle_create", { x, y, w, h });
+        const border = this.getBorder();
+        this.emit("rectangle_create", { x, y, w, h, border });
         break;
       }
 
@@ -293,6 +301,11 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       w: targetWidth,
       h: targetHeight,
     };
+  }
+
+  private getBorder(): number | null {
+    if (!this.borderCheckbox.checked) return null;
+    return parseInt(this.borderNumber.value);
   }
 }
 

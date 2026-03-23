@@ -9,11 +9,13 @@ interface AbstractToken {
 export interface TokenCircle extends AbstractToken {
   type: "circle";
   color: string;
+  border: number | null; // if null, completely filled and no border
 }
 
 export interface TokenRectangle extends AbstractToken {
   type: "rectangle";
   color: string;
+  border: number | null; // if null, completely filled and no border
 }
 
 export interface TokenImage extends AbstractToken {

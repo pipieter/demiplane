@@ -38,15 +38,15 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
 
-    element.onmousedown = (evt) => this.select(evt, token.id);
+    element.onmousedown = (evt) => this.select(evt, token);
   }
 
-  private select(event: MouseEvent, id: string) {
+  private select(event: MouseEvent, token: Token) {
     event.preventDefault();
 
-    this.emit("tokens_select", [id]);
+    this.emit("tokens_select", [token.id]);
 
-    document.onmousemove = (evt) => this.drag(evt, id);
+    document.onmousemove = (evt) => this.drag(evt, token);
     document.onmouseup = () => this.drop();
   }
 
@@ -55,16 +55,13 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
     document.onmouseup = null;
   }
 
-  private drag(event: MouseEvent, id: string) {
-    const element = document.getElementById(id) as unknown as SVGGraphicsElement;
+  private drag(event: MouseEvent, token: Token) {
     const cursor = this.viewport.getTranslatedCoords(event.offsetX, event.offsetY);
-
-    const bbox = element.getBBox();
-    const w = bbox.width;
-    const h = bbox.height;
 
     let x = cursor.x;
     let y = cursor.y;
+    const w = token.w;
+    const h = token.h;
 
     if (event.shiftKey) {
       const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
@@ -72,12 +69,12 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
       y = locked.y;
     }
 
-    x -= bbox.width / 2;
-    y -= bbox.height / 2;
+    x -= w / 2;
+    y -= h / 2;
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.emit("token_transform", { id, x, y, w, h });
+    this.emit("token_transform", { id: token.id, x, y, w, h });
   }
 }
 
