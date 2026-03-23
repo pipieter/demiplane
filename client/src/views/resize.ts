@@ -114,13 +114,14 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const topCenterX = token.x + token.w / 2;
     const topCenterY = token.y - 20; // offset
 
-    const rotated = this.rotatePoint(topCenterX, topCenterY, token.x, token.x, 0);
+    const rotated = this.rotatePoint(topCenterX, topCenterY, token.x, token.x, token.r);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
     this.rotateHandle.setAttribute("cy", rotated.y.toString());
 
     if (this.rotateLine) {
-      this.rotateLine.setAttribute("x1", topCenterX.toString());
-      this.rotateLine.setAttribute("y1", token.y.toString());
+      const topRotated = this.rotatePoint((token.x + token.w / 2), (token.y), token.x, token.y, token.r)
+      this.rotateLine.setAttribute("x1", topRotated.x.toString());
+      this.rotateLine.setAttribute("y1", topRotated.y.toString());
       this.rotateLine.setAttribute("x2", rotated.x.toString());
       this.rotateLine.setAttribute("y2", rotated.y.toString());
     }

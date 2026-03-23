@@ -4,6 +4,7 @@ interface AbstractToken {
   y: number;
   w: number;
   h: number;
+  r: number;
 }
 
 export interface TokenCircle extends AbstractToken {

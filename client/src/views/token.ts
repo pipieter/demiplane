@@ -49,6 +49,8 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
       throw `Cannot redraw token with id ${token.id} because it does not exist!`;
     }
 
+    console.log(token);
+
     this.draw(element, token);
   }
 
