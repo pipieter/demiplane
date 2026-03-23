@@ -16,7 +16,7 @@ class SelectionController extends Controller<SelectionView> {
   }
 
   private clear() {
-    this.state.selectTokens([]);
+    this.state.clearSelected();
   }
 }
 

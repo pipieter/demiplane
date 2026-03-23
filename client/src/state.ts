@@ -81,6 +81,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.emit("token_select", [previous, ids]);
   }
 
+  public clearSelected() {
+    this.selectTokens([]);
+  }
+
   public getSelected(): string[] {
     return [...this.selected];
   }
