@@ -24,8 +24,6 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private rotateHandle: SVGCircleElement;
   private rotateLine: SVGLineElement;
 
-  private cursorStartPosition: { x: number; y: number };
-  private elementStartSize: DOMRect;
   private direction: string | null;
   private selected: Token[];
 
@@ -41,8 +39,6 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
     this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
 
-    this.cursorStartPosition = { x: 0, y: 0 };
-    this.elementStartSize = new DOMRect(0, 0, 0, 0);
     this.direction = null;
     this.selected = [];
 
@@ -150,10 +146,6 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const target = e.target as SVGElement;
     this.direction = target.dataset.dir ?? null;
 
-    const token = this.selected[0];
-
-    this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
-    this.elementStartSize = new DOMRect(token.x, token.y, token.w, token.h);
     document.onmousemove = (evt) => this.resize(evt);
     document.onmouseup = () => this.stopResize();
   }
@@ -163,98 +155,62 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     document.onmouseup = null;
     this.direction = null;
   }
-  private getSnapStep(size: number, gridSize: number, minSize: number) {
-    let step = gridSize;
 
-    while (step / 2 >= minSize && size < step) {
-      if (size <= minSize) break;
-      step /= 2;
+  // TODO this is the same as in TokenDrawView, and a common util method would be better
+  private getCoordinates(evt: MouseEvent) {
+    let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
+    if (evt.shiftKey) {
+      const gridLocked = this.grid.getLockedCoordinates(x, y);
+      x = gridLocked.x;
+      y = gridLocked.y;
     }
-
-    return step;
+    return { x, y };
   }
 
-  private snapToStep(value: number, offset: number, step: number) {
-    return Math.round((value - offset) / step) * step + offset;
-  }
-
-  private resize(e: MouseEvent, minSize: number = 8) {
+  private resize(e: MouseEvent) {
     if (this.selected.length <= 0 || !this.direction) return;
 
-    const token = this.selected[0];
     this.updateBox();
 
+    const token = this.selected[0];
     let x = token.x;
     let y = token.y;
-    let width = token.w;
-    let height = token.h;
+    let w = token.w;
+    let h = token.h;
 
-    const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
+    const target = this.getCoordinates(e);
+    const dx = target.x - token.x;
+    const dy = target.y - token.y;
 
-    const dx = current.x - this.cursorStartPosition.x;
-    const dy = current.y - this.cursorStartPosition.y;
+    if (this.direction.includes("r")) {
+      w = dx;
+    }
 
-    if (this.direction.includes("r")) width = this.elementStartSize.width + dx;
     if (this.direction.includes("l")) {
-      width = this.elementStartSize.width - dx;
-      x = this.elementStartSize.x + (this.elementStartSize.width - width);
+      x = target.x;
+      w = token.w - dx;
     }
-    if (this.direction.includes("b")) height = this.elementStartSize.height + dy;
+    if (this.direction.includes("b")) {
+      h = dy;
+    }
     if (this.direction.includes("t")) {
-      height = this.elementStartSize.height - dy;
-      y = this.elementStartSize.y + (this.elementStartSize.height - height);
-    }
-
-    if (e.shiftKey) {
-      const stepX = this.getSnapStep(width, this.grid.size, minSize);
-      const stepY = this.getSnapStep(height, this.grid.size, minSize);
-
-      if (this.direction.includes("r")) {
-        const snappedX = this.snapToStep(x + width, this.grid.offset.x, stepX);
-        width = snappedX - x;
-      }
-
-      if (this.direction.includes("l")) {
-        const snappedX = this.snapToStep(x, this.grid.offset.x, stepX);
-        width = width + (x - snappedX);
-        x = snappedX;
-      }
-
-      if (this.direction.includes("b")) {
-        const snappedY = this.snapToStep(y + height, this.grid.offset.y, stepY);
-        height = snappedY - y;
-      }
-
-      if (this.direction.includes("t")) {
-        const snappedY = this.snapToStep(y, this.grid.offset.y, stepY);
-        height = height + (y - snappedY);
-        y = snappedY;
-      }
-    }
-
-    // Limit minimum width & height
-    if (width <= minSize) {
-      x = token.x; // Prevent accidental shifting
-      width = minSize;
-    }
-    if (height <= minSize) {
-      y = token.y; // Prevent accidental shifting
-      height = minSize;
+      y = target.y;
+      h = token.h - dy;
     }
 
     this.emit("token_transform", {
       id: token.id,
       x,
       y,
-      w: width,
-      h: height,
+      w,
+      h,
       r: token.r,
     });
   }
 
   private startRotate(e: MouseEvent) {
     e.stopPropagation();
-    this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
+    //this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
     document.onmousemove = (evt) => this.rotate(evt);
     document.onmouseup = () => this.stopRotate();
   }
