@@ -29,9 +29,10 @@ class BackgroundView extends ListenerContainer<BackgroundViewListeners, Backgrou
     ];
 
     this.input.onchange = (evt) => {
-      // @ts-expect-error Files should be a valid field
-      const file = evt.target?.files[0];
-      this.emit("background_upload", file);
+      const file = (evt.target as HTMLInputElement).files?.item(0);
+      if (file) {
+        this.emit("background_upload", file);
+      }
     };
   }
 

@@ -91,8 +91,7 @@ function getRandomPosition(): { x: number; y: number } {
 }
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
-  // @ts-expect-error Files should be a valid field
-  const file = evt.target?.files[0];
+  const file = (evt.target as HTMLInputElement).files?.item(0);
   if (!file) {
     console.error("Could not open file.");
     return;
