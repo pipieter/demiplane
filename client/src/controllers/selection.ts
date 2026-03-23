@@ -1,3 +1,4 @@
+import type { Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
 import type SelectionView from "../views/selection";
@@ -11,7 +12,7 @@ class SelectionController extends Controller<SelectionView> {
     this.view.listen("clear_selection", () => this.clear());
   }
 
-  private select(previous: string[], current: string[]) {
+  private select(previous: Token[], current: Token[]) {
     this.view.select(previous, current);
   }
 
