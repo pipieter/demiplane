@@ -21,6 +21,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private layer: SVGSVGElement;
   private box: SVGRectElement;
   private handles: SVGRectElement[];
+  private rotateHandle: SVGCircleElement;
+  private rotateLine: SVGLineElement;
 
   private cursorStartPosition: { x: number; y: number };
   private elementStartSize: DOMRect;
@@ -36,6 +38,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
     this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
     this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
+    this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
+    this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
 
     this.cursorStartPosition = { x: 0, y: 0 };
     this.elementStartSize = new DOMRect(0, 0, 0, 0);
@@ -78,6 +82,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size);
     this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size);
     this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size);
+    this.setRotateHandle(token);
   }
 
   private setHandle(id: string, x: number, y: number, size: number) {
@@ -87,6 +92,38 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     h.setAttribute("y", y.toString());
     h.setAttribute("width", size.toString());
     h.setAttribute("height", size.toString());
+  }
+
+  private rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
+    const angle = (angleDeg * Math.PI) / 180;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const dx = px - cx;
+    const dy = py - cy;
+
+    const x = cx + dx * cos - dy * sin;
+    const y = cy + dx * sin + dy * cos;
+
+    return { x, y };
+  }
+
+  setRotateHandle(token: Token) {
+    if (!this.rotateHandle) return;
+
+    const topCenterX = token.x + token.w / 2;
+    const topCenterY = token.y - 20; // offset
+
+    const rotated = this.rotatePoint(topCenterX, topCenterY, token.x, token.x, 0);
+    this.rotateHandle.setAttribute("cx", rotated.x.toString());
+    this.rotateHandle.setAttribute("cy", rotated.y.toString());
+
+    if (this.rotateLine) {
+      this.rotateLine.setAttribute("x1", topCenterX.toString());
+      this.rotateLine.setAttribute("y1", token.y.toString());
+      this.rotateLine.setAttribute("x2", rotated.x.toString());
+      this.rotateLine.setAttribute("y2", rotated.y.toString());
+    }
   }
 
   private start(e: MouseEvent) {
