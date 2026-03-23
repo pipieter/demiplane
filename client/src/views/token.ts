@@ -61,8 +61,8 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
   private draw(element: SVGElement, token: Token) {
     switch (token.type) {
       case "circle":
-        let cx = token.x + token.w / 2;
-        let cy = token.y + token.h / 2;
+        const cx = token.x + token.w / 2;
+        const cy = token.y + token.h / 2;
         let rx = token.w / 2;
         let ry = token.h / 2;
 
@@ -77,8 +77,6 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
           element.setAttribute("stroke", "none");
         }
 
-        console.log(cx, cy, rx, ry);
-
         element.setAttribute("cx", cx.toString());
         element.setAttribute("cy", cy.toString());
         element.setAttribute("rx", rx.toString());
@@ -86,11 +84,28 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         break;
 
       case "rectangle":
-        element.setAttribute("fill", token.color);
-        element.setAttribute("x", token.x.toString());
-        element.setAttribute("y", token.y.toString());
-        element.setAttribute("width", token.w.toString());
-        element.setAttribute("height", token.h.toString());
+        let x = token.x;
+        let y = token.y;
+        let w = token.w;
+        let h = token.h;
+
+        if (token.border) {
+          x += token.border / 2;
+          y += token.border / 2;
+          w -= token.border;
+          h -= token.border;
+          element.setAttribute("fill", "none");
+          element.setAttribute("stroke", token.color);
+          element.setAttribute("stroke-width", `${token.border}px`);
+        } else {
+          element.setAttribute("fill", token.color);
+          element.setAttribute("stroke", "none");
+        }
+
+        element.setAttribute("x", x.toString());
+        element.setAttribute("y", y.toString());
+        element.setAttribute("width", w.toString());
+        element.setAttribute("height", h.toString());
         break;
 
       case "image":
