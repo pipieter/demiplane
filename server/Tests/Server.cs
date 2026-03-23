@@ -28,6 +28,7 @@ public class ServerTests : ServerTestSetup
                 'type': 'circle',
                 'id': '123',
                 'color': '#FF0000',
+                'border': 4,
                 'x': 200,
                 'y': 200,
                 'w': 50,

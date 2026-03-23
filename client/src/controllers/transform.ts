@@ -1,3 +1,4 @@
+import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
@@ -13,8 +14,8 @@ class TransformController extends Controller<TransformView> {
     this.state.listen("token_create", (token) => this.view.makeDraggable(token));
   }
 
-  private select(ids: string[]) {
-    this.state.selectTokens(ids);
+  private select(tokens: Token[]) {
+    this.state.selectTokens(tokens);
   }
 
   private ontransform(transform: Transform) {

@@ -7,12 +7,12 @@ class TokenDrawController extends Controller<TokenDrawView> {
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
 
-    this.view.listen("circle_create", ({ x, y, w, h }) => this.createCircle(x, y, w, h));
-    this.view.listen("rectangle_create", ({ x, y, w, h }) => this.createRectangle(x, y, w, h));
+    this.view.listen("circle_create", ({ x, y, w, h, border }) => this.createCircle(border, x, y, w, h));
+    this.view.listen("rectangle_create", ({ x, y, w, h, border }) => this.createRectangle(border, x, y, w, h));
     this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
   }
 
-  private createCircle(x: number, y: number, w: number, h: number) {
+  private createCircle(border: number | null, x: number, y: number, w: number, h: number) {
     const color = "#FF0000"; //TODO
 
     this.store.send({
@@ -20,6 +20,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
       create: {
         type: "circle",
         id: crypto.randomUUID(),
+        border,
         color,
         x,
         y,
@@ -29,7 +30,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private createRectangle(x: number, y: number, w: number, h: number) {
+  private createRectangle(border: number | null, x: number, y: number, w: number, h: number) {
     const color = "#00FF00"; //TODO
 
     this.store.send({
@@ -37,6 +38,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
       create: {
         type: "rectangle",
         id: crypto.randomUUID(),
+        border,
         color,
         x,
         y,

@@ -9,7 +9,7 @@ interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
   token_create: Token;
-  token_select: [string[], string[]];
+  token_select: [Token[], Token[]];
   token_transform: [Token, Transform];
   token_delete: string[];
 }
@@ -22,7 +22,7 @@ class StateListeners extends Listener<StateListenerMap> {
 
 class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private tokens: Token[];
-  private selected: string[];
+  private selected: Token[];
   private background: Background;
   private grid: Grid;
   private viewport: Viewport;
@@ -59,7 +59,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     const previousSelected = [...this.selected];
 
     this.tokens = this.tokens.filter((token) => !ids.includes(token.id));
-    this.selected = this.selected.filter((id) => !ids.includes(id));
+    this.selected = this.selected.filter((token) => !ids.includes(token.id));
     this.emit("token_delete", ids);
     this.emit("token_select", [previousSelected, this.selected]);
   }
@@ -75,17 +75,17 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     }
   }
 
-  public selectTokens(ids: string[]) {
+  public selectTokens(tokens: Token[]) {
     const previous = [...this.selected];
-    this.selected = [...ids];
-    this.emit("token_select", [previous, ids]);
+    this.selected = [...tokens];
+    this.emit("token_select", [previous, tokens]);
   }
 
   public clearSelected() {
     this.selectTokens([]);
   }
 
-  public getSelected(): string[] {
+  public getSelected(): Token[] {
     return [...this.selected];
   }
 

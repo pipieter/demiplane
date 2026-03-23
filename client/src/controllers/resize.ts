@@ -1,3 +1,4 @@
+import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
@@ -19,7 +20,7 @@ class ResizeController extends Controller<ResizeView> {
     });
   }
 
-  private update(ids: string[]) {
+  private update(ids: Token[]) {
     this.view.setSelected(ids);
   }
 

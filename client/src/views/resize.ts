@@ -1,5 +1,6 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
+import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type Viewport from "../models/viewport";
 
@@ -24,7 +25,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private cursorStartPosition: { x: number; y: number };
   private elementStartSize: DOMRect;
   private direction: string | null;
-  private selected: string[];
+  private selected: Token[];
 
   constructor(grid: Grid, viewport: Viewport) {
     super(new ResizeViewListeners());
@@ -44,8 +45,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.start(evt)));
   }
 
-  public setSelected(ids: string[]) {
-    this.selected = [...ids];
+  public setSelected(tokens: Token[]) {
+    this.selected = [...tokens];
     this.updateBox();
   }
 
@@ -57,27 +58,26 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     }
 
     // TODO for now only use the first id
-    const element = this.elements()[0];
-    const box = element.getBBox();
+    const token = this.selected[0];
 
     const offset = 0;
-    box.x -= offset;
-    box.y -= offset;
-    box.width += offset * 2;
-    box.height += offset * 2;
+    const x = token.x - offset;
+    const y = token.y - offset;
+    const w = token.w + offset * 2;
+    const h = token.h + offset * 2;
 
     this.layer.style.display = "block";
-    this.box.setAttribute("x", box.x.toString());
-    this.box.setAttribute("y", box.y.toString());
-    this.box.setAttribute("width", box.width.toString());
-    this.box.setAttribute("height", box.height.toString());
+    this.box.setAttribute("x", x.toString());
+    this.box.setAttribute("y", y.toString());
+    this.box.setAttribute("width", w.toString());
+    this.box.setAttribute("height", h.toString());
 
     // Position the handles
     const size = 8;
-    this.setHandle("handle-tr", box.x - size / 2, box.y - size / 2, size);
-    this.setHandle("handle-tl", box.x + box.width - size / 2, box.y - size / 2, size);
-    this.setHandle("handle-bl", box.x - size / 2, box.y + box.height - size / 2, size);
-    this.setHandle("handle-br", box.x + box.width - size / 2, box.y + box.height - size / 2, size);
+    this.setHandle("handle-tr", x - size / 2, y - size / 2, size);
+    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size);
+    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size);
+    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size);
   }
 
   private setHandle(id: string, x: number, y: number, size: number) {
@@ -89,19 +89,15 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     h.setAttribute("height", size.toString());
   }
 
-  private elements(): SVGGraphicsElement[] {
-    return this.selected.map((id) => document.getElementById(id) as unknown as SVGGraphicsElement);
-  }
-
   private start(e: MouseEvent) {
     e.stopPropagation();
     const target = e.target as SVGElement;
     this.direction = target.dataset.dir ?? null;
 
-    const element = this.elements()[0];
+    const token = this.selected[0];
 
     this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
-    this.elementStartSize = element.getBBox();
+    this.elementStartSize = new DOMRect(token.x, token.y, token.w, token.h);
     document.onmousemove = (evt) => this.resize(evt);
     document.onmouseup = () => this.stop();
   }
@@ -113,16 +109,15 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   }
 
   private resize(e: MouseEvent, minSize: number = 8) {
-    const elements = this.elements();
+    if (this.selected.length <= 0 || !this.direction) return;
 
-    if (elements.length <= 0 || !this.direction) return;
-    const box = elements[0].getBBox();
+    const token = this.selected[0];
     this.updateBox();
 
-    let x = box.x;
-    let y = box.y;
-    let width = box.width;
-    let height = box.height;
+    let x = token.x;
+    let y = token.y;
+    let width = token.w;
+    let height = token.h;
 
     const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
 
@@ -201,18 +196,16 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     // Limit minimum width & height
     if (width <= minSize) {
-      x = box.x; // Prevent accidental shifting
+      x = token.x; // Prevent accidental shifting
       width = minSize;
     }
     if (height <= minSize) {
-      y = box.y; // Prevent accidental shifting
+      y = token.y; // Prevent accidental shifting
       height = minSize;
     }
 
-    const id = elements[0].getAttribute("id")!;
-
     this.emit("token_transform", {
-      id,
+      id: token.id,
       x,
       y,
       w: width,
