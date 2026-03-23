@@ -210,7 +210,6 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
   private startRotate(e: MouseEvent) {
     e.stopPropagation();
-    //this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
     document.onmousemove = (evt) => this.rotate(evt);
     document.onmouseup = () => this.stopRotate();
   }
