@@ -196,11 +196,11 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     // Limit minimum width & height
     if (width <= minSize) {
-      x = x; // Prevent accidental shifting
+      x = token.x; // Prevent accidental shifting
       width = minSize;
     }
     if (height <= minSize) {
-      y = y; // Prevent accidental shifting
+      y = token.y; // Prevent accidental shifting
       height = minSize;
     }
 

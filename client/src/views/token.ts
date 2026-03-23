@@ -60,7 +60,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
 
   private draw(element: SVGElement, token: Token) {
     switch (token.type) {
-      case "circle":
+      case "circle": {
         const cx = token.x + token.w / 2;
         const cy = token.y + token.h / 2;
         let rx = token.w / 2;
@@ -82,8 +82,9 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         element.setAttribute("rx", rx.toString());
         element.setAttribute("ry", ry.toString());
         break;
+      }
 
-      case "rectangle":
+      case "rectangle": {
         let x = token.x;
         let y = token.y;
         let w = token.w;
@@ -107,6 +108,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         element.setAttribute("width", w.toString());
         element.setAttribute("height", h.toString());
         break;
+      }
 
       case "image":
         element.setAttribute("href", server.url + token.href);
