@@ -47,12 +47,11 @@
             <image id="whiteboard-background-image" width="1024px" height="1024px" />
             <rect id="whiteboard-background-grid" fill="url(#grid-pattern)" width="100%" height="100%" />
           </svg>
-          <!-- The rotate-line belongs to the resize-box, but needs to be placed here so it's behind all objects -->
-          <line id="rotate-line" stroke="#4da3ff" />
 
           <svg id="whiteboard-objects-layer"></svg>
           
           <svg id="whiteboard-resize" style="display: none">
+            <line id="rotate-line" stroke="#4da3ff" />
             <rect id="resize-box" fill="none" stroke="#4da3ff" stroke-width="1" pointer-events="none" />
 
             <rect class="resize-handle" id="handle-tr" data-dir="tl" width="8" height="8" fill="white" stroke="black" />

@@ -70,31 +70,47 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const y = token.y - offset;
     const w = token.w + offset * 2;
     const h = token.h + offset * 2;
-    const r = token.r;
+    const angle = token.r;
 
     this.layer.style.display = "block";
     this.box.setAttribute("x", x.toString());
     this.box.setAttribute("y", y.toString());
     this.box.setAttribute("width", w.toString());
     this.box.setAttribute("height", h.toString());
-    this.box.setAttribute("transform", `rotate(${r} 0 0)`);
+    this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
 
     // Position the handles
     const size = 8;
-    this.setHandle("handle-tr", x - size / 2, y - size / 2, size);
-    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size);
-    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size);
-    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size);
-    this.setRotateHandle(token);
+    const centerX = token.x + token.w / 2;
+    const centerY = token.y + token.h / 2;
+    this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+    this.setRotateHandle(token, centerX, centerY, angle);
   }
 
-  private setHandle(id: string, x: number, y: number, size: number) {
+  private setHandle(
+    id: string,
+    x: number,
+    y: number,
+    size: number,
+    angle: number = 0,
+    centerX?: number,
+    centerY?: number,
+  ) {
     const h = document.getElementById(id);
     if (!h) return;
     h.setAttribute("x", x.toString());
     h.setAttribute("y", y.toString());
     h.setAttribute("width", size.toString());
     h.setAttribute("height", size.toString());
+
+    if (centerX !== undefined && centerY !== undefined) {
+      h.setAttribute("transform", `rotate(${angle} ${centerX - x - size / 2} ${centerY - y - size / 2})`);
+    } else {
+      h.removeAttribute("transform");
+    }
   }
 
   private rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
@@ -111,21 +127,19 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     return { x, y };
   }
 
-  setRotateHandle(token: Token) {
+  setRotateHandle(token: Token, centerX: number, centerY: number, angle: number) {
     if (!this.rotateHandle) return;
 
     const topCenterX = token.x + token.w / 2;
     const topCenterY = token.y - 20; // offset
 
-    const tokenCenter = { x: token.x + token.w / 2, y: token.y + token.h / 2 }
-
-    const rotated = this.rotatePoint(topCenterX, topCenterY, tokenCenter.x, tokenCenter.x, token.r);
+    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
     this.rotateHandle.setAttribute("cy", rotated.y.toString());
 
     if (this.rotateLine) {
-      this.rotateLine.setAttribute("x1", tokenCenter.x.toString());
-      this.rotateLine.setAttribute("y1", tokenCenter.y.toString());
+      this.rotateLine.setAttribute("x1", centerX.toString());
+      this.rotateLine.setAttribute("y1", centerY.toString());
       this.rotateLine.setAttribute("x2", rotated.x.toString());
       this.rotateLine.setAttribute("y2", rotated.y.toString());
     }
