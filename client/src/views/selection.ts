@@ -1,4 +1,5 @@
 import { Listener, ListenerContainer } from "../listener";
+import type { Token } from "../models/token";
 
 interface SelectionViewMap {
   clear_selection: null;
@@ -20,13 +21,13 @@ class SelectionView extends ListenerContainer<SelectionViewListeners, SelectionV
     this.background.onclick = () => this.clear();
   }
 
-  public select(previous: string[], current: string[]) {
-    for (const id of previous) {
-      document.getElementById(id)?.classList.remove("selected");
+  public select(previous: Token[], current: Token[]) {
+    for (const token of previous) {
+      document.getElementById(token.id)?.classList.remove("selected");
     }
 
-    for (const id of current) {
-      document.getElementById(id)?.classList.add("selected");
+    for (const token of current) {
+      document.getElementById(token.id)?.classList.add("selected");
     }
   }
 
