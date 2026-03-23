@@ -26,7 +26,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0
+        r: 0,
       },
     });
   }
@@ -45,7 +45,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0
+        r: 0,
       },
     });
   }
@@ -63,7 +63,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0
+        r: 0,
       },
     });
   }
