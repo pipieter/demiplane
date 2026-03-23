@@ -1,22 +1,10 @@
-import { Listener, ListenerContainer } from "../listener";
+import { TokenListenerContainer } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
-import type { Transform } from "../models/transform";
 import type Viewport from "../models/viewport";
 import { util } from "../util";
 
-interface TransformViewMap {
-  tokens_select: Token[];
-  token_transform: Transform;
-}
-
-class TransformViewListeners extends Listener<TransformViewMap> {
-  protected override keys(): (keyof TransformViewMap)[] {
-    return ["tokens_select", "token_transform"];
-  }
-}
-
-class TransformView extends ListenerContainer<TransformViewListeners, TransformViewMap> {
+class TransformView extends TokenListenerContainer {
   private grid: Grid;
   private viewport: Viewport;
 
@@ -24,7 +12,7 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
   private background: SVGSVGElement;
 
   constructor(grid: Grid, viewport: Viewport) {
-    super(new TransformViewListeners());
+    super();
 
     this.grid = grid;
     this.viewport = viewport;
