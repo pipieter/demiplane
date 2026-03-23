@@ -21,22 +21,28 @@ public abstract class Token(string id, int x, int y, int w, int h)
     public int h = h;
 }
 
-public class TokenCircle(string id, string color, int x, int y, int w, int h) : Token(id, x, y, w, h)
+public class TokenCircle(string id, string color, int? border, int x, int y, int w, int h) : Token(id, x, y, w, h)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "circle";
 
     [JsonProperty(Required = Required.Always)]
     public string color = color;
+
+    [JsonProperty(Required = Required.AllowNull)]
+    public int? border = border;
 }
 
-public class TokenRectangle(string id, string color, int x, int y, int w, int h) : Token(id, x, y, w, h)
+public class TokenRectangle(string id, string color, int? border, int x, int y, int w, int h) : Token(id, x, y, w, h)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "rectangle";
 
     [JsonProperty(Required = Required.Always)]
     public string color = color;
+
+    [JsonProperty(Required = Required.AllowNull)]
+    public int? border = border;
 }
 
 public class TokenImage(string id, string href, int x, int y, int w, int h) : Token(id, x, y, w, h)
