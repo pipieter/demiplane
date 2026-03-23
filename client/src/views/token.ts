@@ -49,8 +49,6 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
       throw `Cannot redraw token with id ${token.id} because it does not exist!`;
     }
 
-    console.log(token);
-
     this.draw(element, token);
   }
 
@@ -83,6 +81,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         element.setAttribute("cy", cy.toString());
         element.setAttribute("rx", rx.toString());
         element.setAttribute("ry", ry.toString());
+        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
         break;
       }
 
@@ -109,6 +108,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         element.setAttribute("y", y.toString());
         element.setAttribute("width", w.toString());
         element.setAttribute("height", h.toString());
+        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
         break;
       }
 
@@ -118,6 +118,7 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
         element.setAttribute("y", token.y.toString());
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
+        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
     }
   }
 }
