@@ -163,6 +163,20 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     document.onmouseup = null;
     this.direction = null;
   }
+  private getSnapStep(size: number, gridSize: number, minSize: number) {
+    let step = gridSize;
+
+    while (step / 2 >= minSize && size < step) {
+      if (size <= minSize) break;
+      step /= 2;
+    }
+
+    return step;
+  }
+
+  private snapToStep(value: number, offset: number, step: number) {
+    return Math.round((value - offset) / step) * step + offset;
+  }
 
   private resize(e: MouseEvent, minSize: number = 8) {
     if (this.selected.length <= 0 || !this.direction) return;
@@ -180,73 +194,41 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const dx = current.x - this.cursorStartPosition.x;
     const dy = current.y - this.cursorStartPosition.y;
 
-    switch (this.direction) {
-      case "br":
-        width = this.elementStartSize.width + dx;
-        height = this.elementStartSize.height + dy;
-        break;
-
-      case "tr":
-        width = this.elementStartSize.width + dx;
-        height = this.elementStartSize.height - dy;
-        y = this.elementStartSize.y + (this.elementStartSize.height - height);
-        break;
-
-      case "bl":
-        width = this.elementStartSize.width - dx;
-        height = this.elementStartSize.height + dy;
-        x = this.elementStartSize.x + (this.elementStartSize.width - width);
-        break;
-
-      case "tl":
-        width = this.elementStartSize.width - dx;
-        height = this.elementStartSize.height - dy;
-        x = this.elementStartSize.x + (this.elementStartSize.width - width);
-        y = this.elementStartSize.y + (this.elementStartSize.height - height);
-        break;
+    if (this.direction.includes("r")) width = this.elementStartSize.width + dx;
+    if (this.direction.includes("l")) {
+      width = this.elementStartSize.width - dx;
+      x = this.elementStartSize.x + (this.elementStartSize.width - width);
+    }
+    if (this.direction.includes("b")) height = this.elementStartSize.height + dy;
+    if (this.direction.includes("t")) {
+      height = this.elementStartSize.height - dy;
+      y = this.elementStartSize.y + (this.elementStartSize.height - height);
     }
 
     if (e.shiftKey) {
-      function getSnapStep(size: number, gridSize: number, minSize: number) {
-        let step = gridSize;
-
-        while (step / 2 >= minSize && size < step) {
-          if (size <= minSize) break;
-          step /= 2;
-        }
-
-        return step;
-      }
-
-      function snapToStep(value: number, offset: number, step: number) {
-        return Math.round((value - offset) / step) * step + offset;
-      }
-
-      const stepX = getSnapStep(width, this.grid.size, minSize);
-      const stepY = getSnapStep(height, this.grid.size, minSize);
+      const stepX = this.getSnapStep(width, this.grid.size, minSize);
+      const stepY = this.getSnapStep(height, this.grid.size, minSize);
 
       if (this.direction.includes("r")) {
-        const snappedX = snapToStep(x + width, this.grid.offset.x, stepX);
+        const snappedX = this.snapToStep(x + width, this.grid.offset.x, stepX);
         width = snappedX - x;
       }
 
       if (this.direction.includes("l")) {
-        const snappedX = snapToStep(x, this.grid.offset.x, stepX);
-        const newX = snappedX;
-        width = width + (x - newX);
-        x = newX;
+        const snappedX = this.snapToStep(x, this.grid.offset.x, stepX);
+        width = width + (x - snappedX);
+        x = snappedX;
       }
 
       if (this.direction.includes("b")) {
-        const snappedY = snapToStep(y + height, this.grid.offset.y, stepY);
+        const snappedY = this.snapToStep(y + height, this.grid.offset.y, stepY);
         height = snappedY - y;
       }
 
       if (this.direction.includes("t")) {
-        const snappedY = snapToStep(y, this.grid.offset.y, stepY);
-        const newY = snappedY;
-        height = height + (y - newY);
-        y = newY;
+        const snappedY = this.snapToStep(y, this.grid.offset.y, stepY);
+        height = height + (y - snappedY);
+        y = snappedY;
       }
     }
 
@@ -266,7 +248,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
       y,
       w: width,
       h: height,
-      r: token.r
+      r: token.r,
     });
   }
 
@@ -292,7 +274,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     let r = Math.atan2(dy, dx);
     r = r * (180 / Math.PI); // Radians to degrees
-    r += 90 // 90 degree offset, so the top of the token is 0.
+    r += 90; // 90 degree offset, so the top of the token is 0.
     r = Math.floor(r); // Make behavior "snappier"
 
     this.updateBox();
@@ -302,7 +284,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
       y: token.y,
       w: token.w,
       h: token.h,
-      r
+      r,
     });
   }
 }
