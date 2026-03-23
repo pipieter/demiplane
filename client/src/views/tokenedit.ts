@@ -62,13 +62,16 @@ class TokenEditView extends TokenListenerContainer {
   public onchange() {
     if (!this.selected) return;
 
-    console.log("AAAAAAA");
     const id = this.selected.id;
-    const x = parseInt(this.editX.value ?? "0");
-    const y = parseInt(this.editY.value ?? "0");
-    const w = parseInt(this.editW.value ?? "8");
-    const h = parseInt(this.editH.value ?? "8");
-    console.log(x, y, w, h);
+    const x = parseInt(this.editX.value || "0");
+    const y = parseInt(this.editY.value || "0");
+    let w = parseInt(this.editW.value || "8");
+    let h = parseInt(this.editH.value || "8");
+
+    // Don't allow negative dimensions
+    w = Math.min(w, 0);
+    h = Math.min(h, 0);
+
     this.emit("token_transform", { id, x, y, w, h });
   }
 }
