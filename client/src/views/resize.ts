@@ -1,5 +1,6 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
+import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type Viewport from "../models/viewport";
 
@@ -24,7 +25,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private cursorStartPosition: { x: number; y: number };
   private elementStartSize: DOMRect;
   private direction: string | null;
-  private selected: string[];
+  private selected: Token[];
 
   constructor(grid: Grid, viewport: Viewport) {
     super(new ResizeViewListeners());
@@ -44,8 +45,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.start(evt)));
   }
 
-  public setSelected(ids: string[]) {
-    this.selected = [...ids];
+  public setSelected(tokens: Token[]) {
+    this.selected = [...tokens];
     this.updateBox();
   }
 
@@ -90,7 +91,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   }
 
   private elements(): SVGGraphicsElement[] {
-    return this.selected.map((id) => document.getElementById(id) as unknown as SVGGraphicsElement);
+    return this.selected.map((token) => document.getElementById(token.id) as unknown as SVGGraphicsElement);
   }
 
   private start(e: MouseEvent) {

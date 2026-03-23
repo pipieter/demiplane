@@ -6,7 +6,7 @@ import type Viewport from "../models/viewport";
 import { util } from "../util";
 
 interface TransformViewMap {
-  tokens_select: string[];
+  tokens_select: Token[];
   token_transform: Transform;
 }
 
@@ -44,7 +44,7 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
   private select(event: MouseEvent, token: Token) {
     event.preventDefault();
 
-    this.emit("tokens_select", [token.id]);
+    this.emit("tokens_select", [token]);
 
     document.onmousemove = (evt) => this.drag(evt, token);
     document.onmouseup = () => this.drop();

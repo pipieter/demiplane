@@ -27,7 +27,7 @@ class TokenController extends Controller<TokenView> {
   }
 
   public requestRemove() {
-    const ids = this.state.getSelected();
+    const ids = this.state.getSelected().map(token => token.id);
     this.store.send({ type: "request_delete", delete: ids });
   }
 }
