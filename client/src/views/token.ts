@@ -21,6 +21,9 @@ class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 
     window.addEventListener("keydown", (event) => {
+      // Don't trigger this event if focused on another input, e.g. a text input
+      if (document.activeElement?.tagName.toLowerCase() === "input") return;
+
       const keys = ["Delete", "Backspace"];
       if (keys.includes(event.key)) {
         this.emit("request_remove", null);
