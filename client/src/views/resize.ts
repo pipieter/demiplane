@@ -46,7 +46,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.direction = null;
     this.selected = [];
 
-    this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.start(evt)));
+    this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.startResize(evt)));
+    this.rotateHandle.addEventListener("mousedown", (evt) => this.startRotate(evt));
   }
 
   public setSelected(tokens: Token[]) {
@@ -69,12 +70,14 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const y = token.y - offset;
     const w = token.w + offset * 2;
     const h = token.h + offset * 2;
+    const r = token.r;
 
     this.layer.style.display = "block";
     this.box.setAttribute("x", x.toString());
     this.box.setAttribute("y", y.toString());
     this.box.setAttribute("width", w.toString());
     this.box.setAttribute("height", h.toString());
+    this.box.setAttribute("transform", `rotate(${r} 0 0)`);
 
     // Position the handles
     const size = 8;
@@ -114,20 +117,21 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const topCenterX = token.x + token.w / 2;
     const topCenterY = token.y - 20; // offset
 
-    const rotated = this.rotatePoint(topCenterX, topCenterY, token.x, token.x, token.r);
+    const tokenCenter = { x: token.x + token.w / 2, y: token.y + token.h / 2 }
+
+    const rotated = this.rotatePoint(topCenterX, topCenterY, tokenCenter.x, tokenCenter.x, token.r);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
     this.rotateHandle.setAttribute("cy", rotated.y.toString());
 
     if (this.rotateLine) {
-      const topRotated = this.rotatePoint((token.x + token.w / 2), (token.y), token.x, token.y, token.r)
-      this.rotateLine.setAttribute("x1", topRotated.x.toString());
-      this.rotateLine.setAttribute("y1", topRotated.y.toString());
+      this.rotateLine.setAttribute("x1", tokenCenter.x.toString());
+      this.rotateLine.setAttribute("y1", tokenCenter.y.toString());
       this.rotateLine.setAttribute("x2", rotated.x.toString());
       this.rotateLine.setAttribute("y2", rotated.y.toString());
     }
   }
 
-  private start(e: MouseEvent) {
+  private startResize(e: MouseEvent) {
     e.stopPropagation();
     const target = e.target as SVGElement;
     this.direction = target.dataset.dir ?? null;
@@ -137,10 +141,10 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
     this.elementStartSize = new DOMRect(token.x, token.y, token.w, token.h);
     document.onmousemove = (evt) => this.resize(evt);
-    document.onmouseup = () => this.stop();
+    document.onmouseup = () => this.stopResize();
   }
 
-  private stop() {
+  private stopResize() {
     document.onmousemove = null;
     document.onmouseup = null;
     this.direction = null;
@@ -248,6 +252,43 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
       y,
       w: width,
       h: height,
+      r: token.r
+    });
+  }
+
+  private startRotate(e: MouseEvent) {
+    e.stopPropagation();
+    this.cursorStartPosition = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
+    document.onmousemove = (evt) => this.rotate(evt);
+    document.onmouseup = () => this.stopRotate();
+  }
+
+  private stopRotate() {
+    document.onmousemove = null;
+    document.onmouseup = null;
+  }
+
+  private rotate(e: MouseEvent) {
+    const token = this.selected[0];
+
+    const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
+    const center = this.viewport.getTranslatedCoords(token.x + token.w / 2, token.y + token.h / 2);
+    const dx = current.x - center.x;
+    const dy = current.y - center.y;
+
+    let r = Math.atan2(dy, dx);
+    r = r * (180 / Math.PI); // Radians to degrees
+    r += 90 // 90 degree offset, so the top of the token is 0.
+    r = Math.floor(r); // Make behavior "snappier"
+
+    this.updateBox();
+    this.emit("token_transform", {
+      id: token.id,
+      x: token.x,
+      y: token.y,
+      w: token.w,
+      h: token.h,
+      r
     });
   }
 }

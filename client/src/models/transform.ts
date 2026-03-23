@@ -4,4 +4,5 @@ export interface Transform {
   y: number;
   w: number;
   h: number;
+  r: number;
 }
