@@ -8,6 +8,7 @@ class TokenEditView extends TokenListenerContainer {
   private editW: HTMLInputElement;
   private editH: HTMLInputElement;
   private editElements: HTMLInputElement[];
+  private deleteButton: HTMLButtonElement;
 
   private selected: Token | null;
 
@@ -19,10 +20,12 @@ class TokenEditView extends TokenListenerContainer {
     this.editW = document.getElementById("token-edit-w") as HTMLInputElement;
     this.editH = document.getElementById("token-edit-h") as HTMLInputElement;
     this.editElements = [this.editX, this.editY, this.editW, this.editH];
+    this.deleteButton = document.getElementById("token-edit-delete") as HTMLButtonElement;
 
     this.selected = null;
 
     this.editElements.forEach((input) => input.addEventListener("change", () => this.onchange()));
+    this.deleteButton.addEventListener("click", () => this.ondelete());
   }
 
   public select(tokens: Token[]) {
@@ -49,10 +52,12 @@ class TokenEditView extends TokenListenerContainer {
 
   public disable() {
     this.editElements.forEach((element) => (element.disabled = true));
+    this.deleteButton.disabled = true;
   }
 
   public enable(token: Token) {
     this.editElements.forEach((element) => (element.disabled = false));
+    this.deleteButton.disabled = false;
     this.editX.value = token.x.toString();
     this.editY.value = token.y.toString();
     this.editW.value = token.w.toString();
@@ -73,6 +78,12 @@ class TokenEditView extends TokenListenerContainer {
     h = Math.min(h, 0);
 
     this.emit("token_transform", { id, x, y, w, h });
+  }
+
+  public ondelete() {
+    if (!this.selected) return;
+
+    this.emit("tokens_delete", [this.selected]);
   }
 }
 
