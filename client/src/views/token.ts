@@ -1,34 +1,11 @@
-import { Listener, ListenerContainer } from "../listener";
 import type { Token } from "../models/token";
 import server from "../server";
 
-interface TokenViewMap {
-  request_remove: null;
-}
-
-class TokenViewListener extends Listener<TokenViewMap> {
-  protected override keys(): (keyof TokenViewMap)[] {
-    return ["request_remove"];
-  }
-}
-
-class TokenView extends ListenerContainer<TokenViewListener, TokenViewMap> {
+class TokenView {
   private layer: SVGSVGElement;
 
   constructor() {
-    super(new TokenViewListener());
-
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
-
-    window.addEventListener("keydown", (event) => {
-      // Don't trigger this event if focused on another input, e.g. a text input
-      if (document.activeElement?.tagName.toLowerCase() === "input") return;
-
-      const keys = ["Delete", "Backspace"];
-      if (keys.includes(event.key)) {
-        this.emit("request_remove", null);
-      }
-    });
   }
 
   public create(token: Token) {

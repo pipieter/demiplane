@@ -1,24 +1,26 @@
-import { Listener, ListenerContainer } from "../listener";
+import { TokenListenerContainer } from "../listeners";
 import type { Token } from "../models/token";
 
-interface SelectionViewMap {
-  clear_selection: null;
-}
-
-class SelectionViewListeners extends Listener<SelectionViewMap> {
-  protected keys(): (keyof SelectionViewMap)[] {
-    return ["clear_selection"];
-  }
-}
-
-class SelectionView extends ListenerContainer<SelectionViewListeners, SelectionViewMap> {
+class SelectionView extends TokenListenerContainer {
   private background: SVGSVGElement;
+  private selected: Token[];
 
   constructor() {
-    super(new SelectionViewListeners());
+    super();
 
     this.background = document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement;
     this.background.onclick = () => this.clear();
+    this.selected = [];
+
+    window.addEventListener("keydown", (event) => {
+      // Don't trigger this event if focused on another input, e.g. a text input
+      if (document.activeElement?.tagName.toLowerCase() === "input") return;
+
+      const keys = ["Delete", "Backspace"];
+      if (this.selected && keys.includes(event.key)) {
+        this.delete();
+      }
+    });
   }
 
   public select(previous: Token[], current: Token[]) {
@@ -29,10 +31,16 @@ class SelectionView extends ListenerContainer<SelectionViewListeners, SelectionV
     for (const token of current) {
       document.getElementById(token.id)?.classList.add("selected");
     }
+
+    this.selected = [...current];
   }
 
   public clear() {
-    this.emit("clear_selection", null);
+    this.emit("tokens_select", []);
+  }
+
+  public delete() {
+    this.emit("tokens_delete", [...this.selected]);
   }
 }
 
