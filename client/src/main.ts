@@ -1,55 +1,79 @@
-import { grid } from "./whiteboard/grid";
-import { header } from "./header";
 import type { ResponseMessage } from "./messages";
-import { viewport } from "./whiteboard/viewport";
 import { util } from "./util";
-import { server } from "./server";
-import drawFree from "./whiteboard/drawing/free";
-import drawCircle from "./whiteboard/drawing/circle";
-import drawRectangle from "./whiteboard/drawing/rectangle";
-import tokens from "./whiteboard/tokens";
-import background from "./whiteboard/background";
-import selection from "./whiteboard/selection";
+import server from "./server";
+import BackgroundView from "./views/background";
+import BackgroundController from "./controllers/background";
+import State from "./state";
+import Store from "./store";
+import TokenView from "./views/token";
+import TokenController from "./controllers/token";
+import TransformController from "./controllers/transform";
+import TransformView from "./views/transform";
+import SelectionView from "./views/selection";
+import SelectionController from "./controllers/selection";
+import ResizeView from "./views/resize";
+import ResizeController from "./controllers/resize";
+import TokenDrawView from "./views/tokendraw";
+import TokenDrawController from "./controllers/tokendraw";
+import GridView from "./views/grid";
+import GridController from "./controllers/grid";
+import HeaderView from "./views/header";
+import HeaderController from "./controllers/header";
 
-tokens.initialize();
-selection.initialize();
-header.initialize();
-viewport.initialize();
-grid.initialize();
+const socket = new WebSocket(server.url);
+const store = new Store(server.url, socket);
+const state = new State();
 
-server.socket.onmessage = function (event) {
+const grid = state.getGrid();
+const viewport = state.getViewport();
+
+const tokenView = new TokenView();
+const backgroundView = new BackgroundView();
+const transformView = new TransformView(grid, viewport);
+const selectionView = new SelectionView();
+const resizeView = new ResizeView(grid, viewport);
+const tokenDrawView = new TokenDrawView(grid, viewport);
+const gridView = new GridView();
+const headerView = new HeaderView();
+
+new BackgroundController(store, state, backgroundView);
+new TokenController(store, state, tokenView);
+new TransformController(store, state, transformView);
+new SelectionController(store, state, selectionView);
+new ResizeController(store, state, resizeView);
+new TokenDrawController(store, state, tokenDrawView);
+new GridController(store, state, gridView);
+new HeaderController(store, state, headerView);
+
+socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
     case "create":
-      tokens.create(data.create);
+      state.createToken(data.create);
       break;
 
     case "delete":
-      for (const id of data.delete) {
-        tokens.remove(id);
-      }
+      state.removeTokens(data.delete);
       break;
 
     case "grid":
-      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
+      state.setGrid(data.grid);
       break;
 
     case "background": {
-      background.set(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.href, data.background.width, data.background.height);
       break;
     }
 
     case "transform":
-      tokens.transform(data.transform.id, data.transform.x, data.transform.y, data.transform.w, data.transform.h);
+      state.transformToken(data.transform);
       break;
 
     case "sync":
-      grid.set(data.grid.size, data.grid.offset.x, data.grid.offset.y);
-      background.set(data.background.href, data.background.width, data.background.height);
-      for (const token of data.tokens) {
-        tokens.create(token);
-      }
+      state.setGrid(data.grid);
+      state.setBackground(data.background.href, data.background.width, data.background.height);
+      state.createTokens(data.tokens);
       break;
 
     default:
@@ -57,11 +81,7 @@ server.socket.onmessage = function (event) {
   }
 };
 
-const beginCircleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
-const beginRectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
-const beginDrawingButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
 const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
-const uploadBackgroundInput = document.getElementById("upload-background-button") as HTMLInputElement;
 
 function getRandomPosition(): { x: number; y: number } {
   return {
@@ -70,13 +90,8 @@ function getRandomPosition(): { x: number; y: number } {
   };
 }
 
-beginCircleButton.onclick = drawCircle.begin;
-beginRectangleButton.onclick = drawRectangle.begin;
-beginDrawingButton.onclick = drawFree.begin;
-
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
-  // @ts-expect-error Files should be a valid field
-  const file = evt.target?.files[0];
+  const file = (evt.target as HTMLInputElement).files?.item(0);
   if (!file) {
     console.error("Could not open file.");
     return;
@@ -88,17 +103,17 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     return;
   }
 
-  const href = await server.uploadImageToBackend(base64);
+  const href = await store.uploadImage(base64);
   if (!href) {
     console.error("Could not upload image to server.");
     return;
   }
 
   const { x, y } = getRandomPosition();
-  const w = grid.get().size;
-  const h = grid.get().size;
+  const w = grid.size;
+  const h = grid.size;
 
-  server.send({
+  store.send({
     type: "request_create",
     create: {
       type: "image",
@@ -109,31 +124,5 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       w,
       h,
     },
-  });
-});
-
-uploadBackgroundInput.addEventListener("change", async (evt: Event) => {
-  // @ts-expect-error Files should be a valid field
-  const file = evt.target?.files[0];
-  if (!file) {
-    console.error("Could not open file.");
-    return;
-  }
-
-  const base64 = await util.readBase64(file);
-  if (!base64) {
-    console.error("Could not read file.");
-    return;
-  }
-
-  const href = await server.uploadImageToBackend(base64);
-  if (!href) {
-    console.error("Could not upload image to server.");
-    return;
-  }
-
-  server.send({
-    type: "request_background",
-    href,
   });
 });

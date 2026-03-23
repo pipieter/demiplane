@@ -15,8 +15,11 @@
         "cloudflared",
         "Demiplane",
         "discordsays",
+        "freedraw",
         "Newtonsoft",
+        "ontransform",
         "resizebox",
+        "tokendraw",
         "wwwroot"
     ],
     "ignoreWords": [],
