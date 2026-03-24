@@ -5,7 +5,7 @@ import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
 import Viewport from "./models/viewport";
 
-interface StateListenerMap {
+export interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
   token_create: Token;
@@ -88,6 +88,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
   public getSelected(): Token[] {
     return [...this.selected];
+  }
+
+  public getTokens(): Token[] {
+    return [...this.tokens];
   }
 
   public getGrid(): Grid {

@@ -94,6 +94,39 @@ button:disabled {
   text-orientation: mixed;
 }
 
+/* Token list */
+
+.token-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.token-list > li {
+  border: solid 1px gray;
+  background-color: var(--dark-primary);
+  margin: 8px;
+  display: flex;
+  overflow: hidden;
+  cursor: pointer;
+  align-items: center;
+}
+
+.token-list > li.selected {
+  background-color: var(--dark-secondary);
+}
+
+.token-list > li > i {
+  font-size: 32px;
+  margin: 0;
+  padding: 4px;
+}
+
+.token-list > li > p {
+  margin: 0;
+  padding: 0;
+}
+
 /* Whiteboard */
 
 #whiteboard-container {
