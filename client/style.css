@@ -1,31 +1,8 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-}
 
-header {
-  background-color: darkgray;
-  box-shadow: 0px 0px 4px black;
-
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 1rem 1rem;
-  z-index: 1000;
-}
-
-header > nav {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-header > nav > button {
-  min-width: 100%;
+  --sidebar-width: 200px;
 }
 
 button {
@@ -52,6 +29,60 @@ button:disabled {
   background-color: darkgray;
   color: gray;
 }
+
+/* Sidebar */
+
+.sidebar {
+  position: fixed;
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  z-index: 1000;
+  pointer-events: visible;
+}
+
+.sidebar-content {
+  background-color: red;
+
+  background-color: darkgray;
+  box-shadow: 0px 0px 4px black;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1rem;
+  min-width: 200px;
+  overflow: hidden;
+  width: var(--sidebar-width);
+}
+
+.sidebar > nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar > nav > button {
+  min-width: 100%;
+}
+
+.sidebar-navigation {
+  display: grid;
+  grid-auto-columns: auto;
+  grid-auto-rows: auto;
+  height: fit-content;
+  background-color: red;
+  height: fit-content;
+}
+
+.sidebar-navigation > button {
+  height: fit-content;
+  width: fit-content;
+  transform: rotate(90deg);
+  margin: 0;
+}
+
+/* Whiteboard */
 
 #whiteboard-container {
   pointer-events: none;
