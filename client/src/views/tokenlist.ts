@@ -3,11 +3,21 @@ import type { Token } from "../models/token";
 
 class TokenListView extends TokenListenerContainer {
   private list: HTMLUListElement;
+  private checkbox: HTMLInputElement;
 
   constructor() {
     super();
 
     this.list = document.getElementById("token-list") as HTMLUListElement;
+    this.checkbox = document.getElementById("token-list-checkbox") as HTMLInputElement;
+
+    this.checkbox.addEventListener("change", (evt) => {
+      if ((evt.target as HTMLInputElement).checked) {
+        this.list.style.display = "";
+      } else {
+        this.list.style.display = "none";
+      }
+    });
   }
 
   public update(tokens: Token[], selected: Token[]) {

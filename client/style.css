@@ -100,6 +100,7 @@ button:disabled {
   list-style-type: none;
   padding: 0px;
   margin: 0px;
+  overflow-y: scroll;
 }
 
 .token-list > li {
