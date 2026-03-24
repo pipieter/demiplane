@@ -72,8 +72,6 @@ button:disabled {
 .sidebar-navigation {
   display: grid;
   grid-auto-columns: auto;
-  grid-auto-rows: auto;
-  background-color: red;
   height: fit-content;
 }
 
@@ -82,12 +80,12 @@ button:disabled {
   border-radius: 0;
 }
 
-.tab-close-button {
-  height: 50px;
-}
-
 .sidebar-navigation > button.selected {
   background-color: var(--dark-tertiary);
+}
+
+.tab-close-button {
+  height: 50px;
 }
 
 .sidebar-navigation > .tab-button {
