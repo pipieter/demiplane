@@ -224,9 +224,10 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const token = this.selected[0];
 
     const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
-    const center = this.viewport.getTranslatedCoords(token.x + token.w / 2, token.y + token.h / 2);
-    const dx = current.x - center.x;
-    const dy = current.y - center.y;
+    const centerX = token.x + token.w / 2;
+    const centerY = token.y + token.h / 2;
+    const dx = current.x - centerX;
+    const dy = current.y - centerY;
 
     let r = Math.atan2(dy, dx);
     r = r * (180 / Math.PI); // Radians to degrees
