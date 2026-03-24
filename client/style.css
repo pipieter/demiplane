@@ -1,83 +1,88 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+  font-family: Arial, sans-serif;
+  margin: 0;
 }
 
 header {
-    background-color: darkgray;
-    box-shadow: 0px 0px 4px black;
+  background-color: darkgray;
+  box-shadow: 0px 0px 4px black;
 
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem 1rem;
-    z-index: 1000;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1rem;
+  z-index: 1000;
 }
 
 header > nav {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 
-    gap: 1rem;
-    margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 header > nav > button {
-    min-width: 100%;
+  min-width: 100%;
 }
 
 button {
-    background-color: darkgray;
-    color: black;
-    font-weight: bold;
-    transition: all 0.1s ease;
-    cursor: pointer;
+  background-color: darkgray;
+  color: black;
+  font-weight: bold;
+  transition: all 0.1s ease;
+  cursor: pointer;
 
-    border: 1px solid gray;
-    border-radius: 1rem;
-    font-size: 1rem;
-    padding: 0.6rem;
+  border: 1px solid gray;
+  border-radius: 1rem;
+  font-size: 1rem;
+  padding: 0.6rem;
 
-    box-shadow: 0px -4px 4px gray inset;
+  box-shadow: 0px -4px 4px gray inset;
 }
 
 button:hover {
-    background-color: lightcyan;
-    color: black;
+  background-color: lightcyan;
+  color: black;
+}
+
+button:disabled {
+  background-color: darkgray;
+  color: gray;
 }
 
 #whiteboard-container {
-    pointer-events: none;
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
+  pointer-events: none;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 #whiteboard {
-    display: block;
+  display: block;
 }
 
 #whiteboard-objects-layer > * {
-    transition: filter 0.1s ease;
-    transform-box: fill-box;
-    transform-origin: center center;
-    filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+  transition: filter 0.1s ease;
+  transform-box: fill-box;
+  transform-origin: center center;
+  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
 
-    cursor: pointer;
-    outline: none;
+  cursor: pointer;
+  outline: none;
 }
 
 #whiteboard-objects-layer > *:hover {
-    filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.6));
+  filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.6));
 }
 
 #whiteboard-objects-layer > *:focus,
 #whiteboard-objects-layer > .selected {
-    filter: drop-shadow(0px 0px 8px #4da3ff);
-    outline: none;
+  filter: drop-shadow(0px 0px 8px #4da3ff);
+  outline: none;
 }
 
 #whiteboard-resize {
@@ -85,7 +90,7 @@ button:hover {
 }
 
 #resize-box {
-    filter: drop-shadow(0px 0px 1px #4da3ff);
+  filter: drop-shadow(0px 0px 1px #4da3ff);
 }
 
 .resize-handle,
@@ -95,12 +100,12 @@ button:hover {
 }
 
 #rotate-line {
-    z-index: -1;
+  z-index: -1;
 }
 
 #whiteboard-drawing-layer {
-    pointer-events: auto;
-    cursor: none; /* A custom marker is used when drawing */
+  pointer-events: auto;
+  cursor: none; /* A custom marker is used when drawing */
 }
 
 /* 
@@ -111,6 +116,6 @@ button:hover {
 */
 #whiteboard-objects-layer > *,
 #whiteboard-resize > * {
-    transform-origin: center center;
-    transform-box: fill-box;
+  transform-origin: center center;
+  transform-box: fill-box;
 }

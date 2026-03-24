@@ -251,8 +251,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private updateFreedrawLine() {
-    if (!this.freedrawPoints) {
-      this.freedraw.removeAttribute("d");
+    if (this.freedrawPoints.length === 0) {
+      this.freedraw.setAttribute("d", "M 0 0");
       return;
     }
 
@@ -276,6 +276,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
     const ctx = canvas.getContext("2d")!;
     ctx.translate(-x + lineWidth, -y + lineWidth);
+    ctx.fillStyle = "black";
     ctx.lineWidth = lineWidth;
 
     if (this.freedrawPoints.length > 1) {

@@ -1,20 +1,9 @@
-import { Listener, ListenerContainer } from "../listener";
+import { TokenListenerContainer } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
-import type { Transform } from "../models/transform";
 import type Viewport from "../models/viewport";
 
-interface ResizeViewMap {
-  token_transform: Transform;
-}
-
-class ResizeViewListeners extends Listener<ResizeViewMap> {
-  protected override keys(): (keyof ResizeViewMap)[] {
-    return ["token_transform"];
-  }
-}
-
-class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
+class ResizeView extends TokenListenerContainer {
   private grid: Grid;
   private viewport: Viewport;
 
@@ -28,7 +17,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
   private selected: Token[];
 
   constructor(grid: Grid, viewport: Viewport) {
-    super(new ResizeViewListeners());
+    super();
 
     this.grid = grid;
     this.viewport = viewport;

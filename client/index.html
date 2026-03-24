@@ -10,6 +10,7 @@
       <nav class="tabs">
         <button class="tab-button" data-tab="draw">Draw</button>
         <button class="tab-button" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="token">Token</button>
       </nav>
 
       <section id="tab-draw" class="tab-panel">
@@ -32,6 +33,20 @@
         <label for="grid-offset-Y">offset Y</label>
         <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
       </section>
+
+      <section id="tab-token" class="tab-panel" hidden>
+        <label for="token-edit-x">x</label>
+        <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
+        <label for="token-edit-y">y</label>
+        <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
+        <label for="token-edit-w">width</label>
+        <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
+        <label for="token-edit-h">height</label>
+        <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
+        <label for="token-edit-r">angle</label>
+        <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+        <button id="token-edit-delete" disabled>Delete</button>
+      </section>
     </header>
 
     <div id="whiteboard-container">
@@ -49,7 +64,7 @@
           </svg>
 
           <svg id="whiteboard-objects-layer"></svg>
-          
+
           <svg id="whiteboard-resize" style="display: none">
             <line id="rotate-line" stroke="#4da3ff" />
             <rect id="resize-box" fill="none" stroke="#4da3ff" stroke-width="1" pointer-events="none" />

@@ -17,9 +17,11 @@
         "discordsays",
         "freedraw",
         "Newtonsoft",
+        "ondelete",
         "ontransform",
         "resizebox",
         "tokendraw",
+        "tokenedit",
         "wwwroot"
     ],
     "ignoreWords": [],

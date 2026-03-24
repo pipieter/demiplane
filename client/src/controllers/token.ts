@@ -11,7 +11,6 @@ class TokenController extends Controller<TokenView> {
     this.state.listen("token_create", (token) => this.create(token));
     this.state.listen("token_transform", ([token, _]) => this.redraw(token));
     this.state.listen("token_delete", (ids) => this.remove(ids));
-    this.view.listen("request_remove", () => this.requestRemove());
   }
 
   public create(token: Token) {
@@ -24,11 +23,6 @@ class TokenController extends Controller<TokenView> {
 
   public remove(ids: string[]) {
     this.view.remove(ids);
-  }
-
-  public requestRemove() {
-    const ids = this.state.getSelected().map((token) => token.id);
-    this.store.send({ type: "request_delete", delete: ids });
   }
 }
 
