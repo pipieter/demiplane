@@ -128,7 +128,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     const topCenterX = token.x + token.w / 2;
     const topCenterY = token.y - 20; // offset
-    const handleAngle = angle + 90 // 0 degrees is on the right, we want the top to be the default position
+    const handleAngle = angle + 90; // 0 degrees is on the right, we want the top to be the default position
 
     const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, handleAngle);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
