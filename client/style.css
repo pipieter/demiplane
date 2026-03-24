@@ -77,8 +77,6 @@ button:disabled {
 .sidebar-navigation > button {
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  width: 100%;
-  height: 100%;
 }
 
 /* Whiteboard */
