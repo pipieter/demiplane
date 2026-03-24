@@ -78,10 +78,16 @@ socket.onmessage = function (event) {
       state.transformToken(data.transform);
       break;
 
+    case "user":
+      state.setUser(data.user);
+      break;
+
     case "sync":
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       state.createTokens(data.tokens);
+      state.setUsers(data.users);
+      store.setBearerToken(data.bearer);
       break;
 
     default:

@@ -15,7 +15,7 @@ public class ErrorResponseMessage(string message)
     public string message = message;
 }
 
-public class SyncResponseMessage(Token[] tokens, Background background, Grid grid) : Message
+public class SyncResponseMessage(Token[] tokens, Background background, Grid grid, User[] users, User me) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "sync";
@@ -28,6 +28,12 @@ public class SyncResponseMessage(Token[] tokens, Background background, Grid gri
 
     [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
+    [JsonProperty(Required = Required.Always)]
+    public User[] users = users;
+    [JsonProperty(Required = Required.Always)]
+    public string bearer = me.bearer;
+    [JsonProperty(Required = Required.Always)]
+    public User me = me;
 }
 
 public class CreateRequestMessage(Token create) : Message

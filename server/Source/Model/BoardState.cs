@@ -6,6 +6,7 @@ public class ConcurrentBoardState
 {
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
+    private readonly List<User> _users = [];
     private readonly Grid _grid = new(64, 0, 0);
     private readonly Background _background = new(null, 1024, 1024);
 
@@ -56,6 +57,40 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             return [.. _tokens];
+        }
+    }
+
+    public bool AddUser(User user)
+    {
+        lock (_lock)
+        {
+            if (_users.Find(existing => existing.id == user.id) != null)
+                return false;
+
+            _users.Add(user);
+            return true;
+        }
+    }
+
+    public bool EditUser(string bearer, string name, string color)
+    {
+        lock (_lock)
+        {
+            User? user = _users.Find(user => user.bearer == bearer);
+            if (user == null)
+                return false;
+
+            user.name = name;
+            user.color = color;
+            return true;
+        }
+    }
+
+    public List<User> Users()
+    {
+        lock (_lock)
+        {
+            return [.. _users];
         }
     }
 

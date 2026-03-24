@@ -1,6 +1,7 @@
 import type { GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
+import type { User } from "./models/user";
 
 /** Sync the current board state */
 export interface SyncResponseMessage {
@@ -12,6 +13,9 @@ export interface SyncResponseMessage {
   };
   grid: GridData;
   tokens: Token[];
+  users: User[];
+  bearer: string;
+  me: User;
 }
 
 /** Request to create a token on the whiteboard */
@@ -78,16 +82,30 @@ export interface BackgroundResponseMessage {
   };
 }
 
+/** Request to a user */
+export interface UserRequestMessage {
+  type: "request_user";
+  user: User;
+}
+
+/** Set the user's new data */
+export interface UserResponseMessage {
+  type: "user";
+  user: User;
+}
+
 export type RequestMessage =
   | CreateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage
   | GridRequestMessage
-  | BackgroundRequestMessage;
+  | BackgroundRequestMessage
+  | UserRequestMessage;
 export type ResponseMessage =
   | SyncResponseMessage
   | CreateResponseMessage
   | DeleteResponseMessage
   | TransformResponseMessage
   | GridResponseMessage
-  | BackgroundResponseMessage;
+  | BackgroundResponseMessage
+  | UserResponseMessage;

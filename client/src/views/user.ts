@@ -21,7 +21,7 @@ class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
 
     this.nameInput = document.getElementById("user-input-name") as HTMLInputElement;
     this.colorInput = document.getElementById("user-input-color") as HTMLInputElement;
-    this.me = { 'id': 'e', 'name': 'steve', 'color': '#FF00FF' };
+    this.me = { id: "e", name: "steve", color: "#FF00FF" };
 
     this.nameInput.onchange = () => this.onchange();
     this.colorInput.onchange = () => this.onchange();

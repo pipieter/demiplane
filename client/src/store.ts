@@ -3,10 +3,12 @@ import type { RequestMessage } from "./messages";
 class Store {
   private url: string;
   private socket: WebSocket;
+  private bearer: string | null;
 
   constructor(url: string, socket: WebSocket) {
     this.url = url;
     this.socket = socket;
+    this.bearer = localStorage.getItem('bearer');
   }
 
   public async uploadImage(base64: string): Promise<string> {
@@ -31,6 +33,11 @@ class Store {
 
   public send(req: RequestMessage) {
     this.socket.send(JSON.stringify(req));
+  }
+
+  public setBearerToken(bearer: string) {
+    this.bearer = bearer;
+    localStorage.setItem('bearer', bearer);
   }
 }
 

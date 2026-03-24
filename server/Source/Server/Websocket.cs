@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
@@ -67,7 +68,8 @@ public partial class Server
         _clients.TryAdd(socket, "");
 
         // Synchronize the current state
-        SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid());
+        User newUser = GenerateNewUser();
+        SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.Users()], newUser);
         await socket.SendAsync(Json.Serialize(sync));
 
         while (socket.IsOpen)
@@ -92,6 +94,27 @@ public partial class Server
                 }
             }
         }
+    }
+
+    private User GenerateNewUser()
+    {
+        // TODO - This probably does not belong in this file and should be moved.
+        // TODO only create a user if synced device does not send an existing bearer token.
+        Guid guid = Guid.NewGuid();
+        string newUserName = "Wanderer " + _state.Users().Count;
+
+        // bearer
+        byte[] tokenBytes = RandomNumberGenerator.GetBytes(32);
+        string bearer = Convert.ToHexString(tokenBytes);
+
+        // color
+        byte[] bytes = guid.ToByteArray();
+        byte r = (byte)(bytes[0] % 200 + 30);
+        byte g = (byte)(bytes[1] % 200 + 30);
+        byte b = (byte)(bytes[2] % 200 + 30);
+        string newUserColor = $"#{r:X2}{g:X2}{b:X2}";
+
+        return new(guid.ToString(), bearer, newUserName, newUserColor);
     }
 
     private async Task BroadcastMessage(string message)

@@ -104,19 +104,19 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
   public createUser(user: User) {
     if (user.id in this.users) throw `User ${user.id} already exists.`;
-    this.users[user.id] = user;
+
+  }
+
+  public setUser(user: User) {
+    if (user.id in this.users) this.users[user.id] = user;
+    else this.users[user.id] = user;
     this.emit("user_change", user);
   }
 
-  public createUsers(users: User[]) {
+  public setUsers(users: User[]) {
     for (const user of users) {
-      this.createUser(user);
+      this.setUser(user);
     }
-  }
-
-  public updateUser(user: User) {
-    if (!(user.id in this.users)) throw `Could not update unknown user ${user.id}.`;
-    this.users[user.id] = user;
   }
 
   public getGrid(): Grid {
