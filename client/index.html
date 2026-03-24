@@ -11,6 +11,7 @@
         <button class="tab-button" data-tab="draw">Draw</button>
         <button class="tab-button" data-tab="settings">Settings</button>
         <button class="tab-button" data-tab="token">Token</button>
+        <button class="tab-button" data-tab="user">User</button>
       </nav>
 
       <section id="tab-draw" class="tab-panel">
@@ -47,6 +48,12 @@
         <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
         <button id="token-edit-delete" disabled>Delete</button>
       </section>
+<section id="tab-user" class="tab-panel" hidden>
+  <label for="user-input-name">Name</label>
+  <input id="user-input-name" type="text" name="user-input-name" />
+  <label for="user-input-color">Color</label>
+  <input id="user-input-color" type="color" name="user-input-color" />
+</section>
     </header>
 
     <div id="whiteboard-container">
