@@ -62,7 +62,7 @@ button:disabled {
   top: 0;
   left: 0;
   right: 0;
-  overflow: hidden;
+  overflow: scroll;
   width: var(--sidebar-width);
   transition: 0.1s linear;
 
@@ -96,6 +96,39 @@ button:disabled {
   height: 100px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
+}
+
+/* Token list */
+
+.token-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.token-list > li {
+  border: solid 1px gray;
+  background-color: var(--dark-primary);
+  margin: 8px;
+  display: flex;
+  overflow: hidden;
+  cursor: pointer;
+  align-items: center;
+}
+
+.token-list > li.selected {
+  background-color: var(--dark-secondary);
+}
+
+.token-list > li > i {
+  font-size: 32px;
+  margin: 0;
+  padding: 4px;
+}
+
+.token-list > li > p {
+  margin: 0;
+  padding: 0;
 }
 
 /* Whiteboard */

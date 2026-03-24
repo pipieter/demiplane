@@ -6,7 +6,7 @@ import type { Transform } from "./models/transform";
 import type { User } from "./models/user";
 import Viewport from "./models/viewport";
 
-interface StateListenerMap {
+export interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
   user_change: User;
@@ -102,6 +102,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
   public getSelected(): Token[] {
     return [...this.selected];
+  }
+
+  public getTokens(): Token[] {
+    return [...this.tokens];
   }
 
   public setMe(user: User) {

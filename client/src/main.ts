@@ -21,8 +21,10 @@ import SidebarView from "./views/sidebar";
 import SidebarController from "./controllers/sidebar";
 import TokenEditView from "./views/tokenedit";
 import TokenEditController from "./controllers/tokenedit";
-import UserController from "./controllers/user";
+import TokenListView from "./views/tokenlist";
+import TokenListController from "./controllers/tokenlist";
 import UserView from "./views/user";
+import UserController from "./controllers/user";
 
 const socket = new WebSocket(server.url);
 const store = new Store(server.url, socket);
@@ -40,6 +42,7 @@ const tokenDrawView = new TokenDrawView(grid, viewport);
 const gridView = new GridView();
 const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
+const tokenListView = new TokenListView();
 const userView = new UserView();
 
 new BackgroundController(store, state, backgroundView);
@@ -51,6 +54,7 @@ new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
 new SidebarController(store, state, headerView);
 new TokenEditController(store, state, tokenEditView);
+new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 
 socket.onmessage = function (event) {
