@@ -2,27 +2,32 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
 
-  --sidebar-width: 200px;
+  --sidebar-width: 250px;
+
+  --dark-primary: #252525;
+  --dark-secondary: #353535;
+  --dark-tertiary: #454545;
+  --light-primary: #a0a0a0;
+  --light-secondary: #808080;
 }
 
 button {
-  background-color: darkgray;
-  color: black;
+  color: var(--light-primary);
+  background-color: var(--dark-primary);
   font-weight: bold;
   transition: all 0.1s ease;
   cursor: pointer;
 
   border: 1px solid gray;
-  border-radius: 1rem;
+  border-radius: 8px;
   font-size: 1rem;
   padding: 0.6rem;
 
-  box-shadow: 0px -4px 4px gray inset;
+  box-shadow: 0px -1px 1px gray inset;
 }
 
 button:hover {
-  background-color: lightcyan;
-  color: black;
+  background-color: var(--dark-secondary);
 }
 
 button:disabled {
@@ -46,28 +51,22 @@ button:disabled {
 }
 
 .sidebar-content {
-  background-color: red;
-
-  background-color: darkgray;
+  color: var(--light-primary);
+  background-color: var(--dark-primary);
   box-shadow: 0px 0px 4px black;
 
   top: 0;
   left: 0;
   right: 0;
-  padding: 1rem 1rem;
-  min-width: 200px;
   overflow: hidden;
   width: var(--sidebar-width);
+  transition: 0.1s linear;
+
+  margin-left: calc(-1 * var(--sidebar-width)); /* The sidebar is hidden by default */
 }
 
-.sidebar > nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar > nav > button {
-  min-width: 100%;
+.sidebar-content.visible {
+  margin-left: 0;
 }
 
 .sidebar-navigation {
@@ -81,6 +80,20 @@ button:disabled {
 .sidebar-navigation > button {
   writing-mode: vertical-rl;
   text-orientation: mixed;
+  margin: 0;
+  border-radius: 0;
+}
+
+.tab-close-button {
+  height: 50px;
+}
+
+.sidebar-navigation > button.selected {
+  background-color: var(--dark-tertiary);
+}
+
+.sidebar-navigation > .tab-button {
+  height: 100px;
 }
 
 /* Whiteboard */
