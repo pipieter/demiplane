@@ -171,7 +171,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     if (this.selected.length <= 0 || !this.direction) return;
 
     const token = this.selected[0];
-    const target = this.getCoordinates(e);
+    const target = this.getCoordinates(evt);
 
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
