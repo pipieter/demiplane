@@ -43,6 +43,12 @@
           <label for="token-edit-r">angle</label>
           <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
           <button id="token-edit-delete" disabled>Delete</button>
+          <hr />
+          <div id="token-list-container">
+            <input type="checkbox" id="token-list-checkbox" />
+            <label for="token-list-checkbox">Display token list</label>
+            <ul id="token-list" class="token-list" style="display: none;"></ul>
+          </div>
         </section>
       </aside>
       <nav class="sidebar-navigation">

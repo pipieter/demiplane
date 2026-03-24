@@ -22,6 +22,7 @@
         "resizebox",
         "tokendraw",
         "tokenedit",
+        "tokenlist",
         "wwwroot"
     ],
     "ignoreWords": [],
