@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -67,12 +68,6 @@ public partial class Server
         Socket socket = new(webSocket);
         _clients.TryAdd(socket, "");
 
-        // Synchronize the current state
-        User newUser = UserService.GenerateUser(_state.Users());
-        _state.AddUser(newUser);
-        SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.Users()], newUser);
-        await socket.SendAsync(Json.Serialize(sync));
-
         while (socket.IsOpen)
         {
             string message = await socket.ReceiveAsync();
@@ -105,6 +100,7 @@ public partial class Server
         }
     }
 
+
     private async Task ProcessMessage(Socket socket, string? message)
     {
         if (message == null)
@@ -114,6 +110,33 @@ public partial class Server
 
         switch (body)
         {
+            case SyncRequestMessage sync:
+                {
+                    string? bearer = sync.bearer;
+                    User? user = null;
+
+                    if (bearer != null)
+                    {
+                        user = _state.GetUser(bearer);
+                        if (user == null)
+                            bearer = null; // Force creation of a new user.
+                    }
+
+                    if (bearer == null)
+                    {
+                        user = UserService.GenerateUser(_state.Users());
+                        if (!_state.AddUser(user))
+                            throw new Exception("Could not register user.");
+                    }
+
+                    if (user == null)
+                        throw new Exception("Failed to validate user.");
+
+                    SyncResponseMessage response = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.Users()], user);
+                    await socket.SendAsync(Json.Serialize(response));
+                    break;
+                }
+
             case CreateRequestMessage create:
                 {
                     if (!_state.AddToken(create.create))

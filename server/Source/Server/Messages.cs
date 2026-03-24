@@ -15,6 +15,15 @@ public class ErrorResponseMessage(string message)
     public string message = message;
 }
 
+public class SyncRequestMessage(string? bearer) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_sync";
+
+    [JsonProperty]
+    public string? bearer = bearer;
+}
+
 public class SyncResponseMessage(Token[] tokens, Background background, Grid grid, User[] users, User me) : Message
 {
     [JsonProperty(Required = Required.Always)]
@@ -191,6 +200,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
                 ["user"] = typeof(UserResponseMessage),
+                ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),

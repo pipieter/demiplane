@@ -3,6 +3,12 @@ import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
 import type { User } from "./models/user";
 
+/** Request to sync the board state */
+export interface SyncRequestMessage {
+  type: "request_sync";
+  bearer: string | null;
+}
+
 /** Sync the current board state */
 export interface SyncResponseMessage {
   type: "sync";
@@ -99,6 +105,7 @@ export interface UserResponseMessage {
 }
 
 export type RequestMessage =
+  | SyncRequestMessage
   | CreateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage

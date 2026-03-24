@@ -17,7 +17,11 @@ class UserController extends Controller<UserView> {
 
   private onchange(name: string, color: string) {
     const bearer = this.store.getBearerToken();
-    if (!bearer) throw "USER NOT YET AUTHENTICATED"; // TODO - Req auth?
+
+    if (!bearer) {
+      this.store.send({ type: "request_sync", bearer: null });
+      return;
+    }
 
     this.store.send({
       type: "request_user",

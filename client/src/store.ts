@@ -9,7 +9,13 @@ class Store {
     this.url = url;
     this.socket = socket;
     this.bearer = localStorage.getItem("bearer");
+
+    this.socket.onopen = this.onopen.bind(this);
   }
+
+  private onopen = () => {
+    this.send({ type: "request_sync", bearer: this.getBearerToken() });
+  };
 
   public async uploadImage(base64: string): Promise<string> {
     const url = `${this.url}/images`;
