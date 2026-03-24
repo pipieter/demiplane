@@ -117,6 +117,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     return this.users[this.myId];
   }
 
+  public isMe(user: User): boolean {
+    return user.id === this.myId;
+  }
+
   public setUser(user: User) {
     if (user.id in this.users) this.users[user.id] = user;
     else this.users[user.id] = user;

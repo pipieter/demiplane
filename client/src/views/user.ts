@@ -37,19 +37,32 @@ class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
     document.documentElement.style.setProperty("--user-color", user.color);
   }
 
-  set(user: User) {
+  set(user: User, isMe: boolean = false) {
     const id = `user-${user.id}`;
     const existingItem = this.userList.querySelector(`#${id}`) as HTMLLIElement | null;
+
     if (existingItem) {
-      existingItem.textContent = user.name;
+      const nameElement = existingItem.querySelector("p");
+      if (nameElement) nameElement.innerText = user.name;
+      if (isMe) existingItem.style.backgroundColor = "var(--dark-secondary)";
+
       existingItem.style.color = user.color;
       return;
     }
 
     const li = document.createElement("li");
+    const iconElement = document.createElement("i");
+    const nameElement = document.createElement("p");
+
+    iconElement.classList.add("fa-user", "fa-solid");
+    nameElement.innerText = user.name;
+
     li.id = id;
-    li.textContent = user.name;
     li.style.color = user.color;
+    li.appendChild(iconElement);
+    li.appendChild(nameElement);
+    li.style.cursor = "default"; // Currently not clickable.
+
     this.userList.appendChild(li);
   }
 }

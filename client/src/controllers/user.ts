@@ -9,9 +9,9 @@ class UserController extends Controller<UserView> {
 
     this.view.listen("user_change", ({ name, color }) => this.onchange(name, color));
     this.state.listen("user_change", (user) => {
-      const me = this.state.getMe();
-      if (me && user.id === me.id) this.view.setMe(user);
-      this.view.set(user);
+      const isMe = this.state.isMe(user);
+      if (isMe) this.view.setMe(user);
+      this.view.set(user, isMe);
     });
   }
 
