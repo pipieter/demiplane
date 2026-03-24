@@ -17,8 +17,8 @@ import TokenDrawView from "./views/tokendraw";
 import TokenDrawController from "./controllers/tokendraw";
 import GridView from "./views/grid";
 import GridController from "./controllers/grid";
-import HeaderView from "./views/header";
-import HeaderController from "./controllers/header";
+import SidebarView from "./views/sidebar";
+import SidebarController from "./controllers/sidebar";
 import TokenEditView from "./views/tokenedit";
 import TokenEditController from "./controllers/tokenedit";
 
@@ -36,7 +36,7 @@ const selectionView = new SelectionView();
 const resizeView = new ResizeView(grid, viewport);
 const tokenDrawView = new TokenDrawView(grid, viewport);
 const gridView = new GridView();
-const headerView = new HeaderView();
+const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
 
 new BackgroundController(store, state, backgroundView);
@@ -46,7 +46,7 @@ new SelectionController(store, state, selectionView);
 new ResizeController(store, state, resizeView);
 new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
-new HeaderController(store, state, headerView);
+new SidebarController(store, state, headerView);
 new TokenEditController(store, state, tokenEditView);
 
 socket.onmessage = function (event) {
