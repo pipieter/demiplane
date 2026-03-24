@@ -1,6 +1,6 @@
 // No ListenerContainer necessary for this class as it's purely DOM manipulation
 
-class HeaderView {
+class SidebarView {
   private tabs: HTMLElement[];
   private tabButtons: HTMLButtonElement[];
 
@@ -27,4 +27,4 @@ class HeaderView {
   }
 }
 
-export default HeaderView;
+export default SidebarView;
