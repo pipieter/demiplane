@@ -123,6 +123,7 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
       y,
       w,
       h,
+      r: 0,
     },
   });
 });

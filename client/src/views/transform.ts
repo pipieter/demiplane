@@ -82,7 +82,7 @@ class TransformView extends ListenerContainer<TransformViewListeners, TransformV
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.emit("token_transform", { id: token.id, x, y, w, h });
+    this.emit("token_transform", { id: token.id, x, y, w, h, r: token.r });
   }
 }
 
