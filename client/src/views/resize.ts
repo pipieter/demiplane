@@ -127,9 +127,10 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     if (!this.rotateHandle) return;
 
     const topCenterX = token.x + token.w / 2;
-    const topCenterY = token.y - 20; // offset
+    const topCenterY = token.y - Math.max(token.w / 2, 64); // offset
+    const handleAngle = angle + 90;
 
-    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
+    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, handleAngle);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
     this.rotateHandle.setAttribute("cy", rotated.y.toString());
 
