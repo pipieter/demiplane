@@ -38,7 +38,11 @@ button:disabled {
   height: 100%;
   display: flex;
   z-index: 1000;
-  pointer-events: visible;
+  pointer-events: none; /* Allow clicking through the transparent parts of the sidebar */
+}
+
+.sidebar > * {
+  pointer-events: auto;
 }
 
 .sidebar-content {
