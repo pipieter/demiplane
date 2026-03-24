@@ -7,6 +7,7 @@ class TokenEditView extends TokenListenerContainer {
   private editY: HTMLInputElement;
   private editW: HTMLInputElement;
   private editH: HTMLInputElement;
+  private editR: HTMLInputElement;
   private editElements: HTMLInputElement[];
   private deleteButton: HTMLButtonElement;
 
@@ -19,7 +20,8 @@ class TokenEditView extends TokenListenerContainer {
     this.editY = document.getElementById("token-edit-y") as HTMLInputElement;
     this.editW = document.getElementById("token-edit-w") as HTMLInputElement;
     this.editH = document.getElementById("token-edit-h") as HTMLInputElement;
-    this.editElements = [this.editX, this.editY, this.editW, this.editH];
+    this.editR = document.getElementById("token-edit-r") as HTMLInputElement;
+    this.editElements = [this.editX, this.editY, this.editW, this.editH, this.editR];
     this.deleteButton = document.getElementById("token-edit-delete") as HTMLButtonElement;
 
     this.selected = null;
@@ -48,6 +50,7 @@ class TokenEditView extends TokenListenerContainer {
     this.editY.value = transform.y.toString();
     this.editW.value = transform.w.toString();
     this.editH.value = transform.h.toString();
+    this.editR.value = transform.r.toString();
   }
 
   public disable() {
@@ -62,6 +65,7 @@ class TokenEditView extends TokenListenerContainer {
     this.editY.value = token.y.toString();
     this.editW.value = token.w.toString();
     this.editH.value = token.h.toString();
+    this.editR.value = token.r.toString();
   }
 
   public onchange() {
@@ -70,14 +74,15 @@ class TokenEditView extends TokenListenerContainer {
     const id = this.selected.id;
     const x = parseInt(this.editX.value || "0");
     const y = parseInt(this.editY.value || "0");
+    const r = parseInt(this.editR.value || "0");
     let w = parseInt(this.editW.value || "8");
     let h = parseInt(this.editH.value || "8");
 
     // Don't allow negative dimensions
-    w = Math.min(w, 0);
-    h = Math.min(h, 0);
+    w = Math.max(w, 0);
+    h = Math.max(h, 0);
 
-    this.emit("token_transform", { id, x, y, w, h });
+    this.emit("token_transform", { id, x, y, w, h, r });
   }
 
   public ondelete() {
