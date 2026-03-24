@@ -128,9 +128,8 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
 
     const topCenterX = token.x + token.w / 2;
     const topCenterY = token.y - 20; // offset
-    const handleAngle = angle + 90; // 0 degrees is on the right, we want the top to be the default position
 
-    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, handleAngle);
+    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
     this.rotateHandle.setAttribute("cx", rotated.x.toString());
     this.rotateHandle.setAttribute("cy", rotated.y.toString());
 
@@ -168,7 +167,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     return { x, y };
   }
 
-  private resize(e: MouseEvent) {
+  private resize(evt: MouseEvent) {
     if (this.selected.length <= 0 || !this.direction) return;
 
     const token = this.selected[0];
@@ -235,17 +234,23 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     document.onmouseup = null;
   }
 
-  private rotate(e: MouseEvent) {
+  private rotate(evt: MouseEvent) {
     const token = this.selected[0];
 
-    const current = this.viewport.getTranslatedCoords(e.offsetX, e.offsetY);
-    const center = this.viewport.getTranslatedCoords(token.x + token.w / 2, token.y + token.h / 2);
-    const dx = current.x - center.x;
-    const dy = current.y - center.y;
+    const current = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
+    const centerX = token.x + token.w / 2;
+    const centerY = token.y + token.h / 2;
+    const dx = current.x - centerX;
+    const dy = current.y - centerY;
 
     let r = Math.atan2(dy, dx);
     r = r * (180 / Math.PI); // Radians to degrees
-    r = Math.floor(r); // Make behavior "snappier"
+
+    if (evt.shiftKey) {
+      r = Math.round(r / 15) * 15; // Snap by 15 degrees
+    } else {
+      r = Math.floor(r); // Makes behavior "snappier"
+    }
 
     this.updateBox();
     this.emit("token_transform", {
