@@ -78,8 +78,6 @@ button:disabled {
 }
 
 .sidebar-navigation > button {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
   margin: 0;
   border-radius: 0;
 }
@@ -94,6 +92,8 @@ button:disabled {
 
 .sidebar-navigation > .tab-button {
   height: 100px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 /* Whiteboard */
