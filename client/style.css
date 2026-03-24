@@ -5,57 +5,100 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-}
 
-header {
-  background-color: darkgray;
-  box-shadow: 0px 0px 4px black;
+  --sidebar-width: 250px;
 
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 1rem 1rem;
-  z-index: 1000;
-}
-
-header > nav {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-header > nav > button {
-  min-width: 100%;
+  --dark-primary: #252525;
+  --dark-secondary: #353535;
+  --dark-tertiary: #454545;
+  --light-primary: #a0a0a0;
+  --light-secondary: #808080;
 }
 
 button {
-  background-color: darkgray;
-  color: black;
+  color: var(--light-primary);
+  background-color: var(--dark-primary);
   font-weight: bold;
   transition: all 0.1s ease;
   cursor: pointer;
 
   border: 1px solid gray;
-  border-radius: 1rem;
+  border-radius: 8px;
   font-size: 1rem;
   padding: 0.6rem;
 
-  box-shadow: 0px -4px 4px gray inset;
+  box-shadow: 0px -1px 1px gray inset;
 }
 
 button:hover {
-  background-color: lightcyan;
-  color: black;
+  background-color: var(--dark-secondary);
 }
 
 button:disabled {
   background-color: darkgray;
   color: gray;
 }
+
+/* Sidebar */
+
+.sidebar {
+  position: fixed;
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  z-index: 1000;
+  pointer-events: none; /* Allow clicking through the transparent parts of the sidebar */
+}
+
+.sidebar > * {
+  pointer-events: auto;
+}
+
+.sidebar-content {
+  color: var(--light-primary);
+  background-color: var(--dark-primary);
+  box-shadow: 0px 0px 4px black;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  width: var(--sidebar-width);
+  transition: 0.1s linear;
+
+  margin-left: calc(-1 * var(--sidebar-width)); /* The sidebar is hidden by default */
+}
+
+.sidebar-content.visible {
+  margin-left: 0;
+}
+
+.sidebar-navigation {
+  display: grid;
+  grid-auto-columns: auto;
+  height: fit-content;
+}
+
+.sidebar-navigation > button {
+  margin: 0;
+  border-radius: 0;
+}
+
+.sidebar-navigation > button.selected {
+  background-color: var(--dark-tertiary);
+}
+
+.tab-close-button {
+  height: 50px;
+}
+
+.sidebar-navigation > .tab-button {
+  height: 100px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Whiteboard */
 
 #whiteboard-container {
   pointer-events: none;

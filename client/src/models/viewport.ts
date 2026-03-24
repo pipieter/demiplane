@@ -31,6 +31,10 @@ class Viewport {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.whiteboard.call(this.zoom as any);
     this.enable();
+
+    // Slightly move the default viewport so the edges are easier to follow
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.whiteboard.call(this.zoom.transform as any, d3Zoom.zoomIdentity.translate(100, 50).scale(0.8));
   }
 
   public enable() {
