@@ -8,7 +8,7 @@ class UserController extends Controller<UserView> {
     super(store, state, view);
 
     this.view.listen("user_change", ({ name, color }) => this.onchange(name, color));
-    // this.state.listen("user_change", (grid) => this.view.set(grid.size, grid.offset.x, grid.offset.y));
+    this.state.listen("user_change", (user) => this.view.set(user));
   }
 
   private onchange(name: string, color: string) {

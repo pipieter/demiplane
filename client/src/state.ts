@@ -3,11 +3,13 @@ import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
+import type { User } from "./models/user";
 import Viewport from "./models/viewport";
 
 interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
+  user_change: User;
   token_create: Token;
   token_select: [Token[], Token[]];
   token_transform: [Token, Transform];
@@ -16,13 +18,22 @@ interface StateListenerMap {
 
 class StateListeners extends Listener<StateListenerMap> {
   protected override keys(): (keyof StateListenerMap)[] {
-    return ["background_change", "grid_change", "token_create", "token_select", "token_transform", "token_delete"];
+    return [
+      "background_change",
+      "grid_change",
+      "user_change",
+      "token_create",
+      "token_select",
+      "token_transform",
+      "token_delete",
+    ];
   }
 }
 
 class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private tokens: Token[];
   private selected: Token[];
+  private users: Record<string, User>;
   private background: Background;
   private grid: Grid;
   private viewport: Viewport;
@@ -32,6 +43,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
     this.tokens = [];
     this.selected = [];
+    this.users = {};
     this.grid = new Grid();
     this.viewport = new Viewport();
     this.background = new Background();
@@ -88,6 +100,23 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
   public getSelected(): Token[] {
     return [...this.selected];
+  }
+
+  public createUser(user: User) {
+    if (user.id in this.users) throw `User ${user.id} already exists.`;
+    this.users[user.id] = user;
+    this.emit("user_change", user);
+  }
+
+  public createUsers(users: User[]) {
+    for (const user of users) {
+      this.createUser(user);
+    }
+  }
+
+  public updateUser(user: User) {
+    if (!(user.id in this.users)) throw `Could not update unknown user ${user.id}.`;
+    this.users[user.id] = user;
   }
 
   public getGrid(): Grid {

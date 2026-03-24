@@ -14,12 +14,14 @@ class UserViewListeners extends Listener<UserViewMap> {
 class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
   private nameInput: HTMLInputElement;
   private colorInput: HTMLInputElement;
+  private me: User;
 
   constructor() {
     super(new UserViewListeners());
 
     this.nameInput = document.getElementById("user-input-name") as HTMLInputElement;
     this.colorInput = document.getElementById("user-input-color") as HTMLInputElement;
+    this.me = { 'id': 'e', 'name': 'steve', 'color': '#FF00FF' };
 
     this.nameInput.onchange = () => this.onchange();
     this.colorInput.onchange = () => this.onchange();
@@ -27,12 +29,17 @@ class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
 
   private onchange() {
     console.log(this.nameInput.value, this.colorInput.value);
-    this.set();
+    this.me.name = this.nameInput.value;
+    this.me.color = this.colorInput.value;
   }
 
-  private set() {
-    const color = this.colorInput.value;
-    document.documentElement.style.setProperty("--user-color", color);
+  set(user: User) {
+    console.log(user);
+    if (user.id === this.me.id) {
+      this.nameInput.value = user.name;
+      this.colorInput.value = user.color;
+      document.documentElement.style.setProperty("--user-color", user.color);
+    }
   }
 }
 
