@@ -58,7 +58,7 @@ button:disabled {
   top: 0;
   left: 0;
   right: 0;
-  overflow: hidden;
+  overflow: scroll;
   width: var(--sidebar-width);
   transition: 0.1s linear;
 
@@ -100,7 +100,6 @@ button:disabled {
   list-style-type: none;
   padding: 0px;
   margin: 0px;
-  overflow-y: scroll;
 }
 
 .token-list > li {
