@@ -6,3 +6,8 @@ export interface Transform {
   h: number;
   r: number;
 }
+
+export type Point = {
+  x: number;
+  y: number;
+};
