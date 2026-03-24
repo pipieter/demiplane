@@ -204,7 +204,7 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const newCenterX = x + w / 2;
     const newCenterY = y + h / 2;
 
-    // CSS 'transform-origin: center' expects the object's x/y to be 
+    // CSS 'transform-origin: center' expects the object's x/y to be
     // positioned such that the rotation happens around the NEW center.
     // We rotate the new center back to the original orientation.
     const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
