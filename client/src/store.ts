@@ -8,7 +8,7 @@ class Store {
   constructor(url: string, socket: WebSocket) {
     this.url = url;
     this.socket = socket;
-    this.bearer = localStorage.getItem('bearer');
+    this.bearer = localStorage.getItem("bearer");
   }
 
   public async uploadImage(base64: string): Promise<string> {
@@ -37,7 +37,14 @@ class Store {
 
   public setBearerToken(bearer: string) {
     this.bearer = bearer;
-    localStorage.setItem('bearer', bearer);
+    localStorage.setItem("bearer", bearer);
+  }
+
+  public getBearerToken(): string | null {
+    if (!this.bearer) {
+      this.bearer = localStorage.getItem("bearer");
+    }
+    return this.bearer;
   }
 }
 

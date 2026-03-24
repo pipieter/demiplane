@@ -69,6 +69,7 @@ public partial class Server
 
         // Synchronize the current state
         User newUser = GenerateNewUser();
+        _state.AddUser(newUser);
         SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.Users()], newUser);
         await socket.SendAsync(Json.Serialize(sync));
 
@@ -194,6 +195,14 @@ public partial class Server
                         throw new Exception("Could not set grid.");
 
                     GridResponseMessage response = new(_state.GetGrid());
+                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    break;
+                }
+
+            case UserRequestMessage user:
+                {
+                    User userData = _state.EditUser(user.user.bearer, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
+                    UserResponseMessage response = new(userData);
                     await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }

@@ -146,6 +146,36 @@ public class TransformResponseMessage(Transform transform) : Message
     public Transform transform = transform;
 }
 
+public record struct RequestUser(string bearer, string name, string color)
+{
+    [JsonProperty(Required = Required.Always)]
+    public string bearer = bearer;
+
+    [JsonProperty(Required = Required.Always)]
+    public string name = name;
+
+    [JsonProperty(Required = Required.Always)]
+    public string color = color;
+}
+
+public class UserRequestMessage(RequestUser user) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_user";
+
+    [JsonProperty(Required = Required.Always)]
+    public RequestUser user = user;
+}
+
+public class UserResponseMessage(User user) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "user";
+
+    [JsonProperty(Required = Required.Always)]
+    public User user = user;
+}
+
 public class MessageJsonConverter : Json.TypeConverter<Message>
 {
     public override Dictionary<string, Type> TypeMap
@@ -160,11 +190,13 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["delete"] = typeof(DeleteResponseMessage),
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
+                ["user"] = typeof(UserResponseMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),
+                ["request_user"] = typeof(UserRequestMessage),
             };
     }
 }

@@ -82,13 +82,17 @@ export interface BackgroundResponseMessage {
   };
 }
 
-/** Request to a user */
+/** Request to update your user */
 export interface UserRequestMessage {
   type: "request_user";
-  user: User;
+  user: {
+    bearer: string;
+    name: string;
+    color: string;
+  };
 }
 
-/** Set the user's new data */
+/** Set a user's new data */
 export interface UserResponseMessage {
   type: "user";
   user: User;

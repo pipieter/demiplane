@@ -34,6 +34,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private tokens: Token[];
   private selected: Token[];
   private users: Record<string, User>;
+  private myId: string;
   private background: Background;
   private grid: Grid;
   private viewport: Viewport;
@@ -44,6 +45,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.tokens = [];
     this.selected = [];
     this.users = {};
+    this.myId = "";
     this.grid = new Grid();
     this.viewport = new Viewport();
     this.background = new Background();
@@ -102,9 +104,13 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     return [...this.selected];
   }
 
-  public createUser(user: User) {
-    if (user.id in this.users) throw `User ${user.id} already exists.`;
+  public setMe(user: User) {
+    this.myId = user.id;
+    this.setUser(user);
+  }
 
+  public getMe(): User {
+    return this.users[this.myId];
   }
 
   public setUser(user: User) {

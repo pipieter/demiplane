@@ -6,7 +6,7 @@ public class User(string id, string bearer, string name, string color)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
-    [JsonProperty(Required = Required.Always)]
+    [JsonIgnore]
     public string bearer = bearer;
 
     [JsonProperty(Required = Required.Always)]
@@ -14,6 +14,5 @@ public class User(string id, string bearer, string name, string color)
 
     [JsonProperty(Required = Required.Always)]
     public string color = color;
-
 }
 

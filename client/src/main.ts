@@ -88,6 +88,7 @@ socket.onmessage = function (event) {
       state.createTokens(data.tokens);
       state.setUsers(data.users);
       store.setBearerToken(data.bearer);
+      state.setMe(data.me);
       break;
 
     default:

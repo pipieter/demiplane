@@ -2,7 +2,7 @@ import { Listener, ListenerContainer } from "../listener";
 import type { User } from "../models/user";
 
 interface UserViewMap {
-  user_change: User;
+  user_change: { name: string; color: string };
 }
 
 class UserViewListeners extends Listener<UserViewMap> {
@@ -14,32 +14,43 @@ class UserViewListeners extends Listener<UserViewMap> {
 class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
   private nameInput: HTMLInputElement;
   private colorInput: HTMLInputElement;
-  private me: User;
+  private userList: HTMLUListElement;
 
   constructor() {
     super(new UserViewListeners());
 
     this.nameInput = document.getElementById("user-input-name") as HTMLInputElement;
     this.colorInput = document.getElementById("user-input-color") as HTMLInputElement;
-    this.me = { id: "e", name: "steve", color: "#FF00FF" };
+    this.userList = document.getElementById("user-list") as HTMLUListElement;
 
     this.nameInput.onchange = () => this.onchange();
     this.colorInput.onchange = () => this.onchange();
   }
 
   private onchange() {
-    console.log(this.nameInput.value, this.colorInput.value);
-    this.me.name = this.nameInput.value;
-    this.me.color = this.colorInput.value;
+    this.emit("user_change", { name: this.nameInput.value, color: this.colorInput.value });
+  }
+
+  setMe(user: User) {
+    this.nameInput.value = user.name;
+    this.colorInput.value = user.color;
+    document.documentElement.style.setProperty("--user-color", user.color);
   }
 
   set(user: User) {
-    console.log(user);
-    if (user.id === this.me.id) {
-      this.nameInput.value = user.name;
-      this.colorInput.value = user.color;
-      document.documentElement.style.setProperty("--user-color", user.color);
+    const id = `user-${user.id}`;
+    const existingItem = this.userList.querySelector(`#${id}`) as HTMLLIElement | null;
+    if (existingItem) {
+      existingItem.textContent = user.name;
+      existingItem.style.color = user.color;
+      return;
     }
+
+    const li = document.createElement("li");
+    li.id = id;
+    li.textContent = user.name;
+    li.style.color = user.color;
+    this.userList.appendChild(li);
   }
 }
 
