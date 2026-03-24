@@ -71,6 +71,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
       token.y = transform.y;
       token.w = transform.w;
       token.h = transform.h;
+      token.r = transform.r;
       this.emit("token_transform", [token, transform]);
     }
   }

@@ -102,7 +102,7 @@ public class BackgroundResponseMessage(Background background) : Message
     public Background background = background;
 }
 
-public record struct Transform(string id, int x, int y, int w, int h)
+public record struct Transform(string id, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
@@ -118,6 +118,8 @@ public record struct Transform(string id, int x, int y, int w, int h)
 
     [JsonProperty(Required = Required.Always)]
     public int h = h;
+    [JsonProperty(Required = Required.Always)]
+    public int r = r;
 }
 
 public class TransformRequestMessage(Transform transform) : Message

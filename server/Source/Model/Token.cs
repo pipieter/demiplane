@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Demiplane.Model;
 
-public abstract class Token(string id, int x, int y, int w, int h)
+public abstract class Token(string id, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
@@ -19,9 +19,11 @@ public abstract class Token(string id, int x, int y, int w, int h)
 
     [JsonProperty(Required = Required.Always)]
     public int h = h;
+    [JsonProperty(Required = Required.Always)]
+    public int r = r;
 }
 
-public class TokenCircle(string id, string color, int? border, int x, int y, int w, int h) : Token(id, x, y, w, h)
+public class TokenCircle(string id, string color, int? border, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "circle";
@@ -33,7 +35,7 @@ public class TokenCircle(string id, string color, int? border, int x, int y, int
     public int? border = border;
 }
 
-public class TokenRectangle(string id, string color, int? border, int x, int y, int w, int h) : Token(id, x, y, w, h)
+public class TokenRectangle(string id, string color, int? border, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "rectangle";
@@ -45,7 +47,7 @@ public class TokenRectangle(string id, string color, int? border, int x, int y, 
     public int? border = border;
 }
 
-public class TokenImage(string id, string href, int x, int y, int w, int h) : Token(id, x, y, w, h)
+public class TokenImage(string id, string href, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "image";

@@ -21,13 +21,13 @@ public class InvalidMessageTests : ServerTestSetup
 
     private static readonly string[] MissingFieldsMessages =
     [
-        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200}}",
+        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200, 'r': 0}}",
         "{'type': 'request_delete'}",
     ];
 
     private static readonly string[] InvalidFieldMessages =
     [
-        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': 5 'color': '#FF0000', 'x': 'x-value', 'y': 'y-value', 'w': 200, 'h': 200}}",
+        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': 5 'color': '#FF0000', 'x': 'x-value', 'y': 'y-value', 'w': 200, 'h': 200, 'r': 0}}",
         "{'type': 'request_delete', 'delete': [1, 2, 3]}",
     ];
 

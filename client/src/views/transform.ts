@@ -1,6 +1,7 @@
 import { TokenListenerContainer } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
+import type { Point } from "../models/transform";
 import type Viewport from "../models/viewport";
 import { util } from "../util";
 
@@ -10,6 +11,7 @@ class TransformView extends TokenListenerContainer {
 
   private container: HTMLDivElement;
   private background: SVGSVGElement;
+  private dragOffset: Point | null = null;
 
   constructor(grid: Grid, viewport: Viewport) {
     super();
@@ -41,28 +43,35 @@ class TransformView extends TokenListenerContainer {
   private drop() {
     document.onmousemove = null;
     document.onmouseup = null;
+    this.dragOffset = null;
   }
 
   private drag(event: MouseEvent, token: Token) {
     const cursor = this.viewport.getTranslatedCoords(event.offsetX, event.offsetY);
 
-    let x = cursor.x;
-    let y = cursor.y;
+    if (!this.dragOffset)
+      this.dragOffset = {
+        x: cursor.x - token.x,
+        y: cursor.y - token.y,
+      };
+
+    let x = cursor.x - this.dragOffset.x;
+    let y = cursor.y - this.dragOffset.y;
     const w = token.w;
     const h = token.h;
 
     if (event.shiftKey) {
+      // On grid-lock we want to snap to center, this feel better to use.
+      this.dragOffset = { x: token.w / 2, y: token.h / 2 };
       const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
-      x = locked.x;
-      y = locked.y;
-    }
 
-    x -= w / 2;
-    y -= h / 2;
+      x = locked.x - this.dragOffset.x;
+      y = locked.y - this.dragOffset.y;
+    }
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.emit("token_transform", { id: token.id, x, y, w, h });
+    this.emit("token_transform", { id: token.id, x, y, w, h, r: token.r });
   }
 }
 

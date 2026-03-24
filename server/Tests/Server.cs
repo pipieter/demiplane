@@ -32,7 +32,8 @@ public class ServerTests : ServerTestSetup
                 'x': 200,
                 'y': 200,
                 'w': 50,
-                'h': 50
+                'h': 50,
+                'r': 0,
             }
         }";
 

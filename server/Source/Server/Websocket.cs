@@ -156,10 +156,11 @@ public partial class Server
                     int y = transform.transform.y;
                     int w = transform.transform.w;
                     int h = transform.transform.h;
-                    if (!_state.TransformToken(id, x, y, w, h))
+                    int r = transform.transform.r;
+                    if (!_state.TransformToken(id, x, y, w, h, r))
                         throw new Exception("Could not transform token.");
 
-                    TransformResponseMessage response = new(new Transform(id, x, y, w, h));
+                    TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
                     await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }
