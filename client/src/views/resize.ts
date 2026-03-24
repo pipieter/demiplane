@@ -82,23 +82,18 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const centerY = token.y + token.h / 2;
 
     for (const handle of this.handles) {
+      // Temporary debug code to differentiate between corners
       const dir = handle.dataset.dir!;
-      const { x, y } = this.getHandlePosition(token, dir);
-      handle.setAttribute("x", x.toString());
-      handle.setAttribute("y", y.toString());
-      handle.setAttribute("width", size.toString());
-      handle.setAttribute("height", size.toString());
-
       if (dir === "tl") handle.setAttribute("fill", "yellow");
       if (dir === "tr") handle.setAttribute("fill", "red");
       if (dir === "bl") handle.setAttribute("fill", "cyan");
       if (dir === "br") handle.setAttribute("fill", "blue");
     }
     // Temporarily disabled
-    // this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
-    // this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
-    // this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    // this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
     this.setRotateHandle(token, centerX, centerY, angle);
   }
 
