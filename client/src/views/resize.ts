@@ -3,6 +3,7 @@ import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type Viewport from "../models/viewport";
+import { util } from "../util";
 
 interface ResizeViewMap {
   token_transform: Transform;
@@ -79,10 +80,25 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     const size = 8;
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
-    this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+
+    for (const handle of this.handles) {
+      const dir = handle.dataset.dir!;
+      const { x, y } = this.getHandlePosition(token, dir);
+      handle.setAttribute("x", x.toString());
+      handle.setAttribute("y", y.toString());
+      handle.setAttribute("width", size.toString());
+      handle.setAttribute("height", size.toString());
+
+      if (dir === "tl") handle.setAttribute("fill", "yellow");
+      if (dir === "tr") handle.setAttribute("fill", "red");
+      if (dir === "bl") handle.setAttribute("fill", "cyan");
+      if (dir === "br") handle.setAttribute("fill", "blue");
+    }
+    // Temporarily disabled
+    // this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
+    // this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
+    // this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
+    // this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
     this.setRotateHandle(token, centerX, centerY, angle);
   }
 
@@ -167,6 +183,36 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     return { x, y };
   }
 
+  private getHandlePosition(token: Token, handle: string) {
+    const cx = token.x + token.w / 2;
+    const cy = token.y + token.h / 2;
+    let x = 0;
+    let y = 0;
+    switch (handle) {
+      case "tl":
+        x = token.x;
+        y = token.y;
+        break;
+      case "tr":
+        x = token.x + token.w;
+        y = token.y;
+        break;
+      case "bl":
+        x = token.x;
+        y = token.y + token.h;
+        break;
+      case "br":
+        x = token.x + token.w;
+        y = token.y + token.h;
+        break;
+      default:
+        throw `Unknown handle ${handle}`;
+    }
+
+    const rotated = util.rotatePoint2D({ x, y }, { x: cx, y: cy }, token.r);
+    return rotated;
+  }
+
   private resize(e: MouseEvent) {
     if (this.selected.length <= 0 || !this.direction) return;
 
@@ -179,23 +225,29 @@ class ResizeView extends ListenerContainer<ResizeViewListeners, ResizeViewMap> {
     let h = token.h;
 
     const target = this.getCoordinates(e);
-    const dx = target.x - token.x;
-    const dy = target.y - token.y;
+    const handle = this.getHandlePosition(token, this.direction);
+
+    // Find the distance between the handle and the current point
+    const dx = target.x - handle.x;
+    const dy = target.y - handle.y;
+
+    // Reverse rotate the distance
+    const fixed = util.rotatePoint2D({ x: dx, y: dy }, { x: 0, y: 0 }, -token.r);
 
     if (this.direction.includes("r")) {
-      w = dx;
+      w += fixed.x;
     }
 
     if (this.direction.includes("l")) {
-      x = target.x;
-      w = token.w - dx;
+      x += fixed.x;
+      w -= fixed.x;
     }
     if (this.direction.includes("b")) {
-      h = dy;
+      h += fixed.y;
     }
     if (this.direction.includes("t")) {
-      y = target.y;
-      h = token.h - dy;
+      y += fixed.y;
+      h -= fixed.y;
     }
 
     this.emit("token_transform", {
