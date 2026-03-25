@@ -1,3 +1,4 @@
+import type { User } from "../models/user";
 import type State from "../state";
 import type Store from "../store";
 import type UserView from "../views/user";
@@ -19,21 +20,16 @@ class UserController extends Controller<UserView> {
   }
 
   private onchange(name: string, color: string) {
-    const secret = this.store.getSecretToken();
+    const user: User = { ...this.state.getMe(), name, color };
+    this.state.setUser(user);
 
+    const secret = this.store.getSecretToken();
     if (!secret) {
       this.store.send({ type: "request_sync", secret: null });
       return;
     }
 
-    this.store.send({
-      type: "request_user_change",
-      user: {
-        secret,
-        name,
-        color,
-      },
-    });
+    this.store.send({ type: "request_user_change", user: { secret, name, color } });
   }
 }
 
