@@ -5,7 +5,7 @@ import type TransformView from "../views/transform";
 import Controller from "./controller";
 
 class TransformController extends Controller<TransformView> {
-  private readonly timeBetweenMessages = 100; // in milliseconds
+  private readonly timeBetweenMessages = 50; // in milliseconds
   private timeSinceLastMessage: number;
 
   constructor(store: Store, state: State, view: TransformView) {
