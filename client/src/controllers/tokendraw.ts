@@ -15,18 +15,15 @@ class TokenDrawController extends Controller<TokenDrawView> {
     this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createImageFromBase64(base64, x, y, w, h));
     this.view.listen("image_create", ({ base64, x, y, w, h }) => this.createImageFromBase64(base64, x, y, w, h));
 
-    document.addEventListener("copy", async (e) => {
-      e.preventDefault();
+    document.addEventListener("copy", async () => {
       await this.copy();
     });
 
-    document.addEventListener("cut", async (e) => {
-      e.preventDefault();
+    document.addEventListener("cut", async () => {
       await this.cut();
     });
 
-    document.addEventListener("paste", async (e) => {
-      e.preventDefault();
+    document.addEventListener("paste", async () => {
       await this.paste();
     });
   }
