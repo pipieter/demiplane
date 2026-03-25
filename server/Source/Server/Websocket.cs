@@ -79,7 +79,7 @@ public partial class Server
                 _clients.TryRemove(socket, out _);
                 await socket.CloseAsync();
                 socket.Dispose();
-                await BroadcastMessage(JsonConvert.SerializeObject(response));
+                await BroadcastMessage(response);
                 return;
             }
             else
@@ -96,11 +96,12 @@ public partial class Server
         }
     }
 
-    private async Task BroadcastMessage(string message)
+    private async Task BroadcastMessage(Message message, Socket? ignoreSocket = null)
     {
-        foreach (var client in _clients.Keys)
+        foreach (Socket client in _clients.Keys)
         {
-            await client.SendAsync(message);
+            if (client == ignoreSocket) continue;
+            await client.SendAsync(JsonConvert.SerializeObject(message));
         }
     }
 
@@ -123,7 +124,7 @@ public partial class Server
                     {
                         user = _state.GetUser(bearer);
                         if (user == null)
-                            bearer = null; // Force creation of a new user.
+                            bearer = null; // Forces creation of a new user.
                     }
 
                     if (bearer == null)
@@ -137,8 +138,11 @@ public partial class Server
                         throw new Exception("Failed to validate user.");
 
                     _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
-                    SyncResponseMessage response = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.ActiveUsers()], user);
-                    await socket.SendAsync(Json.Serialize(response));
+                    SyncResponseMessage syncResponse = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.ActiveUsers()], user);
+                    await socket.SendAsync(Json.Serialize(syncResponse));
+
+                    UserChangeResponseMessage userResponse = new(user);
+                    await BroadcastMessage(userResponse, socket);
                     break;
                 }
 
@@ -148,7 +152,7 @@ public partial class Server
                         throw new Exception("Could not add token.");
 
                     CreateResponseMessage response = new(create.create);
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -158,7 +162,7 @@ public partial class Server
                         throw new Exception("Could not delete tokens.");
 
                     var response = new DeleteResponseMessage(delete.delete);
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -176,7 +180,7 @@ public partial class Server
 
                     _state.SetBackground(found);
                     BackgroundResponseMessage response = new(_state.GetBackground());
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -192,7 +196,7 @@ public partial class Server
                         throw new Exception("Could not transform token.");
 
                     TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -202,7 +206,7 @@ public partial class Server
                         throw new Exception("Could not set grid.");
 
                     GridResponseMessage response = new(_state.GetGrid());
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -210,7 +214,7 @@ public partial class Server
                 {
                     User userData = _state.EditUser(user.user.bearer, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
                     UserChangeResponseMessage response = new(userData);
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
         }
