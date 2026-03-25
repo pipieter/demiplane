@@ -1,4 +1,4 @@
-import type { Token } from "../models/token";
+import { isToken, type Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
 import type TokenDrawView from "../views/tokendraw";
@@ -119,37 +119,46 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
   async paste() {
     const json = await navigator.clipboard.readText();
-    const parsed: Token[] = JSON.parse(json);
+    try {
+      const parsed: Token[] = JSON.parse(json);
+      if (!Array.isArray(parsed)) return;
 
-    if (!Array.isArray(parsed)) throw "Pasted data is not a JSON array.";
-    // TODO validate data is actual tokens.
+      const offset = 20;
+      const pastedTokens = parsed
+        .filter((token) => {
+          const valid = isToken(token);
+          return valid;
+        })
+        .map((token) => ({
+          ...token,
+          x: token.x + offset,
+          y: token.y + offset,
+        }));
 
-    const offset = 20;
-    const pastedTokens = parsed.map((token) => ({
-      ...token,
-      x: token.x + offset,
-      y: token.y + offset,
-    }));
+      if (pastedTokens.length <= 0) return;
+      await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
 
-    await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
-    for (const token of pastedTokens) {
-      const type = token.type;
-      switch (type) {
-        case "circle":
-          this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-          break;
+      for (const token of pastedTokens) {
+        const type = token.type;
+        switch (type) {
+          case "circle":
+            this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+            break;
 
-        case "rectangle":
-          this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-          break;
+          case "rectangle":
+            this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+            break;
 
-        case "image":
-          this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
-          break;
+          case "image":
+            this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
+            break;
 
-        default:
-          throw `Unsupported paste-type '${type}'`;
+          default:
+            throw `Unsupported paste-type '${type}'`;
+        }
       }
+    } catch {
+      return;
     }
   }
 }

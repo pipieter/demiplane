@@ -25,3 +25,30 @@ export interface TokenImage extends AbstractToken {
 }
 
 export type Token = TokenCircle | TokenImage | TokenRectangle;
+
+export function isToken(obj: Token): boolean {
+  const isBaseValid =
+    obj !== null &&
+    typeof obj === "object" &&
+    typeof obj.id === "string" &&
+    typeof obj.type === "string" &&
+    typeof obj.x === "number" &&
+    typeof obj.y === "number" &&
+    typeof obj.w === "number" &&
+    typeof obj.h === "number" &&
+    typeof obj.r === "number";
+
+  if (!isBaseValid) return false;
+
+  switch (obj.type) {
+    case "circle":
+    case "rectangle":
+      return typeof obj.color === "string" && (typeof obj.border === "number" || obj.border === null);
+
+    case "image":
+      return typeof obj.href === "string";
+
+    default:
+      return false;
+  }
+}
