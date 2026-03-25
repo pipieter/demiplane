@@ -86,6 +86,10 @@ socket.onmessage = function (event) {
       state.setUser(data.user);
       break;
 
+    case "user_disconnect":
+      state.removeUser(data.userId);
+      break;
+
     case "sync":
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);

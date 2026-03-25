@@ -104,6 +104,12 @@ export interface UserChangeResponseMessage {
   user: User;
 }
 
+/** Remove a user due to disconnection */
+export interface UserDisconnectResponseMessage {
+  type: "user_disconnect";
+  userId: string;
+}
+
 export type RequestMessage =
   | SyncRequestMessage
   | CreateRequestMessage
@@ -119,4 +125,5 @@ export type ResponseMessage =
   | TransformResponseMessage
   | GridResponseMessage
   | BackgroundResponseMessage
-  | UserChangeResponseMessage;
+  | UserChangeResponseMessage
+  | UserDisconnectResponseMessage;

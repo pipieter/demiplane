@@ -185,6 +185,15 @@ public class UserChangeResponseMessage(User user) : Message
     public User user = user;
 }
 
+public class UserDisconnectResponseMessage(string userId) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "user_disconnect";
+
+    [JsonProperty(Required = Required.Always)]
+    public string userId = userId;
+}
+
 public class MessageJsonConverter : Json.TypeConverter<Message>
 {
     public override Dictionary<string, Type> TypeMap
@@ -200,6 +209,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
                 ["user_change"] = typeof(UserChangeResponseMessage),
+                ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
                 ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
