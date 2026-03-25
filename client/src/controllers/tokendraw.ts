@@ -51,11 +51,13 @@ class TokenDrawController extends Controller<TokenDrawView> {
   }
 
   private async createFreedraw(base64: string, x: number, y: number, w: number, h: number) {
+    const id = crypto.randomUUID();
+
     // Create the token locally
     const { href: localHref } = await util.createLocalImage(base64);
     this.state.createToken({
       type: "image",
-      id: crypto.randomUUID(),
+      id,
       href: localHref,
       x,
       y,
@@ -70,7 +72,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
       type: "request_create",
       create: {
         type: "image",
-        id: crypto.randomUUID(),
+        id,
         href,
         x,
         y,
