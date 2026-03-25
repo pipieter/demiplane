@@ -15,13 +15,13 @@ public class ErrorResponseMessage(string message)
     public string message = message;
 }
 
-public class SyncRequestMessage(string? bearer) : Message
+public class SyncRequestMessage(string? secret) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "request_sync";
 
     [JsonProperty]
-    public string? bearer = bearer;
+    public string? secret = secret;
 }
 
 public class SyncResponseMessage(Token[] tokens, Background background, Grid grid, User[] users, User me) : Message
@@ -40,7 +40,7 @@ public class SyncResponseMessage(Token[] tokens, Background background, Grid gri
     [JsonProperty(Required = Required.Always)]
     public User[] users = users;
     [JsonProperty(Required = Required.Always)]
-    public string bearer = me.bearer;
+    public string secret = me.secret;
     [JsonProperty(Required = Required.Always)]
     public User me = me;
 }
@@ -155,10 +155,10 @@ public class TransformResponseMessage(Transform transform) : Message
     public Transform transform = transform;
 }
 
-public record struct RequestUser(string bearer, string name, string color)
+public record struct RequestUser(string secret, string name, string color)
 {
     [JsonProperty(Required = Required.Always)]
-    public string bearer = bearer;
+    public string secret = secret;
 
     [JsonProperty(Required = Required.Always)]
     public string name = name;

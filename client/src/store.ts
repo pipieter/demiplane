@@ -3,18 +3,18 @@ import type { RequestMessage } from "./messages";
 class Store {
   private url: string;
   private socket: WebSocket;
-  private bearer: string | null;
+  private secret: string | null;
 
   constructor(url: string, socket: WebSocket) {
     this.url = url;
     this.socket = socket;
-    this.bearer = localStorage.getItem("bearer");
+    this.secret = localStorage.getItem("secret");
 
     this.socket.onopen = this.onopen.bind(this);
   }
 
   private onopen = () => {
-    this.send({ type: "request_sync", bearer: this.getBearerToken() });
+    this.send({ type: "request_sync", secret: this.getSecretToken() });
   };
 
   public async uploadImage(base64: string): Promise<string> {
@@ -41,16 +41,16 @@ class Store {
     this.socket.send(JSON.stringify(req));
   }
 
-  public setBearerToken(bearer: string) {
-    this.bearer = bearer;
-    localStorage.setItem("bearer", bearer);
+  public setSecretToken(secret: string) {
+    this.secret = secret;
+    localStorage.setItem("secret", secret);
   }
 
-  public getBearerToken(): string | null {
-    if (!this.bearer) {
-      this.bearer = localStorage.getItem("bearer");
+  public getSecretToken(): string | null {
+    if (!this.secret) {
+      this.secret = localStorage.getItem("secret");
     }
-    return this.bearer;
+    return this.secret;
   }
 }
 

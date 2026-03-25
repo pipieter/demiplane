@@ -117,17 +117,17 @@ public partial class Server
         {
             case SyncRequestMessage sync:
                 {
-                    string? bearer = sync.bearer;
+                    string? secret = sync.secret;
                     User? user = null;
 
-                    if (bearer != null)
+                    if (secret != null)
                     {
-                        user = _state.GetUser(bearer);
+                        user = _state.GetUser(secret);
                         if (user == null)
-                            bearer = null; // Forces creation of a new user.
+                            secret = null; // Forces creation of a new user.
                     }
 
-                    if (bearer == null)
+                    if (secret == null)
                     {
                         user = UserService.GenerateUser(_state.Users());
                         if (!_state.AddUser(user))
@@ -212,7 +212,7 @@ public partial class Server
 
             case UserChangeRequestMessage user:
                 {
-                    User userData = _state.EditUser(user.user.bearer, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
+                    User userData = _state.EditUser(user.user.secret, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
                     UserChangeResponseMessage response = new(userData);
                     await BroadcastMessage(response);
                     break;

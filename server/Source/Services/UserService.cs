@@ -7,12 +7,12 @@ public class UserService
     {
         Guid guid = Guid.NewGuid();
         string username = "Wanderer " + (users.Count + 1);
-        string bearer = GenerateBearerToken();
+        string secret = GenerateSecretToken();
         string color = GenerateUserColor(guid);
-        return new(guid.ToString(), bearer, username, color);
+        return new(guid.ToString(), secret, username, color);
     }
 
-    private static string GenerateBearerToken()
+    private static string GenerateSecretToken()
     {
         byte[] tokenBytes = RandomNumberGenerator.GetBytes(32);
         return Convert.ToHexString(tokenBytes);

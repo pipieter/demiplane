@@ -87,19 +87,19 @@ public class ConcurrentBoardState
         }
     }
 
-    public User? GetUser(string bearer)
+    public User? GetUser(string secret)
     {
         lock (_lock)
         {
-            return _users.Find(user => user.bearer == bearer);
+            return _users.Find(user => user.secret == secret);
         }
     }
 
-    public User? EditUser(string bearer, string name, string color)
+    public User? EditUser(string secret, string name, string color)
     {
         lock (_lock)
         {
-            User? user = GetUser(bearer);
+            User? user = GetUser(secret);
             if (user == null)
                 return null;
 

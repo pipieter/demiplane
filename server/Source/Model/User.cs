@@ -2,10 +2,10 @@ using Newtonsoft.Json;
 
 namespace Demiplane.Model;
 
-public class User(string id, string bearer, string name, string color)
+public class User(string id, string secret, string name, string color)
 {
     [JsonIgnore]
-    public string bearer = bearer;
+    public string secret = secret;
     [JsonIgnore]
     public bool isActive = true;
     [JsonProperty(Required = Required.Always)]

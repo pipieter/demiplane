@@ -19,17 +19,17 @@ class UserController extends Controller<UserView> {
   }
 
   private onchange(name: string, color: string) {
-    const bearer = this.store.getBearerToken();
+    const secret = this.store.getSecretToken();
 
-    if (!bearer) {
-      this.store.send({ type: "request_sync", bearer: null });
+    if (!secret) {
+      this.store.send({ type: "request_sync", secret: null });
       return;
     }
 
     this.store.send({
       type: "request_user_change",
       user: {
-        bearer,
+        secret,
         name,
         color,
       },

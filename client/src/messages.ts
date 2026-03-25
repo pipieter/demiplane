@@ -6,7 +6,7 @@ import type { User } from "./models/user";
 /** Request to sync the board state */
 export interface SyncRequestMessage {
   type: "request_sync";
-  bearer: string | null;
+  secret: string | null;
 }
 
 /** Sync the current board state */
@@ -20,7 +20,7 @@ export interface SyncResponseMessage {
   grid: GridData;
   tokens: Token[];
   users: User[];
-  bearer: string;
+  secret: string;
   me: User;
 }
 
@@ -92,7 +92,7 @@ export interface BackgroundResponseMessage {
 export interface UserChangeRequestMessage {
   type: "request_user_change";
   user: {
-    bearer: string;
+    secret: string;
     name: string;
     color: string;
   };

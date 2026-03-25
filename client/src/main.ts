@@ -91,7 +91,7 @@ socket.onmessage = function (event) {
       state.setBackground(data.background.href, data.background.width, data.background.height);
       state.createTokens(data.tokens);
       state.setUsers(data.users);
-      store.setBearerToken(data.bearer);
+      store.setSecretToken(data.secret);
       state.setMe(data.me);
       break;
 
