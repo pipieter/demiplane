@@ -132,7 +132,7 @@ public partial class Server
                     if (user == null)
                         throw new Exception("Failed to validate user.");
 
-                    SyncResponseMessage response = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.Users()], user);
+                    SyncResponseMessage response = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.ActiveUsers()], user);
                     await socket.SendAsync(Json.Serialize(response));
                     break;
                 }

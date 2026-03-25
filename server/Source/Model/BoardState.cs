@@ -72,6 +72,20 @@ public class ConcurrentBoardState
         }
     }
 
+    public bool DisconnectUser(User user)
+    {
+        lock (_lock)
+        {
+            if (_users.Find(existing => existing.id == user.id) != null)
+                return false;
+
+            // TODO - Currently users are in-memory only, so we just mark them as 'inactive'.
+            // Down the line they could be stored externally and maybe fully deleted from the board state (Unless we need user-history of sorts.)
+            user.isActive = false;
+            return true;
+        }
+    }
+
     public User? GetUser(string bearer)
     {
         lock (_lock)
@@ -88,6 +102,7 @@ public class ConcurrentBoardState
             if (user == null)
                 return null;
 
+            user.isActive = true;
             user.name = name;
             user.color = color;
             return user;
@@ -99,6 +114,14 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             return [.. _users];
+        }
+    }
+
+    public List<User> ActiveUsers()
+    {
+        lock (_lock)
+        {
+            return _users.FindAll(user => user.isActive);
         }
     }
 
