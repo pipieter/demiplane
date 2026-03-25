@@ -1,4 +1,3 @@
-import type { User } from "../models/user";
 import type State from "../state";
 import type Store from "../store";
 import type UserView from "../views/user";
