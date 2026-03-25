@@ -13,6 +13,9 @@ class UserController extends Controller<UserView> {
       if (isMe) this.view.setMe(user);
       this.view.set(user, isMe);
     });
+    this.state.listen("user_disconnect", (userId) => {
+      this.view.delete(userId);
+    });
   }
 
   private onchange(name: string, color: string) {

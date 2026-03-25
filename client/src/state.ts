@@ -10,6 +10,7 @@ export interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
   user_change: User;
+  user_disconnect: string;
   token_create: Token;
   token_select: [Token[], Token[]];
   token_transform: [Token, Transform];
@@ -22,6 +23,7 @@ class StateListeners extends Listener<StateListenerMap> {
       "background_change",
       "grid_change",
       "user_change",
+      "user_disconnect",
       "token_create",
       "token_select",
       "token_transform",
@@ -125,6 +127,12 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     if (user.id in this.users) this.users[user.id] = user;
     else this.users[user.id] = user;
     this.emit("user_change", user);
+  }
+
+  public removeUser(id: string) {
+    if (!(id in this.users)) return;
+    delete this.users[id];
+    this.emit("user_disconnect", id);
   }
 
   public setUsers(users: User[]) {

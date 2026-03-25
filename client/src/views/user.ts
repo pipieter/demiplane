@@ -37,8 +37,12 @@ class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
     document.documentElement.style.setProperty("--user-color", user.color);
   }
 
+  private listItemId = (id: string) => {
+    return `user-${id}`;
+  };
+
   set(user: User, isMe: boolean = false) {
-    const id = `user-${user.id}`;
+    const id = this.listItemId(user.id);
     const existingItem = this.userList.querySelector(`#${id}`) as HTMLLIElement | null;
 
     if (existingItem) {
@@ -64,6 +68,12 @@ class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
     li.style.cursor = "default"; // Currently not clickable.
 
     this.userList.appendChild(li);
+  }
+
+  delete(userId: string) {
+    const id = this.listItemId(userId);
+    const existingItem = this.userList.querySelector(`#${id}`) as HTMLLIElement | null;
+    if (existingItem) existingItem.remove();
   }
 }
 

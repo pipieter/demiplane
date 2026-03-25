@@ -73,9 +73,11 @@ public partial class Server
             string message = await socket.ReceiveAsync();
             if (socket.WantsToClose)
             {
+                UserDisconnectResponseMessage response = new(_clients[socket]);
                 _clients.TryRemove(socket, out _);
                 await socket.CloseAsync();
                 socket.Dispose();
+                await BroadcastMessage(JsonConvert.SerializeObject(response));
                 return;
             }
             else
@@ -132,6 +134,7 @@ public partial class Server
                     if (user == null)
                         throw new Exception("Failed to validate user.");
 
+                    _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
                     SyncResponseMessage response = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.ActiveUsers()], user);
                     await socket.SendAsync(Json.Serialize(response));
                     break;
