@@ -80,9 +80,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.type = type;
 
     document.onkeydown = (evt) => this.onkeydown(evt);
-    this.layer.onmouseup = () => this.onmouseup();
-    this.layer.onmousedown = (evt) => this.onmousedown(evt);
-    this.layer.onmousemove = (evt) => this.onmousemove(evt);
+    this.layer.onpointerup = () => this.onpointerup();
+    this.layer.onpointerdown = (evt) => this.onpointerdown(evt);
+    this.layer.onpointermove = (evt) => this.onpointermove(evt);
 
     switch (type) {
       case "circle":
@@ -109,7 +109,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     }
   }
 
-  private onmousedown(evt: MouseEvent) {
+  private onpointerdown(evt: PointerEvent) {
     // Cancel on right click
     if (evt.buttons & 2) {
       this.cancel();
@@ -145,7 +145,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     }
   }
 
-  private onmousemove(evt: MouseEvent) {
+  private onpointermove(evt: PointerEvent) {
     const { x, y } = this.getCoordinates(evt);
     this.updateCursor(x, y);
 
@@ -187,7 +187,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     }
   }
 
-  private onmouseup() {
+  private onpointerup() {
     switch (this.type) {
       case "circle": {
         const x = Math.min(this.start.x, this.current.x);
@@ -230,7 +230,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.cursor.setAttribute("cy", y.toString());
   }
 
-  private getCoordinates(evt: MouseEvent) {
+  private getCoordinates(evt: PointerEvent) {
     let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
     if (evt.shiftKey) {
       const gridLocked = this.grid.getLockedCoordinates(x, y);
@@ -247,9 +247,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.rectangle.style.display = "none";
     this.freedraw.style.display = "none";
     this.layer.style.display = "none";
-    this.layer.onmousedown = null;
-    this.layer.onmouseup = null;
-    this.layer.onmousemove = null;
+    this.layer.onpointerdown = null;
+    this.layer.onpointerup = null;
+    this.layer.onpointermove = null;
     this.viewport.enable();
     document.onkeydown = null;
   }

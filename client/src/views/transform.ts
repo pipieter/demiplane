@@ -37,31 +37,31 @@ class TransformView extends TokenListenerContainer {
     this.direction = null;
     this.selected = [];
 
-    this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.startResize(evt)));
-    this.rotateHandle.addEventListener("mousedown", (evt) => this.startRotate(evt));
+    this.handles.forEach((handle) => handle.addEventListener("pointerdown", (evt) => this.startResize(evt)));
+    this.rotateHandle.addEventListener("pointerdown", (evt) => this.startRotate(evt));
   }
 
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
-    element.onmousedown = () => {
+    element.onpointerdown = () => {
       this.emit("tokens_select", [token]);
-      document.onmousemove = (evt) => this.move(evt);
-      document.onmouseup = () => this.stopMoving();
+      document.onpointermove = (evt) => this.move(evt);
+      document.onpointerup = () => this.stopMoving();
     };
   }
 
   private stopMoving() {
-    document.onmousemove = null;
-    document.onmouseup = null;
+    document.onpointermove = null;
+    document.onpointerup = null;
     this.dragOffset = null;
   }
 
-  private move(event: MouseEvent) {
+  private move(evt: PointerEvent) {
     if (this.selected.length === 0) return;
 
     // TODO only use the first selected for now
     const token = this.selected[0];
-    const cursor = this.viewport.getTranslatedCoords(event.offsetX, event.offsetY);
+    const cursor = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
 
     if (!this.dragOffset)
       this.dragOffset = {
@@ -74,7 +74,7 @@ class TransformView extends TokenListenerContainer {
     const w = token.w;
     const h = token.h;
 
-    if (event.shiftKey) {
+    if (evt.shiftKey) {
       // On grid-lock we want to snap to center, this feel better to use.
       this.dragOffset = { x: token.w / 2, y: token.h / 2 };
       const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
@@ -83,7 +83,7 @@ class TransformView extends TokenListenerContainer {
       y = locked.y - this.dragOffset.y;
     }
 
-    if (!util.mouseOnElement(event, this.container)) return;
+    if (!util.pointerOnElement(evt, this.container)) return;
 
     this.emit("token_transform", { id: token.id, x, y, w, h, r: token.r });
   }
@@ -183,23 +183,23 @@ class TransformView extends TokenListenerContainer {
     }
   }
 
-  private startResize(e: MouseEvent) {
-    e.stopPropagation();
-    const target = e.target as SVGElement;
+  private startResize(evt: PointerEvent) {
+    evt.stopPropagation();
+    const target = evt.target as SVGElement;
     this.direction = target.dataset.dir ?? null;
 
-    document.onmousemove = (evt) => this.resize(evt);
-    document.onmouseup = () => this.stopResize();
+    document.onpointermove = (evt) => this.resize(evt);
+    document.onpointerup = () => this.stopResize();
   }
 
   private stopResize() {
-    document.onmousemove = null;
-    document.onmouseup = null;
+    document.onpointermove = null;
+    document.onpointerup = null;
     this.direction = null;
   }
 
   // TODO this is the same as in TokenDrawView, and a common util method would be better
-  private getCoordinates(evt: MouseEvent) {
+  private getCoordinates(evt: PointerEvent) {
     let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
     if (evt.shiftKey) {
       const gridLocked = this.grid.getLockedCoordinates(x, y);
@@ -209,7 +209,7 @@ class TransformView extends TokenListenerContainer {
     return { x, y };
   }
 
-  private resize(evt: MouseEvent) {
+  private resize(evt: PointerEvent) {
     if (this.selected.length <= 0 || !this.direction) return;
 
     const token = this.selected[0];
@@ -218,7 +218,7 @@ class TransformView extends TokenListenerContainer {
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
 
-    // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
+    // By rotating the pointer position BACKWARDS by the object's angle (-token.r),
     // we can treat the object as if it has 0 rotation.
     const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
 
@@ -265,18 +265,18 @@ class TransformView extends TokenListenerContainer {
     this.updateBox();
   }
 
-  private startRotate(e: MouseEvent) {
-    e.stopPropagation();
-    document.onmousemove = (evt) => this.rotate(evt);
-    document.onmouseup = () => this.stopRotate();
+  private startRotate(evt: PointerEvent) {
+    evt.stopPropagation();
+    document.onpointermove = (evt) => this.rotate(evt);
+    document.onpointerup = () => this.stopRotate();
   }
 
   private stopRotate() {
-    document.onmousemove = null;
-    document.onmouseup = null;
+    document.onpointermove = null;
+    document.onpointerup = null;
   }
 
-  private rotate(evt: MouseEvent) {
+  private rotate(evt: PointerEvent) {
     const token = this.selected[0];
 
     const current = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);

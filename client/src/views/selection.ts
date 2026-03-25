@@ -12,12 +12,12 @@ class SelectionView extends TokenListenerContainer {
     this.background.onclick = () => this.clear();
     this.selected = [];
 
-    window.addEventListener("keydown", (event) => {
+    window.addEventListener("keydown", (evt) => {
       // Don't trigger this event if focused on another input, e.g. a text input
       if (document.activeElement?.tagName.toLowerCase() === "input") return;
 
       const keys = ["Delete", "Backspace"];
-      if (this.selected && keys.includes(event.key)) {
+      if (this.selected && keys.includes(evt.key)) {
         this.delete();
       }
     });
