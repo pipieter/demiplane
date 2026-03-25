@@ -11,13 +11,16 @@ class TokenListView extends TokenListenerContainer {
     this.list = document.getElementById("token-list") as HTMLUListElement;
     this.checkbox = document.getElementById("token-list-checkbox") as HTMLInputElement;
 
-    this.checkbox.addEventListener("change", (evt) => {
-      if ((evt.target as HTMLInputElement).checked) {
-        this.list.style.display = "";
-      } else {
-        this.list.style.display = "none";
-      }
-    });
+    this.checkbox.addEventListener("change", () => this.updateVisibility());
+    this.updateVisibility();
+  }
+
+  private updateVisibility() {
+    if (this.checkbox.checked) {
+      this.list.style.display = "";
+    } else {
+      this.list.style.display = "none";
+    }
   }
 
   public update(tokens: Token[], selected: Token[]) {
