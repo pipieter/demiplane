@@ -63,6 +63,11 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.emit("token_create", token);
   }
 
+  public clearTokens() {
+    const ids = this.tokens.map((token) => token.id);
+    this.removeTokens(ids);
+  }
+
   public createTokens(tokens: Token[]) {
     for (const token of tokens) {
       this.createToken(token);
