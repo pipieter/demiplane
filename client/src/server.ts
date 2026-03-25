@@ -4,5 +4,12 @@
 
 const url = location.host.includes(".discordsays.com") ? "/server" : import.meta.env.VITE_SERVER_URL;
 
-const server = { url };
+function fullURL(href: string) {
+  if (href.startsWith("/")) {
+    return url + href;
+  }
+  return href;
+}
+
+const server = { url, fullURL };
 export default server;

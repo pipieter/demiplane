@@ -40,7 +40,7 @@ class BackgroundView extends ListenerContainer<BackgroundViewListeners, Backgrou
     if (href === null) {
       this.image.removeAttribute("href");
     } else {
-      this.image.setAttribute("href", server.url + href);
+      this.image.setAttribute("href", server.fullURL(href));
     }
 
     this.image.setAttribute("width", `${width}px`);
