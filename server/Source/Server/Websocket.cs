@@ -73,7 +73,9 @@ public partial class Server
             string message = await socket.ReceiveAsync();
             if (socket.WantsToClose)
             {
-                UserDisconnectResponseMessage response = new(_clients[socket]);
+                string userId = _clients[socket];
+                UserDisconnectResponseMessage response = new(userId);
+                _state.DisconnectUser(userId);
                 _clients.TryRemove(socket, out _);
                 await socket.CloseAsync();
                 socket.Dispose();

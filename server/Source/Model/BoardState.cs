@@ -72,11 +72,12 @@ public class ConcurrentBoardState
         }
     }
 
-    public bool DisconnectUser(User user)
+    public bool DisconnectUser(string userId)
     {
         lock (_lock)
         {
-            if (_users.Find(existing => existing.id == user.id) != null)
+            User? user = _users.Find(existing => existing.id == userId);
+            if (user == null)
                 return false;
 
             // TODO - Currently users are in-memory only, so we just mark them as 'inactive'.
