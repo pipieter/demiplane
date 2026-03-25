@@ -185,7 +185,7 @@ public class UserChangeResponseMessage(User user) : Message
     public User user = user;
 }
 
-public class UserDisconnectResponseMessage(string userId): Message
+public class UserDisconnectResponseMessage(string userId) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "user_disconnect";
