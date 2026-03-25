@@ -97,7 +97,7 @@ socket.onmessage = function (event) {
       break;
 
     case "error":
-      alert(`An error has occured, re-syncing. '${data.message}'`);
+      alert(`An error has occurred, re-syncing. '${data.message}'`);
       store.send({ type: "request_sync", secret: store.getSecretToken() });
       break;
 
