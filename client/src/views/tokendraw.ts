@@ -1,16 +1,18 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import type Viewport from "../models/viewport";
+import { util } from "../util";
 
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   rectangle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
+  image_create: { base64: string; x: number; y: number; w: number; h: number }
 }
 
 class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
   protected override keys(): (keyof TokenDrawViewMap)[] {
-    return ["circle_create", "rectangle_create", "freedraw_create"];
+    return ["circle_create", "rectangle_create", "freedraw_create", "image_create"];
   }
 }
 
@@ -30,6 +32,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly rectangleButton: HTMLButtonElement;
   private readonly freedrawButton: HTMLButtonElement;
   private readonly colorInput: HTMLInputElement;
+  private readonly uploadTokenInput: HTMLInputElement;
 
   private readonly borderCheckbox: HTMLInputElement;
   private readonly borderNumber: HTMLInputElement;
@@ -56,6 +59,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
     this.freedrawButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
     this.colorInput = document.getElementById("draw-color-input") as HTMLInputElement;
+    this.uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
 
     this.borderCheckbox = document.getElementById("draw-border-checkbox") as HTMLInputElement;
     this.borderNumber = document.getElementById("draw-border-number") as HTMLInputElement;
@@ -69,6 +73,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
     this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
+    this.uploadTokenInput.addEventListener("change", async (evt: Event) => await this.addImage(evt))
   }
 
   private begin(type: TokenDrawType) {
@@ -313,6 +318,20 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private getBorder(): number | null {
     if (!this.borderCheckbox.checked) return null;
     return parseInt(this.borderNumber.value);
+  }
+
+  private async addImage(evt: Event) {
+    const file = (evt.target as HTMLInputElement).files?.item(0);
+    if (!file) throw "Could not open file.";
+
+    const base64 = await util.readBase64(file);
+    if (!base64) throw "Could not read file.";
+
+    const x = 0;
+    const y = 0;
+    const w = 256;
+    const h = 256;
+    this.emit("image_create", { base64, x, y, w, h });
   }
 }
 

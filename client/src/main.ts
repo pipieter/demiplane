@@ -1,5 +1,4 @@
 import type { ResponseMessage } from "./messages";
-import { util } from "./util";
 import server from "./server";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
@@ -99,41 +98,3 @@ socket.onmessage = function (event) {
       throw `Unknown message type: ${JSON.stringify(data)}`;
   }
 };
-
-const uploadTokenInput = document.getElementById("upload-token-button") as HTMLInputElement;
-
-function getRandomPosition(): { x: number; y: number } {
-  return {
-    x: Math.floor(Math.random() * 1280),
-    y: Math.floor(Math.random() * 600),
-  };
-}
-
-uploadTokenInput.addEventListener("change", async (evt: Event) => {
-  const file = (evt.target as HTMLInputElement).files?.item(0);
-  if (!file) throw "Could not open file.";
-
-  const base64 = await util.readBase64(file);
-  if (!base64) throw "Could not read file.";
-
-  const href = await store.uploadImage(base64);
-  if (!href) throw "Could not upload image to server.";
-
-  const { x, y } = getRandomPosition();
-  const w = grid.size;
-  const h = grid.size;
-
-  store.send({
-    type: "request_create",
-    create: {
-      type: "image",
-      id: crypto.randomUUID(),
-      href,
-      x,
-      y,
-      w,
-      h,
-      r: 0,
-    },
-  });
-});

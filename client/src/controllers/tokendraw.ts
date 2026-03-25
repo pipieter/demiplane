@@ -12,7 +12,8 @@ class TokenDrawController extends Controller<TokenDrawView> {
     this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
       this.createRectangle(border, color, x, y, w, h),
     );
-    this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
+    this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createImageFromBase64(base64, x, y, w, h));
+    this.view.listen("image_create", ({ base64, x, y, w, h }) => this.createImageFromBase64(base64, x, y, w, h));
 
     document.addEventListener("copy", async (e) => {
       e.preventDefault();
@@ -64,9 +65,13 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private async createFreedraw(base64: string, x: number, y: number, w: number, h: number, r: number = 0) {
+  private async createImageFromBase64(base64: string, x: number, y: number, w: number, h: number, r: number = 0) {
     const href = await this.store.uploadImage(base64);
+    if (!href) throw "Could not upload image to server.";
+    this.createImage(href, x, y, w, h, r);
+  }
 
+  private async createImage(href: string, x: number, y: number, w: number, h: number, r: number = 0) {
     this.store.send({
       type: "request_create",
       create: {
@@ -112,7 +117,8 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
     await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
     for (const token of pastedTokens) {
-      switch (token.type) {
+      const type = token.type;
+      switch (type) {
         case "circle":
           this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
           break;
@@ -121,10 +127,12 @@ class TokenDrawController extends Controller<TokenDrawView> {
           this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
           break;
 
-        // TODO Images
+        case "image":
+          this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
+          break;
 
         default:
-          break;
+          throw `Unsupported paste-type '${type}'`;
       }
     }
   }
