@@ -3,6 +3,12 @@ import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
 import type { User } from "./models/user";
 
+/** An error has occurred somewhere */
+export interface ErrorResponseMessage {
+  type: "error";
+  message: string;
+}
+
 /** Request to sync the board state */
 export interface SyncRequestMessage {
   type: "request_sync";
@@ -119,6 +125,7 @@ export type RequestMessage =
   | BackgroundRequestMessage
   | UserChangeRequestMessage;
 export type ResponseMessage =
+  | ErrorResponseMessage
   | SyncResponseMessage
   | CreateResponseMessage
   | DeleteResponseMessage

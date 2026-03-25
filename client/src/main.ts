@@ -95,6 +95,11 @@ socket.onmessage = function (event) {
       state.setMe(data.me);
       break;
 
+    case "error":
+      alert(`An error has occured, re-syncing. '${data.message}'`);
+      store.send({ type: "request_sync", secret: store.getSecretToken() });
+      break;
+
     default:
       throw `Unknown message type: ${JSON.stringify(data)}`;
   }
