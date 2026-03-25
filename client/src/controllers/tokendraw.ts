@@ -18,20 +18,28 @@ class TokenDrawController extends Controller<TokenDrawView> {
     document.addEventListener("copy", async (e) => {
       e.preventDefault();
       await this.copy();
-    })
+    });
 
     document.addEventListener("cut", async (e) => {
       e.preventDefault();
       await this.cut();
-    })
+    });
 
     document.addEventListener("paste", async (e) => {
       e.preventDefault();
       await this.paste();
-    })
+    });
   }
 
-  private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number, r: number = 0) {
+  private createCircle(
+    border: number | null,
+    color: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number = 0,
+  ) {
     this.store.send({
       type: "request_create",
       create: {
@@ -48,7 +56,15 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private createRectangle(border: number | null, color: string, x: number, y: number, w: number, h: number, r: number = 0) {
+  private createRectangle(
+    border: number | null,
+    color: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number = 0,
+  ) {
     this.store.send({
       type: "request_create",
       create: {
@@ -97,8 +113,8 @@ class TokenDrawController extends Controller<TokenDrawView> {
     await this.copy();
     this.store.send({
       type: "request_delete",
-      delete: this.state.getSelected().map(token => token.id)
-    })
+      delete: this.state.getSelected().map((token) => token.id),
+    });
   }
 
   async paste() {

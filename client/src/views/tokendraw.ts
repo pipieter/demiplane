@@ -7,7 +7,7 @@ interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   rectangle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
-  image_create: { base64: string; x: number; y: number; w: number; h: number }
+  image_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
 class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
@@ -73,7 +73,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
     this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
-    this.uploadTokenInput.addEventListener("change", async (evt: Event) => await this.addImage(evt))
+    this.uploadTokenInput.addEventListener("change", async (evt: Event) => await this.addImage(evt));
   }
 
   private begin(type: TokenDrawType) {
