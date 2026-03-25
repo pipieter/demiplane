@@ -87,6 +87,7 @@ socket.onmessage = function (event) {
       break;
 
     case "sync":
+      state.clearSelected();
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       state.createTokens(data.tokens);
