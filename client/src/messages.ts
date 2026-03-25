@@ -89,8 +89,8 @@ export interface BackgroundResponseMessage {
 }
 
 /** Request to update your user */
-export interface UserRequestMessage {
-  type: "request_user";
+export interface UserChangeRequestMessage {
+  type: "request_user_change";
   user: {
     bearer: string;
     name: string;
@@ -98,9 +98,9 @@ export interface UserRequestMessage {
   };
 }
 
-/** Set a user's new data */
-export interface UserResponseMessage {
-  type: "user";
+/** Set a user's new data, either by change or by joining. */
+export interface UserChangeResponseMessage {
+  type: "user_change";
   user: User;
 }
 
@@ -111,7 +111,7 @@ export type RequestMessage =
   | TransformRequestMessage
   | GridRequestMessage
   | BackgroundRequestMessage
-  | UserRequestMessage;
+  | UserChangeRequestMessage;
 export type ResponseMessage =
   | SyncResponseMessage
   | CreateResponseMessage
@@ -119,4 +119,4 @@ export type ResponseMessage =
   | TransformResponseMessage
   | GridResponseMessage
   | BackgroundResponseMessage
-  | UserResponseMessage;
+  | UserChangeResponseMessage;

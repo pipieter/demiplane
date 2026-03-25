@@ -201,10 +201,10 @@ public partial class Server
                     break;
                 }
 
-            case UserRequestMessage user:
+            case UserChangeRequestMessage user:
                 {
                     User userData = _state.EditUser(user.user.bearer, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
-                    UserResponseMessage response = new(userData);
+                    UserChangeResponseMessage response = new(userData);
                     await BroadcastMessage(JsonConvert.SerializeObject(response));
                     break;
                 }

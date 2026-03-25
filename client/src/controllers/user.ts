@@ -24,7 +24,7 @@ class UserController extends Controller<UserView> {
     }
 
     this.store.send({
-      type: "request_user",
+      type: "request_user_change",
       user: {
         bearer,
         name,

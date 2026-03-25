@@ -167,19 +167,19 @@ public record struct RequestUser(string bearer, string name, string color)
     public string color = color;
 }
 
-public class UserRequestMessage(RequestUser user) : Message
+public class UserChangeRequestMessage(RequestUser user) : Message
 {
     [JsonProperty(Required = Required.Always)]
-    public string type = "request_user";
+    public string type = "request_user_change";
 
     [JsonProperty(Required = Required.Always)]
     public RequestUser user = user;
 }
 
-public class UserResponseMessage(User user) : Message
+public class UserChangeResponseMessage(User user) : Message
 {
     [JsonProperty(Required = Required.Always)]
-    public string type = "user";
+    public string type = "user_change";
 
     [JsonProperty(Required = Required.Always)]
     public User user = user;
@@ -199,14 +199,14 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["delete"] = typeof(DeleteResponseMessage),
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
-                ["user"] = typeof(UserResponseMessage),
+                ["user_change"] = typeof(UserChangeResponseMessage),
                 ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),
-                ["request_user"] = typeof(UserRequestMessage),
+                ["request_user_change"] = typeof(UserChangeRequestMessage),
             };
     }
 }

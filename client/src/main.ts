@@ -82,7 +82,7 @@ socket.onmessage = function (event) {
       state.transformToken(data.transform);
       break;
 
-    case "user":
+    case "user_change":
       state.setUser(data.user);
       break;
 
