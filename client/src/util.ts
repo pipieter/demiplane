@@ -20,4 +20,14 @@ function mouseOnElement(e: MouseEvent, element: Element): boolean {
   return e.clientX >= left && e.clientX <= right && e.clientY >= top && e.clientY <= bottom;
 }
 
-export const util = { readBase64, mouseOnElement };
+function isUserTyping(): boolean {
+  const el = document.activeElement;
+  if (!el) return false;
+
+  const isInput = el.tagName === "INPUT" || el.tagName === "TEXTAREA";
+  const isContentEditable = (el as HTMLElement).isContentEditable;
+
+  return isInput || isContentEditable;
+}
+
+export const util = { readBase64, mouseOnElement, isUserTyping };

@@ -1,10 +1,13 @@
 import { isToken, type Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
+import { util } from "../util";
 import type TokenDrawView from "../views/tokendraw";
 import Controller from "./controller";
 
 class TokenDrawController extends Controller<TokenDrawView> {
+  TOKEN_CLIPBOARD_TYPE = "web demiplane/x-tokens-json";
+
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
 
@@ -100,58 +103,95 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
+  private async writeTokensToClipboard(tokens: Token[]) {
+    const jsonString = JSON.stringify(tokens);
+    const tokenBlob = new Blob([jsonString], { type: this.TOKEN_CLIPBOARD_TYPE });
+
+    // Retain original copy items from user
+    const existingItems = await navigator.clipboard.read().catch(() => []);
+    const newClipboardMap: Record<string, Blob> = {};
+    for (const item of existingItems) {
+      for (const type of item.types) {
+        if (type !== this.TOKEN_CLIPBOARD_TYPE) {
+          const blob = await item.getType(type);
+          newClipboardMap[type] = blob;
+        }
+      }
+    }
+
+    newClipboardMap[this.TOKEN_CLIPBOARD_TYPE] = tokenBlob;
+    const combinedItem = new ClipboardItem(newClipboardMap);
+    await navigator.clipboard.write([combinedItem]);
+  }
+
   async copy() {
-    if (this.state.getSelected().length <= 0) return;
-    await navigator.clipboard.writeText(JSON.stringify(this.state.getSelected()));
+    if (util.isUserTyping()) return;
+    const selected = this.state.getSelected();
+    if (selected.length <= 0) return;
+
+    await this.writeTokensToClipboard(selected);
   }
 
   async cut() {
-    if (this.state.getSelected().length <= 0) return;
-    await this.copy();
+    if (util.isUserTyping()) return;
+    const selected = this.state.getSelected();
+    if (selected.length <= 0) return;
+
+    await this.writeTokensToClipboard(selected);
     this.store.send({
       type: "request_delete",
-      delete: this.state.getSelected().map((token) => token.id),
+      delete: selected.map((token) => token.id),
     });
   }
 
   async paste() {
-    const json = await navigator.clipboard.readText();
+    if (util.isUserTyping()) return;
+
     try {
-      const parsed: Token[] = JSON.parse(json);
-      if (!Array.isArray(parsed)) return;
+      const clipboardItems = await navigator.clipboard.read();
 
-      const offset = 20;
-      const pastedTokens = parsed
-        .filter((token) => {
-          const valid = isToken(token);
-          return valid;
-        })
-        .map((token) => ({
-          ...token,
-          x: token.x + offset,
-          y: token.y + offset,
-        }));
+      for (const item of clipboardItems) {
+        const blob = await item.getType(this.TOKEN_CLIPBOARD_TYPE);
+        const json = await blob.text();
+        const parsed: Token[] = JSON.parse(json);
 
-      if (pastedTokens.length <= 0) return;
-      await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
+        if (!Array.isArray(parsed)) return;
 
-      for (const token of pastedTokens) {
-        const type = token.type;
-        switch (type) {
-          case "circle":
-            this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-            break;
+        const offset = 16;
+        const pastedTokens = parsed
+          .filter((token) => {
+            const valid = isToken(token);
+            return valid;
+          })
+          .map((token) => ({
+            ...token,
+            x: token.x + offset,
+            y: token.y + offset,
+          }));
 
-          case "rectangle":
-            this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-            break;
+        if (pastedTokens.length <= 0) return;
 
-          case "image":
-            this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
-            break;
+        // Update the clipboard with the new offset version
+        this.writeTokensToClipboard(pastedTokens);
 
-          default:
-            throw `Unsupported paste-type '${type}'`;
+        for (const token of pastedTokens) {
+          const type = token.type;
+          switch (type) {
+            case "circle":
+              this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            case "rectangle":
+              this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            case "image":
+              this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            default:
+              throw `Unsupported paste-type '${type}'`;
+          }
         }
       }
     } catch {
