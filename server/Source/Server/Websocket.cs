@@ -148,7 +148,8 @@ public partial class Server
                 await socket.SendAsync(Json.Serialize(syncResponse));
 
                 UserChangeResponseMessage userResponse = new(user);
-                await BroadcastMessage(userResponse, socket);
+                // Note: we also respond to the socket we communicate with
+                await BroadcastMessage(userResponse);
                 break;
             }
 
@@ -222,7 +223,8 @@ public partial class Server
                     _state.EditUser(user.user.secret, user.user.name, user.user.color)
                     ?? throw new Exception("Could not find user.");
                 UserChangeResponseMessage response = new(userData);
-                await BroadcastMessage(response, socket);
+                // Note: we also respond to the socket we communicate with
+                await BroadcastMessage(response);
                 break;
             }
         }
