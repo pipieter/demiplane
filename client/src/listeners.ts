@@ -4,6 +4,7 @@ import type { Transform } from "./models/transform";
 
 interface TokenListenerMap {
   token_transform: Transform;
+  token_transform_finish: Transform;
   tokens_select: Token[];
   tokens_delete: Token[];
 }
