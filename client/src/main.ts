@@ -137,3 +137,18 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
     },
   });
 });
+
+document.addEventListener("copy", async (e) => {
+  e.preventDefault();
+  await state.copy();
+})
+
+document.addEventListener("cut", async (e) => {
+  e.preventDefault();
+  await state.cut();
+})
+
+document.addEventListener("paste", async (e) => {
+  e.preventDefault();
+  await state.paste();
+})
