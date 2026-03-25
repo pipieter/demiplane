@@ -155,37 +155,6 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
   public getViewport(): Viewport {
     return this.viewport;
   }
-
-  async copy() {
-    if (this.selected.length <= 0) return;
-    await navigator.clipboard.writeText(JSON.stringify(this.selected));
-  }
-
-  async cut() {
-    if (this.selected.length <= 0) return;
-    await this.copy();
-    const ids = this.selected.map(token => token.id);
-    this.removeTokens(ids);
-  }
-
-  async paste() {
-    const json = await navigator.clipboard.readText();
-    const parsed: Token[] = JSON.parse(json);
-
-    if (!Array.isArray(parsed)) throw "Pasted data is not a JSON array.";
-    // TODO validate data is actual tokens.
-
-    const offset = 20;
-    const pastedTokens = parsed.map((token) => ({
-      ...token,
-      id: crypto.randomUUID(),
-      x: token.x + offset,
-      y: token.y + offset,
-    }));
-
-    await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
-    this.createTokens(pastedTokens);
-  }
 }
 
 export default State;

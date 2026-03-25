@@ -1,3 +1,4 @@
+import type { Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
 import type TokenDrawView from "../views/tokendraw";
@@ -12,9 +13,24 @@ class TokenDrawController extends Controller<TokenDrawView> {
       this.createRectangle(border, color, x, y, w, h),
     );
     this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
+
+    document.addEventListener("copy", async (e) => {
+      e.preventDefault();
+      await this.copy();
+    })
+
+    document.addEventListener("cut", async (e) => {
+      e.preventDefault();
+      await this.cut();
+    })
+
+    document.addEventListener("paste", async (e) => {
+      e.preventDefault();
+      await this.paste();
+    })
   }
 
-  private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
+  private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number, r: number = 0) {
     this.store.send({
       type: "request_create",
       create: {
@@ -26,12 +42,12 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0,
+        r,
       },
     });
   }
 
-  private createRectangle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
+  private createRectangle(border: number | null, color: string, x: number, y: number, w: number, h: number, r: number = 0) {
     this.store.send({
       type: "request_create",
       create: {
@@ -43,12 +59,12 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0,
+        r,
       },
     });
   }
 
-  private async createFreedraw(base64: string, x: number, y: number, w: number, h: number) {
+  private async createFreedraw(base64: string, x: number, y: number, w: number, h: number, r: number = 0) {
     const href = await this.store.uploadImage(base64);
 
     this.store.send({
@@ -61,9 +77,56 @@ class TokenDrawController extends Controller<TokenDrawView> {
         y,
         w,
         h,
-        r: 0,
+        r,
       },
     });
+  }
+
+  async copy() {
+    if (this.state.getSelected().length <= 0) return;
+    await navigator.clipboard.writeText(JSON.stringify(this.state.getSelected()));
+  }
+
+  async cut() {
+    if (this.state.getSelected().length <= 0) return;
+    await this.copy();
+    this.store.send({
+      type: "request_delete",
+      delete: this.state.getSelected().map(token => token.id)
+    })
+  }
+
+  async paste() {
+    const json = await navigator.clipboard.readText();
+    const parsed: Token[] = JSON.parse(json);
+
+    if (!Array.isArray(parsed)) throw "Pasted data is not a JSON array.";
+    // TODO validate data is actual tokens.
+
+    const offset = 20;
+    const pastedTokens = parsed.map((token) => ({
+      ...token,
+      x: token.x + offset,
+      y: token.y + offset,
+    }));
+
+    await navigator.clipboard.writeText(JSON.stringify(pastedTokens));
+    for (const token of pastedTokens) {
+      switch (token.type) {
+        case "circle":
+          this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+          break;
+
+        case "rectangle":
+          this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+          break;
+
+        // TODO Images
+
+        default:
+          break;
+      }
+    }
   }
 }
 
