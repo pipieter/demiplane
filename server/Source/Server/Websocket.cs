@@ -148,8 +148,7 @@ public partial class Server
                     await socket.SendAsync(Json.Serialize(syncResponse));
 
                     UserChangeResponseMessage userResponse = new(user);
-                    // Note: we also respond to the socket we communicate with
-                    await BroadcastMessage(userResponse);
+                    await BroadcastMessage(userResponse, socket);
                     break;
                 }
 
