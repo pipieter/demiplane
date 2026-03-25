@@ -23,6 +23,7 @@ import TokenListView from "./views/tokenlist";
 import TokenListController from "./controllers/tokenlist";
 import UserView from "./views/user";
 import UserController from "./controllers/user";
+import type { TokenImage } from "./models/token";
 
 const socket = new WebSocket(server.url);
 const store = new Store(server.url, socket);
@@ -129,17 +130,20 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const w = grid.size;
   const h = grid.size;
 
+  const token: TokenImage = {
+    type: "image",
+    id: crypto.randomUUID(),
+    href,
+    x,
+    y,
+    w,
+    h,
+    r: 0,
+  };
+
+  state.createToken(token);
   store.send({
     type: "request_create",
-    create: {
-      type: "image",
-      id: crypto.randomUUID(),
-      href,
-      x,
-      y,
-      w,
-      h,
-      r: 0,
-    },
+    create: token,
   });
 });
