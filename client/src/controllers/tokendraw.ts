@@ -7,14 +7,14 @@ class TokenDrawController extends Controller<TokenDrawView> {
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
 
-    this.view.listen("circle_create", ({ x, y, w, h, border }) => this.createCircle(border, x, y, w, h));
-    this.view.listen("rectangle_create", ({ x, y, w, h, border }) => this.createRectangle(border, x, y, w, h));
+    this.view.listen("circle_create", ({ x, y, w, h, border, color }) => this.createCircle(border, color, x, y, w, h));
+    this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
+      this.createRectangle(border, color, x, y, w, h),
+    );
     this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
   }
 
-  private createCircle(border: number | null, x: number, y: number, w: number, h: number) {
-    const color = "#FF0000"; //TODO
-
+  private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
     this.store.send({
       type: "request_create",
       create: {
@@ -31,9 +31,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private createRectangle(border: number | null, x: number, y: number, w: number, h: number) {
-    const color = "#00FF00"; //TODO
-
+  private createRectangle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
     this.store.send({
       type: "request_create",
       create: {
