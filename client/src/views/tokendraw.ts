@@ -3,8 +3,8 @@ import type Grid from "../models/grid";
 import type Viewport from "../models/viewport";
 
 interface TokenDrawViewMap {
-  circle_create: { x: number; y: number; w: number; h: number; border: number | null };
-  rectangle_create: { x: number; y: number; w: number; h: number; border: number | null };
+  circle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
+  rectangle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   freedraw_create: { base64: string; x: number; y: number; w: number; h: number };
 }
 
@@ -29,6 +29,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly circleButton: HTMLButtonElement;
   private readonly rectangleButton: HTMLButtonElement;
   private readonly freedrawButton: HTMLButtonElement;
+  private readonly colorInput: HTMLInputElement;
 
   private readonly borderCheckbox: HTMLInputElement;
   private readonly borderNumber: HTMLInputElement;
@@ -54,6 +55,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.circleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
     this.freedrawButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
+    this.colorInput = document.getElementById("draw-color-input") as HTMLInputElement;
 
     this.borderCheckbox = document.getElementById("draw-border-checkbox") as HTMLInputElement;
     this.borderNumber = document.getElementById("draw-border-number") as HTMLInputElement;
@@ -192,8 +194,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
+        const color = this.colorInput.value;
         const border = this.getBorder();
-        this.emit("circle_create", { x, y, w, h, border });
+        this.emit("circle_create", { x, y, w, h, border, color });
         break;
       }
 
@@ -202,8 +205,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         const y = Math.min(this.start.y, this.current.y);
         const w = Math.abs(this.start.x - this.current.x);
         const h = Math.abs(this.start.y - this.current.y);
+        const color = this.colorInput.value;
         const border = this.getBorder();
-        this.emit("rectangle_create", { x, y, w, h, border });
+        this.emit("rectangle_create", { x, y, w, h, border, color });
         break;
       }
 
@@ -269,6 +273,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     const lineWidth = 10;
 
     const canvas = document.createElement("canvas");
+    const color = this.colorInput.value;
 
     // A small addition is required to ensure that the line doesn't get cut off at the borders
     canvas.width = width + 2 * lineWidth;
@@ -276,7 +281,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
     const ctx = canvas.getContext("2d")!;
     ctx.translate(-x + lineWidth, -y + lineWidth);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
 
     if (this.freedrawPoints.length > 1) {
