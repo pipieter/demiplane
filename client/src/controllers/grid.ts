@@ -12,15 +12,12 @@ class GridController extends Controller<GridView> {
   }
 
   private onchange(size: number, offsetX: number, offsetY: number) {
+    const grid = { size, offset: { x: offsetX, y: offsetY } };
+
+    this.state.setGrid(grid);
     this.store.send({
       type: "request_grid",
-      grid: {
-        size,
-        offset: {
-          x: offsetX,
-          y: offsetY,
-        },
-      },
+      grid,
     });
   }
 }
