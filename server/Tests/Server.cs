@@ -9,18 +9,8 @@ namespace Demiplane.Tests;
 public class ServerTests : ServerTestSetup
 {
     [Test, Timeout(5000)]
-    public async Task ConnectionToServer_Succeeds()
-    {
-        var response = await _socket.ReceiveAsync<SyncResponseMessage>();
-
-        Assert.That(response.type, Is.EqualTo("sync"));
-    }
-
-    [Test, Timeout(5000)]
     public async Task AddingCircle_Succeeds()
     {
-        await _socket.ReceiveAsync(); // Receive initial message, and ignore
-
         var request =
             @"{
             'type': 'request_create',

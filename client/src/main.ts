@@ -21,6 +21,8 @@ import TokenEditView from "./views/tokenedit";
 import TokenEditController from "./controllers/tokenedit";
 import TokenListView from "./views/tokenlist";
 import TokenListController from "./controllers/tokenlist";
+import UserView from "./views/user";
+import UserController from "./controllers/user";
 
 const socket = new WebSocket(server.url);
 const store = new Store(server.url, socket);
@@ -38,6 +40,7 @@ const gridView = new GridView();
 const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
 const tokenListView = new TokenListView();
+const userView = new UserView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
@@ -48,6 +51,7 @@ new GridController(store, state, gridView);
 new SidebarController(store, state, headerView);
 new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
+new UserController(store, state, userView);
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
@@ -74,10 +78,21 @@ socket.onmessage = function (event) {
       state.transformToken(data.transform);
       break;
 
+    case "user_change":
+      state.setUser(data.user);
+      break;
+
+    case "user_disconnect":
+      state.removeUser(data.userId);
+      break;
+
     case "sync":
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       state.createTokens(data.tokens);
+      state.setUsers(data.users);
+      store.setSecretToken(data.secret);
+      state.setMe(data.me);
       break;
 
     default:

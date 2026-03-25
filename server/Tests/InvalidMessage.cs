@@ -43,7 +43,6 @@ public class InvalidMessageTests : ServerTestSetup
     [TestCaseSource(nameof(TooManyFieldsMessage))]
     public async Task InvalidMessage_Fails(string request)
     {
-        await _socket.ReceiveAsync(); // Receive initial message, and ignore
         await _socket.SendAsync(request);
 
         var response = await _socket.ReceiveAsync<ErrorResponseMessage>();

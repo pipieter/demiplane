@@ -6,6 +6,7 @@ public class ConcurrentBoardState
 {
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
+    private readonly List<User> _users = [];
     private readonly Grid _grid = new(64, 0, 0);
     private readonly Background _background = new(null, 1024, 1024);
 
@@ -56,6 +57,72 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             return [.. _tokens];
+        }
+    }
+
+    public bool AddUser(User user)
+    {
+        lock (_lock)
+        {
+            if (_users.Find(existing => existing.id == user.id) != null)
+                return false;
+
+            _users.Add(user);
+            return true;
+        }
+    }
+
+    public bool DisconnectUser(string userId)
+    {
+        lock (_lock)
+        {
+            User? user = _users.Find(existing => existing.id == userId);
+            if (user == null)
+                return false;
+
+            // TODO - Currently users are in-memory only, so we just mark them as 'inactive'.
+            // Down the line they could be stored externally and maybe fully deleted from the board state (Unless we need user-history of sorts.)
+            user.isActive = false;
+            return true;
+        }
+    }
+
+    public User? GetUser(string secret)
+    {
+        lock (_lock)
+        {
+            return _users.Find(user => user.secret == secret);
+        }
+    }
+
+    public User? EditUser(string secret, string name, string color)
+    {
+        lock (_lock)
+        {
+            User? user = GetUser(secret);
+            if (user == null)
+                return null;
+
+            user.isActive = true;
+            user.name = name;
+            user.color = color;
+            return user;
+        }
+    }
+
+    public List<User> Users()
+    {
+        lock (_lock)
+        {
+            return [.. _users];
+        }
+    }
+
+    public List<User> ActiveUsers()
+    {
+        lock (_lock)
+        {
+            return _users.FindAll(user => user.isActive);
         }
     }
 

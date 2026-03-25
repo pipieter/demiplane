@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
@@ -66,18 +68,18 @@ public partial class Server
         Socket socket = new(webSocket);
         _clients.TryAdd(socket, "");
 
-        // Synchronize the current state
-        SyncResponseMessage sync = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid());
-        await socket.SendAsync(Json.Serialize(sync));
-
         while (socket.IsOpen)
         {
             string message = await socket.ReceiveAsync();
             if (socket.WantsToClose)
             {
+                string userId = _clients[socket];
+                UserDisconnectResponseMessage response = new(userId);
+                _state.DisconnectUser(userId);
                 _clients.TryRemove(socket, out _);
                 await socket.CloseAsync();
                 socket.Dispose();
+                await BroadcastMessage(response);
                 return;
             }
             else
@@ -94,13 +96,15 @@ public partial class Server
         }
     }
 
-    private async Task BroadcastMessage(string message)
+    private async Task BroadcastMessage(Message message, Socket? ignoreSocket = null)
     {
-        foreach (var client in _clients.Keys)
+        foreach (Socket client in _clients.Keys)
         {
-            await client.SendAsync(message);
+            if (client == ignoreSocket) continue;
+            await client.SendAsync(JsonConvert.SerializeObject(message));
         }
     }
+
 
     private async Task ProcessMessage(Socket socket, string? message)
     {
@@ -111,13 +115,44 @@ public partial class Server
 
         switch (body)
         {
+            case SyncRequestMessage sync:
+                {
+                    string? secret = sync.secret;
+                    User? user = null;
+
+                    if (secret != null)
+                    {
+                        user = _state.GetUser(secret);
+                        if (user == null)
+                            secret = null; // Forces creation of a new user.
+                    }
+
+                    if (secret == null)
+                    {
+                        user = UserService.GenerateUser(_state.Users());
+                        if (!_state.AddUser(user))
+                            throw new Exception("Could not register user.");
+                    }
+
+                    if (user == null)
+                        throw new Exception("Failed to validate user.");
+
+                    _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
+                    SyncResponseMessage syncResponse = new([.. _state.Tokens()], _state.GetBackground(), _state.GetGrid(), [.. _state.ActiveUsers()], user);
+                    await socket.SendAsync(Json.Serialize(syncResponse));
+
+                    UserChangeResponseMessage userResponse = new(user);
+                    await BroadcastMessage(userResponse, socket);
+                    break;
+                }
+
             case CreateRequestMessage create:
                 {
                     if (!_state.AddToken(create.create))
                         throw new Exception("Could not add token.");
 
                     CreateResponseMessage response = new(create.create);
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -127,7 +162,7 @@ public partial class Server
                         throw new Exception("Could not delete tokens.");
 
                     var response = new DeleteResponseMessage(delete.delete);
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -145,7 +180,7 @@ public partial class Server
 
                     _state.SetBackground(found);
                     BackgroundResponseMessage response = new(_state.GetBackground());
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -161,7 +196,7 @@ public partial class Server
                         throw new Exception("Could not transform token.");
 
                     TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
                     break;
                 }
 
@@ -171,7 +206,15 @@ public partial class Server
                         throw new Exception("Could not set grid.");
 
                     GridResponseMessage response = new(_state.GetGrid());
-                    await BroadcastMessage(JsonConvert.SerializeObject(response));
+                    await BroadcastMessage(response);
+                    break;
+                }
+
+            case UserChangeRequestMessage user:
+                {
+                    User userData = _state.EditUser(user.user.secret, user.user.name, user.user.color) ?? throw new Exception("Could not find user.");
+                    UserChangeResponseMessage response = new(userData);
+                    await BroadcastMessage(response);
                     break;
                 }
         }

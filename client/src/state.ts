@@ -3,11 +3,14 @@ import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
+import type { User } from "./models/user";
 import Viewport from "./models/viewport";
 
 export interface StateListenerMap {
   background_change: Background;
   grid_change: GridData;
+  user_change: User;
+  user_disconnect: string;
   token_create: Token;
   token_select: [Token[], Token[]];
   token_transform: [Token, Transform];
@@ -16,13 +19,24 @@ export interface StateListenerMap {
 
 class StateListeners extends Listener<StateListenerMap> {
   protected override keys(): (keyof StateListenerMap)[] {
-    return ["background_change", "grid_change", "token_create", "token_select", "token_transform", "token_delete"];
+    return [
+      "background_change",
+      "grid_change",
+      "user_change",
+      "user_disconnect",
+      "token_create",
+      "token_select",
+      "token_transform",
+      "token_delete",
+    ];
   }
 }
 
 class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private tokens: Token[];
   private selected: Token[];
+  private users: Record<string, User>;
+  private myId: string;
   private background: Background;
   private grid: Grid;
   private viewport: Viewport;
@@ -32,6 +46,8 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
     this.tokens = [];
     this.selected = [];
+    this.users = {};
+    this.myId = "";
     this.grid = new Grid();
     this.viewport = new Viewport();
     this.background = new Background();
@@ -92,6 +108,37 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
 
   public getTokens(): Token[] {
     return [...this.tokens];
+  }
+
+  public setMe(user: User) {
+    this.myId = user.id;
+    this.setUser(user);
+  }
+
+  public getMe(): User {
+    return this.users[this.myId];
+  }
+
+  public isMe(user: User): boolean {
+    return user.id === this.myId;
+  }
+
+  public setUser(user: User) {
+    if (user.id in this.users) this.users[user.id] = user;
+    else this.users[user.id] = user;
+    this.emit("user_change", user);
+  }
+
+  public removeUser(id: string) {
+    if (!(id in this.users)) return;
+    delete this.users[id];
+    this.emit("user_disconnect", id);
+  }
+
+  public setUsers(users: User[]) {
+    for (const user of users) {
+      this.setUser(user);
+    }
   }
 
   public getGrid(): Grid {

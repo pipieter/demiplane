@@ -1,6 +1,13 @@
 import type { GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
+import type { User } from "./models/user";
+
+/** Request to sync the board state */
+export interface SyncRequestMessage {
+  type: "request_sync";
+  secret: string | null;
+}
 
 /** Sync the current board state */
 export interface SyncResponseMessage {
@@ -12,6 +19,9 @@ export interface SyncResponseMessage {
   };
   grid: GridData;
   tokens: Token[];
+  users: User[];
+  secret: string;
+  me: User;
 }
 
 /** Request to create a token on the whiteboard */
@@ -78,16 +88,42 @@ export interface BackgroundResponseMessage {
   };
 }
 
+/** Request to update your user */
+export interface UserChangeRequestMessage {
+  type: "request_user_change";
+  user: {
+    secret: string;
+    name: string;
+    color: string;
+  };
+}
+
+/** Set a user's new data, either by change or by joining. */
+export interface UserChangeResponseMessage {
+  type: "user_change";
+  user: User;
+}
+
+/** Remove a user due to disconnection */
+export interface UserDisconnectResponseMessage {
+  type: "user_disconnect";
+  userId: string;
+}
+
 export type RequestMessage =
+  | SyncRequestMessage
   | CreateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage
   | GridRequestMessage
-  | BackgroundRequestMessage;
+  | BackgroundRequestMessage
+  | UserChangeRequestMessage;
 export type ResponseMessage =
   | SyncResponseMessage
   | CreateResponseMessage
   | DeleteResponseMessage
   | TransformResponseMessage
   | GridResponseMessage
-  | BackgroundResponseMessage;
+  | BackgroundResponseMessage
+  | UserChangeResponseMessage
+  | UserDisconnectResponseMessage;

@@ -1,3 +1,7 @@
+:root {
+    --user-color: #ff0000; /* Overridden in code. */
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -96,13 +100,13 @@ button:disabled {
 
 /* Token list */
 
-.token-list {
+.side-menu-list {
   list-style-type: none;
   padding: 0px;
   margin: 0px;
 }
 
-.token-list > li {
+.side-menu-list > li {
   border: solid 1px gray;
   background-color: var(--dark-primary);
   margin: 8px;
@@ -112,17 +116,17 @@ button:disabled {
   align-items: center;
 }
 
-.token-list > li.selected {
+.side-menu-list > li.selected {
   background-color: var(--dark-secondary);
 }
 
-.token-list > li > i {
+.side-menu-list > li > i {
   font-size: 32px;
   margin: 0;
   padding: 4px;
 }
 
-.token-list > li > p {
+.side-menu-list > li > p {
   margin: 0;
   padding: 0;
 }
@@ -157,7 +161,7 @@ button:disabled {
 
 #whiteboard-objects-layer > *:focus,
 #whiteboard-objects-layer > .selected {
-  filter: drop-shadow(0px 0px 8px #4da3ff);
+  filter: drop-shadow(0px 0px 8px var(--user-color));
   outline: none;
 }
 

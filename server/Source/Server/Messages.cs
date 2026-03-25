@@ -15,7 +15,16 @@ public class ErrorResponseMessage(string message)
     public string message = message;
 }
 
-public class SyncResponseMessage(Token[] tokens, Background background, Grid grid) : Message
+public class SyncRequestMessage(string? secret) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_sync";
+
+    [JsonProperty]
+    public string? secret = secret;
+}
+
+public class SyncResponseMessage(Token[] tokens, Background background, Grid grid, User[] users, User me) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "sync";
@@ -28,6 +37,12 @@ public class SyncResponseMessage(Token[] tokens, Background background, Grid gri
 
     [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
+    [JsonProperty(Required = Required.Always)]
+    public User[] users = users;
+    [JsonProperty(Required = Required.Always)]
+    public string secret = me.secret;
+    [JsonProperty(Required = Required.Always)]
+    public User me = me;
 }
 
 public class CreateRequestMessage(Token create) : Message
@@ -140,6 +155,45 @@ public class TransformResponseMessage(Transform transform) : Message
     public Transform transform = transform;
 }
 
+public record struct RequestUser(string secret, string name, string color)
+{
+    [JsonProperty(Required = Required.Always)]
+    public string secret = secret;
+
+    [JsonProperty(Required = Required.Always)]
+    public string name = name;
+
+    [JsonProperty(Required = Required.Always)]
+    public string color = color;
+}
+
+public class UserChangeRequestMessage(RequestUser user) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_user_change";
+
+    [JsonProperty(Required = Required.Always)]
+    public RequestUser user = user;
+}
+
+public class UserChangeResponseMessage(User user) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "user_change";
+
+    [JsonProperty(Required = Required.Always)]
+    public User user = user;
+}
+
+public class UserDisconnectResponseMessage(string userId) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "user_disconnect";
+
+    [JsonProperty(Required = Required.Always)]
+    public string userId = userId;
+}
+
 public class MessageJsonConverter : Json.TypeConverter<Message>
 {
     public override Dictionary<string, Type> TypeMap
@@ -154,11 +208,15 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["delete"] = typeof(DeleteResponseMessage),
                 ["transform"] = typeof(TransformResponseMessage),
                 ["background"] = typeof(BackgroundResponseMessage),
+                ["user_change"] = typeof(UserChangeResponseMessage),
+                ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
+                ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),
+                ["request_user_change"] = typeof(UserChangeRequestMessage),
             };
     }
 }
