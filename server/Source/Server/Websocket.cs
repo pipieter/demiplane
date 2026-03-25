@@ -116,117 +116,117 @@ public partial class Server
         switch (body)
         {
             case SyncRequestMessage sync:
-            {
-                string? secret = sync.secret;
-                User? user = null;
-
-                if (secret != null)
                 {
-                    user = _state.GetUser(secret);
+                    string? secret = sync.secret;
+                    User? user = null;
+
+                    if (secret != null)
+                    {
+                        user = _state.GetUser(secret);
+                        if (user == null)
+                            secret = null; // Forces creation of a new user.
+                    }
+
+                    if (secret == null)
+                    {
+                        user = UserService.GenerateUser(_state.Users());
+                        if (!_state.AddUser(user))
+                            throw new Exception("Could not register user.");
+                    }
+
                     if (user == null)
-                        secret = null; // Forces creation of a new user.
+                        throw new Exception("Failed to validate user.");
+
+                    _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
+                    SyncResponseMessage syncResponse = new(
+                        [.. _state.Tokens()],
+                        _state.GetBackground(),
+                        _state.GetGrid(),
+                        [.. _state.ActiveUsers()],
+                        user
+                    );
+                    await socket.SendAsync(Json.Serialize(syncResponse));
+
+                    UserChangeResponseMessage userResponse = new(user);
+                    // Note: we also respond to the socket we communicate with
+                    await BroadcastMessage(userResponse);
+                    break;
                 }
-
-                if (secret == null)
-                {
-                    user = UserService.GenerateUser(_state.Users());
-                    if (!_state.AddUser(user))
-                        throw new Exception("Could not register user.");
-                }
-
-                if (user == null)
-                    throw new Exception("Failed to validate user.");
-
-                _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
-                SyncResponseMessage syncResponse = new(
-                    [.. _state.Tokens()],
-                    _state.GetBackground(),
-                    _state.GetGrid(),
-                    [.. _state.ActiveUsers()],
-                    user
-                );
-                await socket.SendAsync(Json.Serialize(syncResponse));
-
-                UserChangeResponseMessage userResponse = new(user);
-                // Note: we also respond to the socket we communicate with
-                await BroadcastMessage(userResponse);
-                break;
-            }
 
             case CreateRequestMessage create:
-            {
-                if (!_state.AddToken(create.create))
-                    throw new Exception("Could not add token.");
+                {
+                    if (!_state.AddToken(create.create))
+                        throw new Exception("Could not add token.");
 
-                CreateResponseMessage response = new(create.create);
-                await BroadcastMessage(response, socket);
-                break;
-            }
+                    CreateResponseMessage response = new(create.create);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
             case DeleteRequestMessage delete:
-            {
-                if (!_state.DeleteTokens(delete.delete))
-                    throw new Exception("Could not delete tokens.");
+                {
+                    if (!_state.DeleteTokens(delete.delete))
+                        throw new Exception("Could not delete tokens.");
 
-                var response = new DeleteResponseMessage(delete.delete);
-                await BroadcastMessage(response, socket);
-                break;
-            }
+                    var response = new DeleteResponseMessage(delete.delete);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
             case BackgroundRequestMessage background:
-            {
-                Asset asset =
-                    _assetService.Find(background.href)
-                    ?? throw new FileNotFoundException($"Could not find {background.href}");
+                {
+                    Asset asset =
+                        _assetService.Find(background.href)
+                        ?? throw new FileNotFoundException($"Could not find {background.href}");
 
-                if (!Image.IsImage(asset.Path))
-                    throw new FormatException($"File at {background.href} is not an image!");
+                    if (!Image.IsImage(asset.Path))
+                        throw new FormatException($"File at {background.href} is not an image!");
 
-                (int width, int height) = Image.GetSize(asset.Path);
-                Background found = new(background.href, width, height);
+                    (int width, int height) = Image.GetSize(asset.Path);
+                    Background found = new(background.href, width, height);
 
-                _state.SetBackground(found);
-                BackgroundResponseMessage response = new(_state.GetBackground());
-                await BroadcastMessage(response, socket);
-                break;
-            }
+                    _state.SetBackground(found);
+                    BackgroundResponseMessage response = new(_state.GetBackground());
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
             case TransformRequestMessage transform:
-            {
-                string id = transform.transform.id;
-                int x = transform.transform.x;
-                int y = transform.transform.y;
-                int w = transform.transform.w;
-                int h = transform.transform.h;
-                int r = transform.transform.r;
-                if (!_state.TransformToken(id, x, y, w, h, r))
-                    throw new Exception("Could not transform token.");
+                {
+                    string id = transform.transform.id;
+                    int x = transform.transform.x;
+                    int y = transform.transform.y;
+                    int w = transform.transform.w;
+                    int h = transform.transform.h;
+                    int r = transform.transform.r;
+                    if (!_state.TransformToken(id, x, y, w, h, r))
+                        throw new Exception("Could not transform token.");
 
-                TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
-                await BroadcastMessage(response, socket);
-                break;
-            }
+                    TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
             case GridRequestMessage grid:
-            {
-                if (!_state.SetGrid(grid.grid.size, grid.grid.offset.x, grid.grid.offset.y))
-                    throw new Exception("Could not set grid.");
+                {
+                    if (!_state.SetGrid(grid.grid.size, grid.grid.offset.x, grid.grid.offset.y))
+                        throw new Exception("Could not set grid.");
 
-                GridResponseMessage response = new(_state.GetGrid());
-                await BroadcastMessage(response, socket);
-                break;
-            }
+                    GridResponseMessage response = new(_state.GetGrid());
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
             case UserChangeRequestMessage user:
-            {
-                User userData =
-                    _state.EditUser(user.user.secret, user.user.name, user.user.color)
-                    ?? throw new Exception("Could not find user.");
-                UserChangeResponseMessage response = new(userData);
-                // Note: we also respond to the socket we communicate with
-                await BroadcastMessage(response);
-                break;
-            }
+                {
+                    User userData =
+                        _state.EditUser(user.user.secret, user.user.name, user.user.color)
+                        ?? throw new Exception("Could not find user.");
+                    UserChangeResponseMessage response = new(userData);
+                    // Note: we also respond to the socket we communicate with
+                    await BroadcastMessage(response);
+                    break;
+                }
         }
     }
 }
