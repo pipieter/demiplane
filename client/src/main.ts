@@ -100,22 +100,13 @@ function getRandomPosition(): { x: number; y: number } {
 
 uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const file = (evt.target as HTMLInputElement).files?.item(0);
-  if (!file) {
-    console.error("Could not open file.");
-    return;
-  }
+  if (!file) throw "Could not open file.";
 
   const base64 = await util.readBase64(file);
-  if (!base64) {
-    console.error("Could not read file.");
-    return;
-  }
+  if (!base64) throw "Could not read file.";
 
   const href = await store.uploadImage(base64);
-  if (!href) {
-    console.error("Could not upload image to server.");
-    return;
-  }
+  if (!href) throw "Could not upload image to server.";
 
   const { x, y } = getRandomPosition();
   const w = grid.size;
