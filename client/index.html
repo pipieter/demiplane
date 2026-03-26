@@ -21,16 +21,17 @@
           <input type="color" id="draw-color-input" />
           <label for="draw-color-input">Color</label>
           <button><input id="upload-token-button" type="file" accept="image/*" />Upload a token</button>
-          <button><input id="upload-background-button" type="file" accept="image/*" />Upload background</button>
         </section>
 
-        <section id="tab-settings" class="tab-panel" hidden>
+        <section id="tab-grid" class="tab-panel" hidden>
           <label for="grid-size">size</label>
           <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
           <label for="grid-offset-X">offset X</label>
           <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
           <label for="grid-offset-Y">offset Y</label>
           <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
+          <hr />
+          <button><input id="upload-background-button" type="file" accept="image/*" />Upload background</button>
         </section>
 
         <section id="tab-token" class="tab-panel" hidden>
@@ -66,7 +67,7 @@
       <nav class="sidebar-navigation">
         <button class="tab-close-button" id="sidebar-hide-button"><i class="fa-solid fa-xmark"></i></button>
         <button class="tab-button" data-tab="draw">Draw</button>
-        <button class="tab-button" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="grid">Grid</button>
         <button class="tab-button" data-tab="token">Token</button>
         <button class="tab-button" data-tab="user">User</button>
       </nav>
