@@ -20,7 +20,12 @@
           <button id="begin-drawing-button">Begin drawing</button>
           <input type="color" id="draw-color-input" />
           <label for="draw-color-input">Color</label>
-          <button><input id="upload-token-button" type="file" accept="image/*" />Upload a token</button>
+          <hr />
+          <label for="upload-token-button" class="label-button">
+            Upload a token
+            <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
+          </label>
+          <p>Tokens are uploaded to the top-left corner of the board.</p>
         </section>
 
         <section id="tab-grid" class="tab-panel" hidden>
@@ -31,7 +36,10 @@
           <label for="grid-offset-Y">offset Y</label>
           <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
           <hr />
-          <button><input id="upload-background-button" type="file" accept="image/*" />Upload background</button>
+          <label for="upload-background-button" class="label-button">
+            Upload background
+            <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
+          </label>
         </section>
 
         <section id="tab-token" class="tab-panel" hidden>
