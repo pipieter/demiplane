@@ -23,6 +23,7 @@ import TokenListView from "./views/tokenlist";
 import TokenListController from "./controllers/tokenlist";
 import UserView from "./views/user";
 import UserController from "./controllers/user";
+import type { TokenImage } from "./models/token";
 
 const socket = new WebSocket(server.url);
 const store = new Store(server.url, socket);
@@ -87,12 +88,19 @@ socket.onmessage = function (event) {
       break;
 
     case "sync":
+      state.clearTokens();
+      state.clearSelected();
       state.setGrid(data.grid);
       state.setBackground(data.background.href, data.background.width, data.background.height);
       state.createTokens(data.tokens);
       state.setUsers(data.users);
       store.setSecretToken(data.secret);
       state.setMe(data.me);
+      break;
+
+    case "error":
+      alert(`An error has occurred, re-syncing. '${data.message}'`);
+      store.send({ type: "request_sync", secret: store.getSecretToken() });
       break;
 
     default:
@@ -123,17 +131,20 @@ uploadTokenInput.addEventListener("change", async (evt: Event) => {
   const w = grid.size;
   const h = grid.size;
 
+  const token: TokenImage = {
+    type: "image",
+    id: crypto.randomUUID(),
+    href,
+    x,
+    y,
+    w,
+    h,
+    r: 0,
+  };
+
+  state.createToken(token);
   store.send({
     type: "request_create",
-    create: {
-      type: "image",
-      id: crypto.randomUUID(),
-      href,
-      x,
-      y,
-      w,
-      h,
-      r: 0,
-    },
+    create: token,
   });
 });

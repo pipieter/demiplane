@@ -21,6 +21,11 @@ class BackgroundController extends Controller<BackgroundView> {
     const base64 = await util.readBase64(file);
     if (!base64) throw `Could not read file data.`;
 
+    // Set the image locally
+    const { href: localHref, width, height } = await util.createLocalImage(base64);
+    this.state.setBackground(localHref, width, height);
+
+    // Upload the image to the server
     const href = await this.store.uploadImage(base64);
     this.store.send({ type: "request_background", href });
   }

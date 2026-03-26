@@ -93,7 +93,7 @@ class TokenView {
       }
 
       case "image":
-        element.setAttribute("href", server.url + token.href);
+        element.setAttribute("href", server.fullURL(token.href));
         element.setAttribute("x", token.x.toString());
         element.setAttribute("y", token.y.toString());
         element.setAttribute("width", token.w.toString());

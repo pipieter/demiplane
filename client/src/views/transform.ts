@@ -46,14 +46,8 @@ class TransformView extends TokenListenerContainer {
     element.onmousedown = () => {
       this.emit("tokens_select", [token]);
       document.onmousemove = (evt) => this.move(evt);
-      document.onmouseup = () => this.stopMoving();
+      document.onmouseup = () => this.finishTransform();
     };
-  }
-
-  private stopMoving() {
-    document.onmousemove = null;
-    document.onmouseup = null;
-    this.dragOffset = null;
   }
 
   private move(event: MouseEvent) {
@@ -189,13 +183,7 @@ class TransformView extends TokenListenerContainer {
     this.direction = target.dataset.dir ?? null;
 
     document.onmousemove = (evt) => this.resize(evt);
-    document.onmouseup = () => this.stopResize();
-  }
-
-  private stopResize() {
-    document.onmousemove = null;
-    document.onmouseup = null;
-    this.direction = null;
+    document.onmouseup = () => this.finishTransform();
   }
 
   // TODO this is the same as in TokenDrawView, and a common util method would be better
@@ -268,12 +256,7 @@ class TransformView extends TokenListenerContainer {
   private startRotate(e: MouseEvent) {
     e.stopPropagation();
     document.onmousemove = (evt) => this.rotate(evt);
-    document.onmouseup = () => this.stopRotate();
-  }
-
-  private stopRotate() {
-    document.onmousemove = null;
-    document.onmouseup = null;
+    document.onmouseup = () => this.finishTransform();
   }
 
   private rotate(evt: MouseEvent) {
@@ -303,6 +286,17 @@ class TransformView extends TokenListenerContainer {
       h: token.h,
       r,
     });
+  }
+
+  private finishTransform() {
+    const token = this.selected[0];
+    if (token)
+      this.emit("token_transform_finish", { id: token.id, x: token.x, y: token.y, w: token.w, h: token.h, r: token.r });
+
+    document.onmousemove = null;
+    document.onmouseup = null;
+    this.direction = null;
+    this.dragOffset = null;
   }
 }
 

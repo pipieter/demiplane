@@ -20,20 +20,15 @@ class UserController extends Controller<UserView> {
 
   private onchange(name: string, color: string) {
     const secret = this.store.getSecretToken();
-
     if (!secret) {
       this.store.send({ type: "request_sync", secret: null });
       return;
     }
 
-    this.store.send({
-      type: "request_user_change",
-      user: {
-        secret,
-        name,
-        color,
-      },
-    });
+    // Note: we don't set the state here because the backend needs to do some required
+    // processing that cannot be skipped. Instead, we rely on the backend to respond with
+    // the correct message
+    this.store.send({ type: "request_user_change", user: { secret, name, color } });
   }
 }
 
