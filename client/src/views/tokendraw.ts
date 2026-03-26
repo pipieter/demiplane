@@ -69,6 +69,9 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
     this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
+
+    this.colorInput.addEventListener("change", () => this.updateColors());
+    this.updateColors();
   }
 
   private begin(type: TokenDrawType) {
@@ -313,6 +316,14 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private getBorder(): number | null {
     if (!this.borderCheckbox.checked) return null;
     return parseInt(this.borderNumber.value);
+  }
+
+  private updateColors() {
+    const color = this.colorInput.value ?? "black";
+    this.cursor.setAttribute("fill", color);
+    this.circle.setAttribute("stroke", color);
+    this.rectangle.setAttribute("stroke", color);
+    this.freedraw.setAttribute("stroke", color);
   }
 }
 
