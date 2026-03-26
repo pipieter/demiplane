@@ -13,7 +13,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
     this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
       this.createRectangle(border, color, x, y, w, h),
     );
-    this.view.listen("freedraw_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
+    this.view.listen("image_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
   }
 
   private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
