@@ -97,6 +97,7 @@ class TransformView extends TokenListenerContainer {
     // Hide if nothing is selected
     if (this.selected.length === 0) {
       this.layer.style.display = "none";
+      this.lineLayer.style.display = "none";
       return;
     }
 
@@ -107,7 +108,7 @@ class TransformView extends TokenListenerContainer {
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
 
-    if (this.selected.length <= 1 && token.type != "line") {
+    if (!this.isLineTransform()) {
       const offset = 0;
       const x = token.x - offset;
       const y = token.y - offset;
@@ -122,11 +123,10 @@ class TransformView extends TokenListenerContainer {
       this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
 
       // Position the handles
-
-      this.setHandle("handle-tr", x - handleSize / 2, y - handleSize / 2, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-tl", x + w - handleSize / 2, y - handleSize / 2, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-bl", x - handleSize / 2, y + h - handleSize / 2, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-br", x + w - handleSize / 2, y + h - handleSize / 2, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-tr", x, y, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-tl", x + w, y, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-bl", x, y + h, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-br", x + w, y + h, handleSize, angle, centerX, centerY);
       this.setRotateHandle(token, centerX, centerY, angle);
     } else {
       // Line markings
@@ -135,24 +135,8 @@ class TransformView extends TokenListenerContainer {
       this.line.setAttribute("y1", token.y.toString());
       this.line.setAttribute("x2", token.w.toString());
       this.line.setAttribute("y2", token.h.toString());
-      this.setHandle(
-        "handle-p1",
-        token.x - handleSize / 2,
-        token.y - handleSize / 2,
-        handleSize,
-        angle,
-        centerX,
-        centerY,
-      );
-      this.setHandle(
-        "handle-p2",
-        token.w - handleSize / 2,
-        token.h - handleSize / 2,
-        handleSize,
-        angle,
-        centerX,
-        centerY,
-      );
+      this.setHandle("handle-p1", token.x, token.y, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-p2", token.w, token.h, handleSize, angle, centerX, centerY);
     }
   }
 
@@ -167,6 +151,8 @@ class TransformView extends TokenListenerContainer {
   ) {
     const h = document.getElementById(id);
     if (!h) return;
+    x -= size / 2;
+    y -= size / 2;
     h.setAttribute("x", x.toString());
     h.setAttribute("y", y.toString());
     h.setAttribute("width", size.toString());
@@ -331,6 +317,10 @@ class TransformView extends TokenListenerContainer {
     document.onmouseup = null;
     this.direction = null;
     this.dragOffset = null;
+  }
+
+  private isLineTransform(): boolean {
+    return this.selected.length == 1 && this.selected[0].type == "line";
   }
 }
 
