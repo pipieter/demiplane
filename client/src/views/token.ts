@@ -96,8 +96,8 @@ class TokenView {
       case "line": {
         const x1 = token.x;
         const y1 = token.y;
-        const x2 = token.w;
-        const y2 = token.h;
+        const x2 = token.x + token.w;
+        const y2 = token.y + token.h;
         element.setAttribute("x1", x1.toString());
         element.setAttribute("y1", y1.toString());
         element.setAttribute("x2", x2.toString());
