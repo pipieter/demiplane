@@ -69,11 +69,8 @@ class TransformView extends TokenListenerContainer {
         y: cursor.y - token.y,
       };
 
-    const dx = cursor.x - this.dragOffset.x - token.x;
-    const dy = cursor.y - this.dragOffset.y - token.y;
-
-    let x = token.x + dx;
-    let y = token.y + dy;
+    let x = cursor.x - this.dragOffset.x;
+    let y = cursor.y - this.dragOffset.y;
     const w = token.w;
     const h = token.h;
 
