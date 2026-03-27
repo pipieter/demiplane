@@ -29,5 +29,5 @@ hr {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--dark-primary) var(--dark-tertiary); /* thumb track */
+  scrollbar-color: var(--light-primary) var(--dark-tertiary); /* thumb track */
 }

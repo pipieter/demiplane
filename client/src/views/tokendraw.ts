@@ -81,7 +81,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       this.uploadToken(file);
     });
 
-    this.colorInput.addEventListener("change", () => this.updateColors());
+    this.colorInput.addEventListener("input", () => this.updateColors());
     this.updateColors();
   }
 
