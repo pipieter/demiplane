@@ -238,48 +238,55 @@ class TransformView extends TokenListenerContainer {
     const token = this.selected[0];
     const target = this.getCoordinates(evt);
 
-    const centerX = token.x + token.w / 2;
-    const centerY = token.y + token.h / 2;
+    let { x, y, w, h } = token;
 
-    // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
-    // we can treat the object as if it has 0 rotation.
-    const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
+    if (!this.isLineTransform()) {
+      const centerX = token.x + token.w / 2;
+      const centerY = token.y + token.h / 2;
 
-    let x = token.x;
-    let y = token.y;
-    let w = token.w;
-    let h = token.h;
+      // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
+      // we can treat the object as if it has 0 rotation.
+      const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
 
-    if (this.direction.includes("r")) {
-      w = localMouse.x - token.x;
+      if (this.direction.includes("r")) {
+        w = localMouse.x - token.x;
+      }
+      if (this.direction.includes("l")) {
+        x = localMouse.x;
+        w = token.w + (token.x - localMouse.x);
+      }
+      if (this.direction.includes("b")) {
+        h = localMouse.y - token.y;
+      }
+      if (this.direction.includes("t")) {
+        y = localMouse.y;
+        h = token.h + (token.y - localMouse.y);
+      }
+
+      const newCenterX = x + w / 2;
+      const newCenterY = y + h / 2;
+
+      // CSS 'transform-origin: center' expects the object's x/y to be
+      // positioned such that the rotation happens around the NEW center.
+      // We rotate the new center back to the original orientation.
+      const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
+
+      x = rotatedCenter.x - w / 2;
+      y = rotatedCenter.y - h / 2;
+    } else {
+      if (this.direction === "p1") {
+        x = target.x;
+        y = target.y;
+      } else if (this.direction === "p2") {
+        w = target.x;
+        h = target.y;
+      }
     }
-    if (this.direction.includes("l")) {
-      x = localMouse.x;
-      w = token.w + (token.x - localMouse.x);
-    }
-    if (this.direction.includes("b")) {
-      h = localMouse.y - token.y;
-    }
-    if (this.direction.includes("t")) {
-      y = localMouse.y;
-      h = token.h + (token.y - localMouse.y);
-    }
-
-    const newCenterX = x + w / 2;
-    const newCenterY = y + h / 2;
-
-    // CSS 'transform-origin: center' expects the object's x/y to be
-    // positioned such that the rotation happens around the NEW center.
-    // We rotate the new center back to the original orientation.
-    const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
-
-    const finalX = rotatedCenter.x - w / 2;
-    const finalY = rotatedCenter.y - h / 2;
 
     this.emit("token_transform", {
       id: token.id,
-      x: finalX,
-      y: finalY,
+      x,
+      y,
       w,
       h,
       r: token.r,

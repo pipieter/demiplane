@@ -94,10 +94,10 @@ class TokenView {
       }
 
       case "line": {
-        const x1 = Math.min(token.x, token.w);
-        const y1 = Math.min(token.y, token.h);
-        const x2 = Math.max(token.x, token.w);
-        const y2 = Math.max(token.y, token.h);
+        const x1 = token.x;
+        const y1 = token.y;
+        const x2 = token.w;
+        const y2 = token.h;
         element.setAttribute("x1", x1.toString());
         element.setAttribute("y1", y1.toString());
         element.setAttribute("x2", x2.toString());
