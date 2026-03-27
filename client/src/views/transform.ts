@@ -66,6 +66,12 @@ class TransformView extends TokenListenerContainer {
         y: cursor.y - token.y,
       };
 
+    // On grid-lock we want to snap to center, this feel better to use.
+    if (event.shiftKey) {
+      this.dragOffset.x = token.w / 2;
+      this.dragOffset.y = token.h / 2;
+    }
+
     const x = cursor.x - this.dragOffset.x;
     const y = cursor.y - this.dragOffset.y;
     const w = token.w;
