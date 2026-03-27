@@ -48,8 +48,8 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.selected = [];
     this.users = {};
     this.myId = "";
-    this.grid = new Grid();
     this.viewport = new Viewport();
+    this.grid = new Grid(this.viewport);
     this.background = new Background();
   }
 
@@ -155,6 +155,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.grid.offset.x = grid.offset.x;
     this.grid.offset.y = grid.offset.y;
     this.emit("grid_change", this.grid);
+  }
+
+  public setDefaultGridLocked(locked: boolean) {
+    this.grid.defaultLocked = locked;
   }
 
   public getViewport(): Viewport {

@@ -1,3 +1,5 @@
+import type Viewport from "./viewport";
+
 export interface GridData {
   size: number;
   offset: {
@@ -12,10 +14,14 @@ class Grid {
     x: number;
     y: number;
   };
+  public defaultLocked: boolean;
+  public viewport: Viewport;
 
-  constructor() {
+  constructor(viewport: Viewport) {
     this.size = 64;
     this.offset = { x: 0, y: 0 };
+    this.viewport = viewport;
+    this.defaultLocked = false;
   }
 
   public set(size: number, offsetX: number, offsetY: number) {
@@ -24,7 +30,7 @@ class Grid {
     this.offset.y = offsetY;
   }
 
-  public getLockedCoordinates(x: number, y: number) {
+  private getLockedCoordinates(x: number, y: number) {
     const snap = (value: number, offset: number) => {
       const local = value - offset;
       const start = Math.floor(local / this.size) * this.size + offset;
@@ -44,6 +50,25 @@ class Grid {
       x: snappedX,
       y: snappedY,
     };
+  }
+
+  public getCoordinates(evt: MouseEvent, enableGridLock: boolean = true) {
+    const { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
+
+    if (!enableGridLock) {
+      return { x, y };
+    }
+
+    let gridLocked = this.defaultLocked;
+    if (evt.shiftKey) {
+      gridLocked = !gridLocked; // Inverse behavior on shift
+    }
+
+    if (gridLocked) {
+      return this.getLockedCoordinates(x, y);
+    }
+
+    return { x, y };
   }
 }
 

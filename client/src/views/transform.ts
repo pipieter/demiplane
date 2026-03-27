@@ -2,12 +2,10 @@ import { TokenListenerContainer } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
-import type Viewport from "../models/viewport";
 import { util } from "../util";
 
 class TransformView extends TokenListenerContainer {
   private grid: Grid;
-  private viewport: Viewport;
 
   private container: HTMLDivElement;
   private dragOffset: Point | null = null;
@@ -24,11 +22,10 @@ class TransformView extends TokenListenerContainer {
   private direction: string | null;
   private selected: Token[];
 
-  constructor(grid: Grid, viewport: Viewport) {
+  constructor(grid: Grid) {
     super();
 
     this.grid = grid;
-    this.viewport = viewport;
 
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
     this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
@@ -61,7 +58,7 @@ class TransformView extends TokenListenerContainer {
 
     // TODO only use the first selected for now
     const token = this.selected[0];
-    const cursor = this.viewport.getTranslatedCoords(event.offsetX, event.offsetY);
+    const cursor = this.grid.getCoordinates(event);
 
     if (!this.dragOffset)
       this.dragOffset = {
@@ -69,22 +66,16 @@ class TransformView extends TokenListenerContainer {
         y: cursor.y - token.y,
       };
 
-    let x = cursor.x - this.dragOffset.x;
-    let y = cursor.y - this.dragOffset.y;
+    // On grid-lock we want to snap to center, this feel better to use.
+    if (event.shiftKey) {
+      this.dragOffset.x = token.w / 2;
+      this.dragOffset.y = token.h / 2;
+    }
+
+    const x = cursor.x - this.dragOffset.x;
+    const y = cursor.y - this.dragOffset.y;
     const w = token.w;
     const h = token.h;
-
-    if (event.shiftKey) {
-      // On grid-lock we want to snap to center, this feel better to use.
-      this.dragOffset = { x: token.w / 2, y: token.h / 2 };
-      const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
-
-      const snapDx = locked.x - (token.x + (this.isLineTransform() ? 0 : token.w / 2));
-      const snapDy = locked.y - (token.y + (this.isLineTransform() ? 0 : token.h / 2));
-
-      x = token.x + snapDx;
-      y = token.y + snapDy;
-    }
 
     if (!util.mouseOnElement(event, this.container)) return;
 
@@ -211,22 +202,11 @@ class TransformView extends TokenListenerContainer {
     document.onmouseup = () => this.finishTransform();
   }
 
-  // TODO this is the same as in TokenDrawView, and a common util method would be better
-  private getCoordinates(evt: MouseEvent) {
-    let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
-    if (evt.shiftKey) {
-      const gridLocked = this.grid.getLockedCoordinates(x, y);
-      x = gridLocked.x;
-      y = gridLocked.y;
-    }
-    return { x, y };
-  }
-
   private resize(evt: MouseEvent) {
     if (this.selected.length <= 0 || !this.direction) return;
 
     const token = this.selected[0];
-    const target = this.getCoordinates(evt);
+    const target = this.grid.getCoordinates(evt);
 
     let { x, y, w, h } = token;
 
@@ -299,7 +279,7 @@ class TransformView extends TokenListenerContainer {
   private rotate(evt: MouseEvent) {
     const token = this.selected[0];
 
-    const current = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
+    const current = this.grid.getCoordinates(evt, false);
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
     const dx = current.x - centerX;
