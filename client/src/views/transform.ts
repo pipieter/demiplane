@@ -18,6 +18,9 @@ class TransformView extends TokenListenerContainer {
   private rotateHandle: SVGCircleElement;
   private rotateLine: SVGLineElement;
 
+  private lineLayer: SVGSVGElement;
+  private line: SVGLineElement;
+
   private direction: string | null;
   private selected: Token[];
 
@@ -33,6 +36,9 @@ class TransformView extends TokenListenerContainer {
     this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
     this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
     this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
+
+    this.lineLayer = document.getElementById("whiteboard-resize-line") as unknown as SVGSVGElement;
+    this.line = document.getElementById("resize-line") as unknown as SVGLineElement;
 
     this.direction = null;
     this.selected = [];
@@ -96,30 +102,58 @@ class TransformView extends TokenListenerContainer {
 
     // TODO for now only use the first id
     const token = this.selected[0];
-
-    const offset = 0;
-    const x = token.x - offset;
-    const y = token.y - offset;
-    const w = token.w + offset * 2;
-    const h = token.h + offset * 2;
     const angle = token.r;
-
-    this.layer.style.display = "block";
-    this.box.setAttribute("x", x.toString());
-    this.box.setAttribute("y", y.toString());
-    this.box.setAttribute("width", w.toString());
-    this.box.setAttribute("height", h.toString());
-    this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
-
-    // Position the handles
-    const size = 8;
+    const handleSize = 8;
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
-    this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    this.setRotateHandle(token, centerX, centerY, angle);
+
+    if (this.selected.length <= 1 && token.type != "line") {
+      const offset = 0;
+      const x = token.x - offset;
+      const y = token.y - offset;
+      const w = token.w + offset * 2;
+      const h = token.h + offset * 2;
+
+      this.layer.style.display = "block";
+      this.box.setAttribute("x", x.toString());
+      this.box.setAttribute("y", y.toString());
+      this.box.setAttribute("width", w.toString());
+      this.box.setAttribute("height", h.toString());
+      this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
+
+      // Position the handles
+
+      this.setHandle("handle-tr", x - handleSize / 2, y - handleSize / 2, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-tl", x + w - handleSize / 2, y - handleSize / 2, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-bl", x - handleSize / 2, y + h - handleSize / 2, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-br", x + w - handleSize / 2, y + h - handleSize / 2, handleSize, angle, centerX, centerY);
+      this.setRotateHandle(token, centerX, centerY, angle);
+    } else {
+      // Line markings
+      this.lineLayer.style.display = "block";
+      this.line.setAttribute("x1", token.x.toString());
+      this.line.setAttribute("y1", token.y.toString());
+      this.line.setAttribute("x2", token.w.toString());
+      this.line.setAttribute("y2", token.h.toString());
+      this.setHandle(
+        "handle-p1",
+        token.x - handleSize / 2,
+        token.y - handleSize / 2,
+        handleSize,
+        angle,
+        centerX,
+        centerY,
+      );
+      this.setHandle(
+        "handle-p2",
+        token.w - handleSize / 2,
+        token.h - handleSize / 2,
+        handleSize,
+        angle,
+        centerX,
+        centerY,
+      );
+    }
   }
 
   private setHandle(

@@ -168,22 +168,21 @@ button:disabled {
   outline: none;
 }
 
-#whiteboard-resize {
+.whiteboard-resize {
   pointer-events: none;
 }
 
-#resize-box {
+.resize-marking {
   filter: drop-shadow(0px 0px 1px #4da3ff);
+  stroke-width: 1px;
+  stroke: #4da3ff;
+  pointer-events: none;
 }
 
 .resize-handle,
 #rotate-handle {
   pointer-events: all;
   cursor: grab;
-}
-
-#rotate-line {
-  z-index: -1;
 }
 
 #whiteboard-drawing-layer {
@@ -198,7 +197,7 @@ button:disabled {
     Every time rotation is changed, CSS will handle the hard part for us.
 */
 #whiteboard-objects-layer > *,
-#whiteboard-resize > * {
+.whiteboard-resize > * {
   transform-origin: center center;
   transform-box: fill-box;
 }
