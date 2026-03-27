@@ -22,6 +22,8 @@ import TokenListView from "./views/tokenlist";
 import TokenListController from "./controllers/tokenlist";
 import UserView from "./views/user";
 import UserController from "./controllers/user";
+import HoverView from "./views/hover";
+import HoverController from "./controllers/hover";
 
 const socket = new WebSocket(server.url);
 const store = new Store(server.url, socket);
@@ -39,6 +41,7 @@ const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
 const tokenListView = new TokenListView();
 const userView = new UserView();
+const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
@@ -50,6 +53,7 @@ new SidebarController(store, state, headerView);
 new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
+new HoverController(store, state, hoverView);
 
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data) as ResponseMessage;
