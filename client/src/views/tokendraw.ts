@@ -1,6 +1,5 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
-import type Viewport from "../models/viewport";
 import { util } from "../util";
 
 interface TokenDrawViewMap {
@@ -20,7 +19,6 @@ type TokenDrawType = "circle" | "rectangle" | "freedraw" | "line";
 
 class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawViewMap> {
   private grid: Grid;
-  private viewport: Viewport;
 
   private readonly layer: SVGSVGElement;
   private readonly circle: SVGCircleElement;
@@ -45,11 +43,10 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly start: { x: number; y: number };
   private readonly current: { x: number; y: number };
 
-  constructor(grid: Grid, viewport: Viewport) {
+  constructor(grid: Grid) {
     super(new TokenDrawViewListeners());
 
     this.grid = grid;
-    this.viewport = viewport;
 
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
@@ -89,7 +86,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private begin(type: TokenDrawType) {
-    this.viewport.disable();
+    this.grid.viewport.disable();
     this.mouseDown = false;
     this.cursor.style.display = "";
     this.layer.style.display = "";
@@ -143,7 +140,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
     // Begin drawing on left click
     if (evt.buttons & 1) {
-      const { x, y } = this.getCoordinates(evt);
+      const { x, y } = this.grid.getCoordinates(evt);
 
       this.mouseDown = true;
       this.start.x = x;
@@ -175,7 +172,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private onmousemove(evt: MouseEvent) {
-    const { x, y } = this.getCoordinates(evt);
+    const { x, y } = this.grid.getCoordinates(evt);
     this.updateCursor(x, y);
 
     if (!this.mouseDown) return;
@@ -284,16 +281,6 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.cursor.setAttribute("cy", y.toString());
   }
 
-  private getCoordinates(evt: MouseEvent) {
-    let { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
-    if (evt.shiftKey) {
-      const gridLocked = this.grid.getLockedCoordinates(x, y);
-      x = gridLocked.x;
-      y = gridLocked.y;
-    }
-    return { x, y };
-  }
-
   private cancel() {
     this.mouseDown = false;
     this.cursor.style.display = "none";
@@ -305,7 +292,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.layer.onmousedown = null;
     this.layer.onmouseup = null;
     this.layer.onmousemove = null;
-    this.viewport.enable();
+    this.grid.viewport.enable();
     document.onkeydown = null;
   }
 

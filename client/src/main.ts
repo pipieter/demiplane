@@ -28,13 +28,12 @@ const store = new Store(server.url, socket);
 const state = new State();
 
 const grid = state.getGrid();
-const viewport = state.getViewport();
 
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
-const transformView = new TransformView(grid, viewport);
+const transformView = new TransformView(grid);
 const selectionView = new SelectionView();
-const tokenDrawView = new TokenDrawView(grid, viewport);
+const tokenDrawView = new TokenDrawView(grid);
 const gridView = new GridView();
 const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();

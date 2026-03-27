@@ -48,8 +48,8 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.selected = [];
     this.users = {};
     this.myId = "";
-    this.grid = new Grid();
     this.viewport = new Viewport();
+    this.grid = new Grid(this.viewport);
     this.background = new Background();
   }
 
