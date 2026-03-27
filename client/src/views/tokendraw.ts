@@ -81,7 +81,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       this.uploadToken(file);
     });
 
-    this.colorInput.addEventListener("change", () => this.updateColors());
+    this.colorInput.addEventListener("input", () => this.updateColors());
     this.updateColors();
   }
 
@@ -369,6 +369,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.line.setAttribute("stroke", color);
     this.rectangle.setAttribute("stroke", color);
     this.freedraw.setAttribute("stroke", color);
+    document.documentElement.style.setProperty("--draw-color", color);
   }
 
   private async uploadToken(file: File) {
