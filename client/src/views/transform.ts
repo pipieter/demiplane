@@ -74,13 +74,8 @@ class TransformView extends TokenListenerContainer {
 
     let x = token.x + dx;
     let y = token.y + dy;
-    let w = token.w;
-    let h = token.h;
-
-    if (this.isLineTransform()) {
-      w = token.w + dx;
-      h = token.h + dy;
-    }
+    const w = token.w;
+    const h = token.h;
 
     if (event.shiftKey) {
       // On grid-lock we want to snap to center, this feel better to use.
@@ -92,10 +87,6 @@ class TransformView extends TokenListenerContainer {
 
       x = token.x + snapDx;
       y = token.y + snapDy;
-      if (this.isLineTransform()) {
-        w = token.w + snapDx;
-        h = token.h + snapDy;
-      }
     }
 
     if (!util.mouseOnElement(event, this.container)) return;
@@ -145,13 +136,15 @@ class TransformView extends TokenListenerContainer {
       this.setRotateHandle(token, centerX, centerY, angle);
     } else {
       // Line markings
+      const x2 = token.x + token.w;
+      const y2 = token.y + token.h;
       this.lineLayer.style.display = "block";
       this.line.setAttribute("x1", token.x.toString());
       this.line.setAttribute("y1", token.y.toString());
-      this.line.setAttribute("x2", token.w.toString());
-      this.line.setAttribute("y2", token.h.toString());
+      this.line.setAttribute("x2", x2.toString());
+      this.line.setAttribute("y2", y2.toString());
       this.setHandle("handle-p1", token.x, token.y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-p2", token.w, token.h, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-p2", x2, y2, handleSize, angle, centerX, centerY);
     }
   }
 
@@ -275,11 +268,16 @@ class TransformView extends TokenListenerContainer {
       y = rotatedCenter.y - h / 2;
     } else {
       if (this.direction === "p1") {
+        const x2 = token.x + token.w;
+        const y2 = token.y + token.h;
+
         x = target.x;
         y = target.y;
+        w = x2 - x;
+        h = y2 - y;
       } else if (this.direction === "p2") {
-        w = target.x;
-        h = target.y;
+        w = target.x - token.x;
+        h = target.y - token.y;
       }
     }
 
