@@ -18,6 +18,9 @@ class TransformView extends TokenListenerContainer {
   private rotateHandle: SVGCircleElement;
   private rotateLine: SVGLineElement;
 
+  private lineLayer: SVGSVGElement;
+  private line: SVGLineElement;
+
   private direction: string | null;
   private selected: Token[];
 
@@ -33,6 +36,9 @@ class TransformView extends TokenListenerContainer {
     this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
     this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
     this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
+
+    this.lineLayer = document.getElementById("whiteboard-resize-line") as unknown as SVGSVGElement;
+    this.line = document.getElementById("resize-line") as unknown as SVGLineElement;
 
     this.direction = null;
     this.selected = [];
@@ -73,8 +79,11 @@ class TransformView extends TokenListenerContainer {
       this.dragOffset = { x: token.w / 2, y: token.h / 2 };
       const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
 
-      x = locked.x - this.dragOffset.x;
-      y = locked.y - this.dragOffset.y;
+      const snapDx = locked.x - (token.x + (this.isLineTransform() ? 0 : token.w / 2));
+      const snapDy = locked.y - (token.y + (this.isLineTransform() ? 0 : token.h / 2));
+
+      x = token.x + snapDx;
+      y = token.y + snapDy;
     }
 
     if (!util.mouseOnElement(event, this.container)) return;
@@ -91,35 +100,49 @@ class TransformView extends TokenListenerContainer {
     // Hide if nothing is selected
     if (this.selected.length === 0) {
       this.layer.style.display = "none";
+      this.lineLayer.style.display = "none";
       return;
     }
 
     // TODO for now only use the first id
     const token = this.selected[0];
-
-    const offset = 0;
-    const x = token.x - offset;
-    const y = token.y - offset;
-    const w = token.w + offset * 2;
-    const h = token.h + offset * 2;
     const angle = token.r;
-
-    this.layer.style.display = "block";
-    this.box.setAttribute("x", x.toString());
-    this.box.setAttribute("y", y.toString());
-    this.box.setAttribute("width", w.toString());
-    this.box.setAttribute("height", h.toString());
-    this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
-
-    // Position the handles
-    const size = 8;
+    const handleSize = 8;
     const centerX = token.x + token.w / 2;
     const centerY = token.y + token.h / 2;
-    this.setHandle("handle-tr", x - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-tl", x + w - size / 2, y - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-bl", x - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    this.setHandle("handle-br", x + w - size / 2, y + h - size / 2, size, angle, centerX, centerY);
-    this.setRotateHandle(token, centerX, centerY, angle);
+
+    if (!this.isLineTransform()) {
+      const offset = 0;
+      const x = token.x - offset;
+      const y = token.y - offset;
+      const w = token.w + offset * 2;
+      const h = token.h + offset * 2;
+
+      this.layer.style.display = "block";
+      this.box.setAttribute("x", x.toString());
+      this.box.setAttribute("y", y.toString());
+      this.box.setAttribute("width", w.toString());
+      this.box.setAttribute("height", h.toString());
+      this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
+
+      // Position the handles
+      this.setHandle("handle-tr", x, y, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-tl", x + w, y, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-bl", x, y + h, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-br", x + w, y + h, handleSize, angle, centerX, centerY);
+      this.setRotateHandle(token, centerX, centerY, angle);
+    } else {
+      // Line markings
+      const x2 = token.x + token.w;
+      const y2 = token.y + token.h;
+      this.lineLayer.style.display = "block";
+      this.line.setAttribute("x1", token.x.toString());
+      this.line.setAttribute("y1", token.y.toString());
+      this.line.setAttribute("x2", x2.toString());
+      this.line.setAttribute("y2", y2.toString());
+      this.setHandle("handle-p1", token.x, token.y, handleSize, 0, centerX, centerY);
+      this.setHandle("handle-p2", x2, y2, handleSize, 0, centerX, centerY);
+    }
   }
 
   private setHandle(
@@ -133,6 +156,8 @@ class TransformView extends TokenListenerContainer {
   ) {
     const h = document.getElementById(id);
     if (!h) return;
+    x -= size / 2;
+    y -= size / 2;
     h.setAttribute("x", x.toString());
     h.setAttribute("y", y.toString());
     h.setAttribute("width", size.toString());
@@ -203,48 +228,60 @@ class TransformView extends TokenListenerContainer {
     const token = this.selected[0];
     const target = this.getCoordinates(evt);
 
-    const centerX = token.x + token.w / 2;
-    const centerY = token.y + token.h / 2;
+    let { x, y, w, h } = token;
 
-    // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
-    // we can treat the object as if it has 0 rotation.
-    const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
+    if (!this.isLineTransform()) {
+      const centerX = token.x + token.w / 2;
+      const centerY = token.y + token.h / 2;
 
-    let x = token.x;
-    let y = token.y;
-    let w = token.w;
-    let h = token.h;
+      // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
+      // we can treat the object as if it has 0 rotation.
+      const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
 
-    if (this.direction.includes("r")) {
-      w = localMouse.x - token.x;
+      if (this.direction.includes("r")) {
+        w = localMouse.x - token.x;
+      }
+      if (this.direction.includes("l")) {
+        x = localMouse.x;
+        w = token.w + (token.x - localMouse.x);
+      }
+      if (this.direction.includes("b")) {
+        h = localMouse.y - token.y;
+      }
+      if (this.direction.includes("t")) {
+        y = localMouse.y;
+        h = token.h + (token.y - localMouse.y);
+      }
+
+      const newCenterX = x + w / 2;
+      const newCenterY = y + h / 2;
+
+      // CSS 'transform-origin: center' expects the object's x/y to be
+      // positioned such that the rotation happens around the NEW center.
+      // We rotate the new center back to the original orientation.
+      const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
+
+      x = rotatedCenter.x - w / 2;
+      y = rotatedCenter.y - h / 2;
+    } else {
+      if (this.direction === "p1") {
+        const x2 = token.x + token.w;
+        const y2 = token.y + token.h;
+
+        x = target.x;
+        y = target.y;
+        w = x2 - x;
+        h = y2 - y;
+      } else if (this.direction === "p2") {
+        w = target.x - token.x;
+        h = target.y - token.y;
+      }
     }
-    if (this.direction.includes("l")) {
-      x = localMouse.x;
-      w = token.w + (token.x - localMouse.x);
-    }
-    if (this.direction.includes("b")) {
-      h = localMouse.y - token.y;
-    }
-    if (this.direction.includes("t")) {
-      y = localMouse.y;
-      h = token.h + (token.y - localMouse.y);
-    }
-
-    const newCenterX = x + w / 2;
-    const newCenterY = y + h / 2;
-
-    // CSS 'transform-origin: center' expects the object's x/y to be
-    // positioned such that the rotation happens around the NEW center.
-    // We rotate the new center back to the original orientation.
-    const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
-
-    const finalX = rotatedCenter.x - w / 2;
-    const finalY = rotatedCenter.y - h / 2;
 
     this.emit("token_transform", {
       id: token.id,
-      x: finalX,
-      y: finalY,
+      x,
+      y,
       w,
       h,
       r: token.r,
@@ -297,6 +334,10 @@ class TransformView extends TokenListenerContainer {
     document.onmouseup = null;
     this.direction = null;
     this.dragOffset = null;
+  }
+
+  private isLineTransform(): boolean {
+    return this.selected.length == 1 && this.selected[0].type == "line";
   }
 }
 

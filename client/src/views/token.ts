@@ -13,6 +13,7 @@ class TokenView {
       circle: "ellipse",
       rectangle: "rect",
       image: "image",
+      line: "line",
     }[token.type];
 
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -89,6 +90,21 @@ class TokenView {
         element.setAttribute("width", w.toString());
         element.setAttribute("height", h.toString());
         element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        break;
+      }
+
+      case "line": {
+        const x1 = token.x;
+        const y1 = token.y;
+        const x2 = token.x + token.w;
+        const y2 = token.y + token.h;
+        element.setAttribute("x1", x1.toString());
+        element.setAttribute("y1", y1.toString());
+        element.setAttribute("x2", x2.toString());
+        element.setAttribute("y2", y2.toString());
+        element.setAttribute("stroke-width", `${token.stroke}px`);
+        element.setAttribute("stroke", token.color);
+        // Line currently does not rotate.
         break;
       }
 
