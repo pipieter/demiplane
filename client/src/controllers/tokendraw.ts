@@ -6,8 +6,6 @@ import type TokenDrawView from "../views/tokendraw";
 import Controller from "./controller";
 
 class TokenDrawController extends Controller<TokenDrawView> {
-  TOKEN_CLIPBOARD_TYPE = "web demiplane/x-tokens-json";
-
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
 
@@ -103,25 +101,33 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private async writeTokensToClipboard(tokens: Token[]) {
-    const jsonString = JSON.stringify(tokens);
-    const tokenBlob = new Blob([jsonString], { type: this.TOKEN_CLIPBOARD_TYPE });
+  private async getImageClipboardBlob(tokens: Token[]): Promise<Blob | null> {
+    if (tokens.length > 1) return null;
+    if (tokens[0].type !== "image") return null;
+    if (!tokens[0].href) return null;
+    try {
+      const response = await fetch(tokens[0].href);
+      const blob = await response.blob();
 
-    // Retain original copy items from user
-    const existingItems = await navigator.clipboard.read().catch(() => []);
-    const newClipboardMap: Record<string, Blob> = {};
-    for (const item of existingItems) {
-      for (const type of item.types) {
-        if (type !== this.TOKEN_CLIPBOARD_TYPE) {
-          const blob = await item.getType(type);
-          newClipboardMap[type] = blob;
+      if (blob.type === "image/png" || blob.type === "image/jpeg") {
+        return blob;
         }
+    } catch {
+      return null;
       }
-    }
+    return null;
+  }
 
-    newClipboardMap[this.TOKEN_CLIPBOARD_TYPE] = tokenBlob;
-    const combinedItem = new ClipboardItem(newClipboardMap);
-    await navigator.clipboard.write([combinedItem]);
+  private async writeTokensToClipboard(tokens: Token[]) {
+    const clipboardData: Record<string, Blob> = {};
+    const jsonString = JSON.stringify(tokens);
+    clipboardData["text/plain"] = new Blob([jsonString], { type: "text/plain" });
+
+    const imageBlob = await this.getImageClipboardBlob(tokens);
+    if (imageBlob) clipboardData["image/png"] = imageBlob;
+
+    const item = new ClipboardItem(clipboardData);
+    await navigator.clipboard.write([item]);
   }
 
   async copy() {
@@ -151,7 +157,9 @@ class TokenDrawController extends Controller<TokenDrawView> {
       const clipboardItems = await navigator.clipboard.read();
 
       for (const item of clipboardItems) {
-        const blob = await item.getType(this.TOKEN_CLIPBOARD_TYPE);
+        if (!item.types.includes("text/plain")) continue;
+
+        const blob = await item.getType("text/plain");
         const json = await blob.text();
         const parsed: Token[] = JSON.parse(json);
 
