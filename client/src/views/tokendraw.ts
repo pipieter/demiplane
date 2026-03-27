@@ -369,6 +369,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.line.setAttribute("stroke", color);
     this.rectangle.setAttribute("stroke", color);
     this.freedraw.setAttribute("stroke", color);
+    document.documentElement.style.setProperty("--draw-color", this.colorInput.value);
   }
 
   private async uploadToken(file: File) {
