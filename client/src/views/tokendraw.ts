@@ -222,6 +222,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       }
 
       case "freedraw": {
+        this.freedraw.setAttribute("stroke-width", `${this.getLineStrokeWidth()}px`);
         this.freedrawPoints.push([x, y]);
         this.updateFreedrawLine();
         break;
@@ -324,7 +325,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     const y = bbox.y;
     const width = bbox.width;
     const height = bbox.height;
-    const lineWidth = 10;
+    const lineWidth = this.getLineStrokeWidth();
 
     const canvas = document.createElement("canvas");
     const color = this.colorInput.value;
@@ -337,6 +338,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     ctx.translate(-x + lineWidth, -y + lineWidth);
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
+    ctx.lineCap = "round";
     ctx.lineWidth = lineWidth;
 
     if (this.freedrawPoints.length > 1) {
