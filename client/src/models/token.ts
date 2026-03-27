@@ -24,4 +24,10 @@ export interface TokenImage extends AbstractToken {
   href: string;
 }
 
-export type Token = TokenCircle | TokenImage | TokenRectangle;
+export interface TokenLine extends AbstractToken {
+  type: "line";
+  color: string;
+  width: number;
+}
+
+export type Token = TokenCircle | TokenImage | TokenRectangle | TokenLine;

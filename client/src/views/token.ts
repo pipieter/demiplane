@@ -13,6 +13,7 @@ class TokenView {
       circle: "ellipse",
       rectangle: "rect",
       image: "image",
+      line: "line",
     }[token.type];
 
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
