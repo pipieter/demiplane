@@ -2,15 +2,17 @@ import { Listener, ListenerContainer } from "../listener";
 
 interface GridViewMap {
   grid_change: { size: number; offsetX: number; offsetY: number };
+  default_grid_locked: boolean;
 }
 
 class GridViewListeners extends Listener<GridViewMap> {
   protected override keys(): (keyof GridViewMap)[] {
-    return ["grid_change"];
+    return ["grid_change", "default_grid_locked"];
   }
 }
 
 class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
+  private defaultLockedInput: HTMLInputElement;
   private sizeInput: HTMLInputElement;
   private offsetXInput: HTMLInputElement;
   private offsetYInput: HTMLInputElement;
@@ -20,6 +22,7 @@ class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
   constructor() {
     super(new GridViewListeners());
 
+    this.defaultLockedInput = document.getElementById("grid-global-checkbox") as HTMLInputElement;
     this.sizeInput = document.getElementById("grid-size") as HTMLInputElement;
     this.offsetXInput = document.getElementById("grid-offset-X") as HTMLInputElement;
     this.offsetYInput = document.getElementById("grid-offset-Y") as HTMLInputElement;
@@ -29,6 +32,14 @@ class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
     this.sizeInput.onchange = () => this.onchange();
     this.offsetXInput.onchange = () => this.onchange();
     this.offsetYInput.onchange = () => this.onchange();
+
+    this.defaultLockedInput.addEventListener("change", () => this.onDefaultLockedChange());
+    this.onDefaultLockedChange();
+  }
+
+  private onDefaultLockedChange() {
+    const locked = this.defaultLockedInput.checked;
+    this.emit("default_grid_locked", locked);
   }
 
   private onchange() {

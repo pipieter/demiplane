@@ -157,6 +157,10 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
     this.emit("grid_change", this.grid);
   }
 
+  public setDefaultGridLocked(locked: boolean) {
+    this.grid.defaultLocked = locked;
+  }
+
   public getViewport(): Viewport {
     return this.viewport;
   }
