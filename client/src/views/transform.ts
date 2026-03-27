@@ -69,18 +69,33 @@ class TransformView extends TokenListenerContainer {
         y: cursor.y - token.y,
       };
 
-    let x = cursor.x - this.dragOffset.x;
-    let y = cursor.y - this.dragOffset.y;
-    const w = token.w;
-    const h = token.h;
+    const dx = cursor.x - this.dragOffset.x - token.x;
+    const dy = cursor.y - this.dragOffset.y - token.y;
+
+    let x = token.x + dx;
+    let y = token.y + dy;
+    let w = token.w;
+    let h = token.h;
+
+    if (this.isLineTransform()) {
+      w = token.w + dx;
+      h = token.h + dy;
+    }
 
     if (event.shiftKey) {
       // On grid-lock we want to snap to center, this feel better to use.
       this.dragOffset = { x: token.w / 2, y: token.h / 2 };
       const locked = this.grid.getLockedCoordinates(cursor.x, cursor.y);
 
-      x = locked.x - this.dragOffset.x;
-      y = locked.y - this.dragOffset.y;
+      const snapDx = locked.x - (token.x + (this.isLineTransform() ? 0 : token.w / 2));
+      const snapDy = locked.y - (token.y + (this.isLineTransform() ? 0 : token.h / 2));
+
+      x = token.x + snapDx;
+      y = token.y + snapDy;
+      if (this.isLineTransform()) {
+        w = token.w + snapDx;
+        h = token.h + snapDy;
+      }
     }
 
     if (!util.mouseOnElement(event, this.container)) return;
