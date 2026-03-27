@@ -140,8 +140,8 @@ class TransformView extends TokenListenerContainer {
       this.line.setAttribute("y1", token.y.toString());
       this.line.setAttribute("x2", x2.toString());
       this.line.setAttribute("y2", y2.toString());
-      this.setHandle("handle-p1", token.x, token.y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-p2", x2, y2, handleSize, angle, centerX, centerY);
+      this.setHandle("handle-p1", token.x, token.y, handleSize, 0, centerX, centerY);
+      this.setHandle("handle-p2", x2, y2, handleSize, 0, centerX, centerY);
     }
   }
 
