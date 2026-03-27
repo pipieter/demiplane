@@ -254,8 +254,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       }
 
       case "line": {
-        const x1 = Math.min(this.start.x, this.current.x);
-        const y1 = Math.min(this.start.y, this.current.y);
+        const x1 = Math.abs(this.start.x);
+        const y1 = Math.abs(this.start.y);
         const x2 = Math.abs(this.current.x);
         const y2 = Math.abs(this.current.y);
         const color = this.colorInput.value;
