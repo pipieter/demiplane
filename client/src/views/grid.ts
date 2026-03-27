@@ -2,12 +2,12 @@ import { Listener, ListenerContainer } from "../listener";
 
 interface GridViewMap {
   grid_change: { size: number; offsetX: number; offsetY: number };
-  default_grid_locked: boolean;
+  set_default_grid_locked: boolean;
 }
 
 class GridViewListeners extends Listener<GridViewMap> {
   protected override keys(): (keyof GridViewMap)[] {
-    return ["grid_change", "default_grid_locked"];
+    return ["grid_change", "set_default_grid_locked"];
   }
 }
 
@@ -39,7 +39,7 @@ class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
 
   private onDefaultLockedChange() {
     const locked = this.defaultLockedInput.checked;
-    this.emit("default_grid_locked", locked);
+    this.emit("set_default_grid_locked", locked);
   }
 
   private onchange() {

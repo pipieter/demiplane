@@ -8,7 +8,7 @@ class GridController extends Controller<GridView> {
     super(store, state, view);
 
     this.view.listen("grid_change", ({ size, offsetX, offsetY }) => this.onchange(size, offsetX, offsetY));
-    this.view.listen("default_grid_locked", (locked) => this.state.setDefaultGridLocked(locked));
+    this.view.listen("set_default_grid_locked", (locked) => this.state.setDefaultGridLocked(locked));
     this.state.listen("grid_change", (grid) => this.view.set(grid.size, grid.offset.x, grid.offset.y));
   }
 
