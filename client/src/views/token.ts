@@ -102,7 +102,7 @@ class TokenView {
         element.setAttribute("y1", y1.toString());
         element.setAttribute("x2", x2.toString());
         element.setAttribute("y2", y2.toString());
-        element.setAttribute("stroke-width", `${token.width}px`);
+        element.setAttribute("stroke-width", `${token.stroke}px`);
         element.setAttribute("stroke", token.color);
         element.setAttribute("transform", `rotate(${token.r} 0 0)`);
         break;

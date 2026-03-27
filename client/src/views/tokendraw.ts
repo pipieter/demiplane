@@ -7,7 +7,7 @@ interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   rectangle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
   image_create: { base64: string; x: number; y: number; w: number; h: number };
-  line_create: { x1: number; y1: number; x2: number; y2: number; width: number; color: string };
+  line_create: { x1: number; y1: number; x2: number; y2: number; stroke: number; color: string };
 }
 
 class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
@@ -217,7 +217,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         this.line.setAttribute("y1", y1.toString());
         this.line.setAttribute("x2", x2.toString());
         this.line.setAttribute("y2", y2.toString());
-        this.line.setAttribute("stroke-width", `${this.getLineWidth()}px`);
+        this.line.setAttribute("stroke-width", `${this.getLineStrokeWidth()}px`);
         break;
       }
 
@@ -259,8 +259,8 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         const x2 = Math.abs(this.current.x);
         const y2 = Math.abs(this.current.y);
         const color = this.colorInput.value;
-        const width = this.getLineWidth();
-        this.emit("line_create", { x1, y1, x2, y2, width, color });
+        const stroke = this.getLineStrokeWidth();
+        this.emit("line_create", { x1, y1, x2, y2, stroke, color });
         break;
       }
 
@@ -369,7 +369,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     return parseInt(this.borderNumber.value);
   }
 
-  private getLineWidth(): number {
+  private getLineStrokeWidth(): number {
     return parseInt(this.borderNumber.value) ?? 4;
   }
 

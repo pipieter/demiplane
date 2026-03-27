@@ -13,8 +13,8 @@ class TokenDrawController extends Controller<TokenDrawView> {
     this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
       this.createRectangle(border, color, x, y, w, h),
     );
-    this.view.listen("line_create", ({ x1, y1, x2, y2, width, color }) =>
-      this.createLine(x1, y1, x2, y2, width, color),
+    this.view.listen("line_create", ({ x1, y1, x2, y2, stroke, color }) =>
+      this.createLine(x1, y1, x2, y2, stroke, color),
     );
     this.view.listen("image_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
   }
@@ -53,7 +53,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
     this.store.send({ type: "request_create", create: rectangle });
   }
 
-  private createLine(x1: number, y1: number, x2: number, y2: number, width: number, color: string) {
+  private createLine(x1: number, y1: number, x2: number, y2: number, stroke: number, color: string) {
     const line: TokenLine = {
       type: "line",
       id: crypto.randomUUID(),
@@ -61,7 +61,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
       y: y1,
       w: x2 - x1,
       h: y2 - y1,
-      width,
+      stroke,
       color,
       r: 0,
     };

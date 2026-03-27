@@ -25,12 +25,9 @@ export interface TokenImage extends AbstractToken {
 }
 
 export interface TokenLine extends AbstractToken {
-  // TODO - lines use w and h for their x2 and y2, this could be confusing and should be probably be changed.
-  // We could retain this behavior and make it so the w and h are the relative distance from x and y,
-  // but this would just convolutes things.
   type: "line";
   color: string;
-  width: number;
+  stroke: number;
 }
 
 export type Token = TokenCircle | TokenImage | TokenRectangle | TokenLine;
