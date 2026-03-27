@@ -47,7 +47,7 @@ public class TokenRectangle(string id, string color, int? border, int x, int y, 
     public int? border = border;
 }
 
-public class TokenLine(string id, string color, int width, int x, int y, int w, int h, int r) : Token(id, x, y, w,h,r)
+public class TokenLine(string id, string color, int width, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "line";
