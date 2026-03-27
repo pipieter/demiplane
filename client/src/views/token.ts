@@ -93,6 +93,21 @@ class TokenView {
         break;
       }
 
+      case "line": {
+        const x1 = Math.min(token.x, token.w);
+        const y1 = Math.min(token.y, token.h);
+        const x2 = Math.max(token.x, token.w);
+        const y2 = Math.max(token.y, token.h);
+        element.setAttribute("x1", x1.toString());
+        element.setAttribute("y1", y1.toString());
+        element.setAttribute("x2", x2.toString());
+        element.setAttribute("y2", y2.toString());
+        element.setAttribute("stroke-width", `${token.width}px`);
+        element.setAttribute("stroke", token.color);
+        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        break;
+      }
+
       case "image":
         element.setAttribute("href", server.fullURL(token.href));
         element.setAttribute("x", token.x.toString());

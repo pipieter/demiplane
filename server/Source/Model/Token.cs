@@ -47,6 +47,18 @@ public class TokenRectangle(string id, string color, int? border, int x, int y, 
     public int? border = border;
 }
 
+public class TokenLine(string id, string color, int width, int x, int y, int w, int h, int r) : Token(id, x, y, w,h,r)
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "line";
+
+    [JsonProperty(Required = Required.Always)]
+    public string color = color;
+
+    [JsonProperty(Required = Required.AllowNull)]
+    public int width = width;
+}
+
 public class TokenImage(string id, string href, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
@@ -66,6 +78,7 @@ public class TokenJsonConverter : Json.TypeConverter<Token>
                 ["image"] = typeof(TokenImage),
                 ["circle"] = typeof(TokenCircle),
                 ["rectangle"] = typeof(TokenRectangle),
+                ["line"] = typeof(TokenLine),
             };
     }
 }
