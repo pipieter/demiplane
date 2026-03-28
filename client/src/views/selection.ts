@@ -65,8 +65,10 @@ class SelectionView extends TokenListenerContainer {
         const element = document.getElementById(token.id)!;
         if (calc.overlap(rect, token)) {
           element.setAttribute("fill", "red");
+          element.setAttribute("stroke", "red");
         } else {
           element.setAttribute("fill", "black");
+          element.setAttribute("stroke", "black");
         }
       }
     });

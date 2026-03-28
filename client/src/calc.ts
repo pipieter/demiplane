@@ -104,7 +104,7 @@ function LiangBarsky(rect: DOMRect, line: Line): boolean {
 function overlap(rect: DOMRect, token: Token): boolean {
   switch (token.type) {
     case "image":
-    case "rectangle":
+    case "rectangle": {
       const x = token.x;
       const y = token.y;
       const w = token.w;
@@ -112,6 +112,12 @@ function overlap(rect: DOMRect, token: Token): boolean {
       const r = token.r;
       const edges = getRectangleEdges(x, y, w, h, r);
       return edges.some((edge) => LiangBarsky(rect, edge));
+    }
+    case "line": {
+      const p1: Point = { x: token.x, y: token.y };
+      const p2: Point = { x: token.x + token.w, y: token.y + token.h };
+      return LiangBarsky(rect, [p1, p2]);
+    }
   }
 
   return false;
