@@ -7,11 +7,12 @@ interface TokenListenerMap {
   token_transform_finish: Transform;
   tokens_select: Token[];
   tokens_delete: Token[];
+  tokens_select_area: DOMRect;
 }
 
 class TokenListener extends Listener<TokenListenerMap> {
   protected override keys(): (keyof TokenListenerMap)[] {
-    return ["token_transform", "tokens_select", "tokens_delete"];
+    return ["token_transform", "tokens_select", "tokens_delete", "token_transform_finish", "tokens_select_area"];
   }
 }
 
