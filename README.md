@@ -15,6 +15,9 @@ cd server
 dotnet run
 ```
 
+Before launching the frontend, we will need a ``.env`` file, you can simply copy ``example.env`` and rename it to ``.env``.
+Unless any special hosting changes have been made (backend not on port 5000 or URLs are being tunneled), the default ``VITE_SERVER_URL`` should work fine.
+
 The frontend can be run in development mode using the following command, which launches an interactive server at port 5173. This refreshes the server when any change is made in the client source code.
 
 ```bash
