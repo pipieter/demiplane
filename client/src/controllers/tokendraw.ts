@@ -1,3 +1,4 @@
+import type { Duplicate } from "../messages";
 import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
@@ -131,33 +132,6 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private async createImage(href: string, x: number, y: number, w: number, h: number, r: number = 0) {
-    const id = crypto.randomUUID();
-    this.state.createToken({
-      type: "image",
-      id,
-      href,
-      x,
-      y,
-      w,
-      h,
-      r,
-    });
-    this.store.send({
-      type: "request_create",
-      create: {
-        type: "image",
-        id,
-        href,
-        x,
-        y,
-        w,
-        h,
-        r,
-      },
-    });
-  }
-
   private async getImageClipboardBlob(tokens: Token[]): Promise<Blob | null> {
     if (tokens.length > 1) return null;
     if (tokens[0].type !== "image") return null;
@@ -224,45 +198,32 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
         if (!Array.isArray(parsed)) return;
 
-        const offset = 16;
-        const validTokens = parsed
+        const offset = 8;
+        const duplicatePairs: Duplicate[] = [];
+        const newTokens = parsed
           .filter((token) => isToken(token))
-          .map((token) => ({
-            ...token,
-            x: token.x + offset,
-            y: token.y + offset,
-          }));
+          .map((token) => {
+            const id = crypto.randomUUID();
+            duplicatePairs.push({ parentId: token.id, childId: id });
 
-        if (validTokens.length <= 0) return;
+            return {
+              ...token,
+              id,
+              x: token.x + offset,
+              y: token.y + offset,
+            };
+          });
 
-        this.writeTokensToClipboard(validTokens); // Update the clipboard with the new offset version
+        if (newTokens.length <= 0) return;
 
-        for (const token of validTokens) {
-          const type = token.type;
-          switch (type) {
-            case "circle":
-              this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-              break;
+        this.state.createTokens(newTokens);
 
-            case "rectangle":
-              this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-              break;
+        this.store.send({
+          type: "request_duplicate",
+          duplicate: duplicatePairs,
+        });
 
-            case "image":
-              this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
-              break;
-
-            case "line": {
-              const x2 = token.x + token.w;
-              const y2 = token.y + token.h;
-              this.createLine(token.x, token.y, x2, y2, token.stroke, token.color);
-              break;
-            }
-
-            default:
-              throw `Unsupported paste-type '${type}'`;
-          }
-        }
+        this.writeTokensToClipboard(newTokens); // Update the clipboard with the new offset version
       }
     } catch {
       return;

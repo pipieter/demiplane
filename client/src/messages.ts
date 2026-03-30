@@ -30,6 +30,17 @@ export interface SyncResponseMessage {
   me: User;
 }
 
+export interface Duplicate {
+  parentId: string;
+  childId: string;
+}
+
+/** Request to duplicate a token on the whiteboard */
+export interface DuplicateRequestMessage {
+  type: "request_duplicate";
+  duplicate: Duplicate[];
+}
+
 /** Request to create a token on the whiteboard */
 export interface CreateRequestMessage {
   type: "request_create";
@@ -119,6 +130,7 @@ export interface UserDisconnectResponseMessage {
 export type RequestMessage =
   | SyncRequestMessage
   | CreateRequestMessage
+  | DuplicateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage
   | GridRequestMessage

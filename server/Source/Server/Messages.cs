@@ -54,6 +54,21 @@ public class CreateRequestMessage(Token create) : Message
     public Token create = create;
 }
 
+public class Duplicate(string parentId, string childId)
+{
+    public string parentId = parentId;
+    public string childId = childId;
+}
+
+public class DuplicateRequestMessage(List<Duplicate> duplicate) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_duplicate";
+
+    [JsonProperty(Required = Required.Always)]
+    public List<Duplicate> duplicate = duplicate;
+}
+
 public class CreateResponseMessage(Token create) : Message
 {
     [JsonProperty(Required = Required.Always)]
@@ -213,6 +228,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
+                ["request_duplicate"] = typeof(DuplicateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),
