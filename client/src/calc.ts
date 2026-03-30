@@ -101,14 +101,38 @@ function LiangBarsky(rect: DOMRect, line: Line): boolean {
   return true;
 }
 
-/// Checks if a line intersects with the unit circle
-/// https://mathworld.wolfram.com/Circle-LineIntersection.html
-function lineUnitCircleIntersection(line: Line) {
-  const dx = line[1].x - line[0].x;
-  const dy = line[1].y - line[0].y;
-  const dr = Math.sqrt(dx * dx + dy * dy);
-  const D = line[0].x * line[1].y - line[1].x * line[0].y;
-  return dr * dr - D * D >= 0;
+// https://www.jeffreythompson.org/collision-detection/circle-rect.php
+function circleRectangleIntersection(
+  cx: number,
+  cy: number,
+  cr: number,
+  rx: number,
+  ry: number,
+  rw: number,
+  rh: number,
+) {
+  // temporary variables to set edges for testing
+  let testX = cx;
+  let testY = cy;
+
+  // which edge is closest?
+  if (cx < rx)
+    testX = rx; // test left edge
+  else if (cx > rx + rw) testX = rx + rw; // right edge
+  if (cy < ry)
+    testY = ry; // top edge
+  else if (cy > ry + rh) testY = ry + rh; // bottom edge
+
+  // get distance from closest edges
+  let distX = cx - testX;
+  let distY = cy - testY;
+  let distance = Math.sqrt(distX * distX + distY * distY);
+
+  // if the distance is less than the radius, collision!
+  if (distance <= cr) {
+    return true;
+  }
+  return false;
 }
 
 function rectangleEllipseIntersection(rect: DOMRect, token: TokenCircle): boolean {
@@ -128,43 +152,62 @@ function rectangleEllipseIntersection(rect: DOMRect, token: TokenCircle): boolea
   // TO DO Fix this
 
   const corners = [
-    { x: rect.x, y: rect.y },
-    { x: rect.x + rect.width, y: rect.y },
-    { x: rect.x + rect.width, y: rect.y + rect.height },
-    { x: rect.x, y: rect.y + rect.height },
+    { x: rect.left, y: rect.top },
+    { x: rect.right, y: rect.top },
+    { x: rect.right, y: rect.bottom },
+    { x: rect.left, y: rect.bottom },
   ];
 
   // Step 1: translate the ellipse to (0, 0)
-  const cx = token.x + token.w / 2;
-  const cy = token.y + token.h / 2;
+  {
+    const cx = token.x + token.w / 2;
+    const cy = token.y + token.h / 2;
 
-  for (const corner of corners) {
-    corner.x -= cx;
-    corner.y -= cy;
+    for (const corner of corners) {
+      corner.x -= cx;
+      corner.y -= cy;
+    }
   }
 
   // Step 2: rotate the ellipse so it has no angle
-  for (let i = 0; i < corners.length; i++) {
-    corners[i] = rotatePoint(corners[i], { x: 0, y: 0 }, -token.r);
+  {
+    for (let i = 0; i < corners.length; i++) {
+      corners[i] = rotatePoint(corners[i], { x: 0, y: 0 }, -token.r);
+    }
   }
 
   // Step 3: scale the ellipse
-  for (const corner of corners) {
-    corner.x /= token.w;
-    corner.y /= token.h;
+  {
+    for (const corner of corners) {
+      // TODO scaling should be done on the axis through (0, 0) and (cos(-r), sin(-r))
+      corner.x /= token.w / 2;
+      corner.y /= token.h / 2;
+    }
+  }
+  // Step 4: rotate the points back so they're axis aligned
+  {
+    for (let i = 0; i < corners.length; i++) {
+      corners[i] = rotatePoint(corners[i], { x: 0, y: 0 }, token.r);
+    }
   }
 
-  // Check if any edge intersects with the unit circle
-  const edges: Line[] = [
-    [corners[0], corners[1]],
-    [corners[1], corners[2]],
-    [corners[2], corners[3]],
-    [corners[3], corners[0]],
-  ];
-  return edges.some(lineUnitCircleIntersection);
+  // Step 5: check for intersections
+  // https://stackoverflow.com/a/402010
+  const xmin = Math.min(...corners.map((corner) => corner.x));
+  const ymin = Math.min(...corners.map((corner) => corner.y));
+  const xmax = Math.max(...corners.map((corner) => corner.x));
+  const ymax = Math.max(...corners.map((corner) => corner.y));
 
-  // TODO check if rectangle completely overlaps circle
-  // This can be done by checking if the center of the circle lies inside the rectangle
+  const rx = xmin;
+  const ry = ymin;
+  const rw = xmax - xmin;
+  const rh = ymax - ymin;
+
+  const cx = 0;
+  const cy = 0;
+  const cr = 1;
+
+  return circleRectangleIntersection(cx, cy, cr, rx, ry, rw, rh);
 }
 
 function overlap(rect: DOMRect, token: Token): boolean {
