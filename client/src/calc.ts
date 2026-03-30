@@ -1,4 +1,4 @@
-import type { Token } from "./models/token";
+import type { Token, TokenCircle } from "./models/token";
 import type { Point } from "./models/transform";
 
 type Line = [Point, Point];
@@ -101,6 +101,72 @@ function LiangBarsky(rect: DOMRect, line: Line): boolean {
   return true;
 }
 
+/// Checks if a line intersects with the unit circle
+/// https://mathworld.wolfram.com/Circle-LineIntersection.html
+function lineUnitCircleIntersection(line: Line) {
+  const dx = line[1].x - line[0].x;
+  const dy = line[1].y - line[0].y;
+  const dr = Math.sqrt(dx * dx + dy * dy);
+  const D = line[0].x * line[1].y - line[1].x * line[0].y;
+  return dr * dr - D * D >= 0;
+}
+
+function rectangleEllipseIntersection(rect: DOMRect, token: TokenCircle): boolean {
+  if (token.w <= 0 || token.h <= 0) return false;
+
+  /* In order to calculate the intersection between a rotated circle and an axis-aligned
+   * rectangle, we first transform the ellipse to the unit circle and apply the same
+   * transformations to the edges of the rectangle. We then check if the transformed
+   * edges of the rectangle intersect with the unit circle.
+   *
+   * Transforming the ellipse to the unit circle involves the following steps:
+   * 1. Translate the ellipse to (0, 0)
+   * 2. Rotate the ellipse so it has no rotation/angle
+   * 3. Scale the ellipse so it becomes a circle with length 1
+   */
+
+  // TO DO Fix this
+
+  const corners = [
+    { x: rect.x, y: rect.y },
+    { x: rect.x + rect.width, y: rect.y },
+    { x: rect.x + rect.width, y: rect.y + rect.height },
+    { x: rect.x, y: rect.y + rect.height },
+  ];
+
+  // Step 1: translate the ellipse to (0, 0)
+  const cx = token.x + token.w / 2;
+  const cy = token.y + token.h / 2;
+
+  for (const corner of corners) {
+    corner.x -= cx;
+    corner.y -= cy;
+  }
+
+  // Step 2: rotate the ellipse so it has no angle
+  for (let i = 0; i < corners.length; i++) {
+    corners[i] = rotatePoint(corners[i], { x: 0, y: 0 }, -token.r);
+  }
+
+  // Step 3: scale the ellipse
+  for (const corner of corners) {
+    corner.x /= token.w;
+    corner.y /= token.h;
+  }
+
+  // Check if any edge intersects with the unit circle
+  const edges: Line[] = [
+    [corners[0], corners[1]],
+    [corners[1], corners[2]],
+    [corners[2], corners[3]],
+    [corners[3], corners[0]],
+  ];
+  return edges.some(lineUnitCircleIntersection);
+
+  // TODO check if rectangle completely overlaps circle
+  // This can be done by checking if the center of the circle lies inside the rectangle
+}
+
 function overlap(rect: DOMRect, token: Token): boolean {
   switch (token.type) {
     case "image":
@@ -117,6 +183,9 @@ function overlap(rect: DOMRect, token: Token): boolean {
       const p1: Point = { x: token.x, y: token.y };
       const p2: Point = { x: token.x + token.w, y: token.y + token.h };
       return LiangBarsky(rect, [p1, p2]);
+    }
+    case "circle": {
+      return rectangleEllipseIntersection(rect, token);
     }
   }
 
