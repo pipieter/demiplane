@@ -32,7 +32,7 @@ export interface SyncResponseMessage {
 
 export interface Duplicate {
   parentId: string;
-  childId: string;
+  child: Token;
 }
 
 /** Request to duplicate a token on the whiteboard */

@@ -24,7 +24,7 @@ public class ConcurrentBoardState
         }
     }
 
-    public Token? DuplicateToken(string parentId, string childId)
+    public Token? DuplicateToken(string parentId, Token child)
     {
         lock (_lock)
         {
@@ -38,9 +38,11 @@ public class ConcurrentBoardState
             }
 
             Token clone = parent.Clone();
-            clone.id = childId;
-            _tokens.Add(clone);
+            clone.id = child.id;
+            clone.x = child.x;
+            clone.y = child.y;
 
+            _tokens.Add(clone);
             return clone;
         }
     }

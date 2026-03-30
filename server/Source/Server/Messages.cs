@@ -54,10 +54,10 @@ public class CreateRequestMessage(Token create) : Message
     public Token create = create;
 }
 
-public class Duplicate(string parentId, string childId)
+public class Duplicate(string parentId, Token child)
 {
     public string parentId = parentId;
-    public string childId = childId;
+    public Token child = child;
 }
 
 public class DuplicateRequestMessage(List<Duplicate> duplicate) : Message

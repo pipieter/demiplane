@@ -203,15 +203,13 @@ class TokenDrawController extends Controller<TokenDrawView> {
         const newTokens = parsed
           .filter((token) => isToken(token))
           .map((token) => {
-            const id = crypto.randomUUID();
-            duplicatePairs.push({ parentId: token.id, childId: id });
+            const newToken = token;
+            newToken.id = crypto.randomUUID();
+            newToken.x += offset;
+            newToken.y += offset;
 
-            return {
-              ...token,
-              id,
-              x: token.x + offset,
-              y: token.y + offset,
-            };
+            duplicatePairs.push({ parentId: token.id, child: newToken });
+            return newToken;
           });
 
         if (newTokens.length <= 0) return;
