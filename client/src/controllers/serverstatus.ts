@@ -12,6 +12,10 @@ class ServerStatusController extends Controller<ServerStatusView> {
     this.socket = socket;
     this.socket.addEventListener("open", () => this.view.setOnline());
     this.socket.addEventListener("close", () => this.view.setOffline());
+    this.state.listen("user_change", () => {
+      this.clearSyncTimeout();
+      this.view.setOnline();
+    })
 
     this.view.listen("manual_sync", () => this.manualSync());
   }
