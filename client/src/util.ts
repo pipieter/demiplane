@@ -55,4 +55,14 @@ async function createLocalImage(base64: string) {
   return { href, width, height };
 }
 
-export const util = { readBase64, mouseOnElement, createLocalImage };
+function isUserTyping(): boolean {
+  const el = document.activeElement;
+  if (!el) return false;
+
+  const isInput = el.tagName === "INPUT" || el.tagName === "TEXTAREA";
+  const isContentEditable = (el as HTMLElement).isContentEditable;
+
+  return isInput || isContentEditable;
+}
+
+export const util = { readBase64, mouseOnElement, isUserTyping, createLocalImage };

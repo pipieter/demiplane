@@ -1,4 +1,4 @@
-import type { TokenCircle, TokenLine, TokenRectangle } from "../models/token";
+import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
 import { util } from "../util";
@@ -17,9 +17,29 @@ class TokenDrawController extends Controller<TokenDrawView> {
       this.createLine(x1, y1, x2, y2, stroke, color),
     );
     this.view.listen("image_create", ({ base64, x, y, w, h }) => this.createFreedraw(base64, x, y, w, h));
+
+    document.addEventListener("copy", async () => {
+      await this.copy();
+    });
+
+    document.addEventListener("cut", async () => {
+      await this.cut();
+    });
+
+    document.addEventListener("paste", async () => {
+      await this.paste();
+    });
   }
 
-  private createCircle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
+  private createCircle(
+    border: number | null,
+    color: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number = 0,
+  ) {
     const circle: TokenCircle = {
       type: "circle",
       id: crypto.randomUUID(),
@@ -29,14 +49,22 @@ class TokenDrawController extends Controller<TokenDrawView> {
       y,
       w,
       h,
-      r: 0,
+      r,
     };
 
     this.state.createToken(circle);
     this.store.send({ type: "request_create", create: circle });
   }
 
-  private createRectangle(border: number | null, color: string, x: number, y: number, w: number, h: number) {
+  private createRectangle(
+    border: number | null,
+    color: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number = 0,
+  ) {
     const rectangle: TokenRectangle = {
       type: "rectangle",
       id: crypto.randomUUID(),
@@ -46,7 +74,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
       y,
       w,
       h,
-      r: 0,
+      r,
     };
 
     this.state.createToken(rectangle);
@@ -101,6 +129,144 @@ class TokenDrawController extends Controller<TokenDrawView> {
         r: 0,
       },
     });
+  }
+
+  private async createImage(href: string, x: number, y: number, w: number, h: number, r: number = 0) {
+    const id = crypto.randomUUID();
+    this.state.createToken({
+      type: "image",
+      id,
+      href,
+      x,
+      y,
+      w,
+      h,
+      r,
+    });
+    this.store.send({
+      type: "request_create",
+      create: {
+        type: "image",
+        id,
+        href,
+        x,
+        y,
+        w,
+        h,
+        r,
+      },
+    });
+  }
+
+  private async getImageClipboardBlob(tokens: Token[]): Promise<Blob | null> {
+    if (tokens.length > 1) return null;
+    if (tokens[0].type !== "image") return null;
+    if (!tokens[0].href) return null;
+    try {
+      const response = await fetch(tokens[0].href);
+      const blob = await response.blob();
+
+      if (blob.type === "image/png" || blob.type === "image/jpeg") {
+        return blob;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  private async writeTokensToClipboard(tokens: Token[]) {
+    const clipboardData: Record<string, Blob> = {};
+    const jsonString = JSON.stringify(tokens);
+    clipboardData["text/plain"] = new Blob([jsonString], { type: "text/plain" });
+
+    const imageBlob = await this.getImageClipboardBlob(tokens);
+    if (imageBlob) clipboardData["image/png"] = imageBlob;
+
+    const item = new ClipboardItem(clipboardData);
+    await navigator.clipboard.write([item]);
+  }
+
+  async copy() {
+    if (util.isUserTyping()) return;
+    const selected = this.state.getSelected();
+    if (selected.length <= 0) return;
+
+    await this.writeTokensToClipboard(selected);
+  }
+
+  async cut() {
+    if (util.isUserTyping()) return;
+    const selected = this.state.getSelected();
+    if (selected.length <= 0) return;
+
+    await this.writeTokensToClipboard(selected);
+    const ids = selected.map((token) => token.id);
+    this.state.removeTokens(ids);
+    this.store.send({
+      type: "request_delete",
+      delete: ids,
+    });
+  }
+
+  async paste() {
+    if (util.isUserTyping()) return;
+
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+
+      for (const item of clipboardItems) {
+        if (!item.types.includes("text/plain")) continue;
+
+        const blob = await item.getType("text/plain");
+        const json = await blob.text();
+        const parsed: Token[] = JSON.parse(json);
+
+        if (!Array.isArray(parsed)) return;
+
+        const offset = 16;
+        const validTokens = parsed
+          .filter((token) => isToken(token))
+          .map((token) => ({
+            ...token,
+            x: token.x + offset,
+            y: token.y + offset,
+          }));
+
+        if (validTokens.length <= 0) return;
+
+        this.writeTokensToClipboard(validTokens); // Update the clipboard with the new offset version
+
+        for (const token of validTokens) {
+          const type = token.type;
+          switch (type) {
+            case "circle":
+              this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            case "rectangle":
+              this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            case "image":
+              this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
+              break;
+
+            case "line": {
+              const x2 = token.x + token.w;
+              const y2 = token.y + token.h;
+              this.createLine(token.x, token.y, x2, y2, token.stroke, token.color);
+              break;
+            }
+
+            default:
+              throw `Unsupported paste-type '${type}'`;
+          }
+        }
+      }
+    } catch {
+      return;
+    }
   }
 }
 
