@@ -110,6 +110,7 @@ class TransformView extends TokenListenerContainer {
       const h = token.h + offset * 2;
 
       this.layer.style.display = "block";
+      this.lineLayer.style.display = "none";
       this.box.setAttribute("x", x.toString());
       this.box.setAttribute("y", y.toString());
       this.box.setAttribute("width", w.toString());
@@ -126,6 +127,7 @@ class TransformView extends TokenListenerContainer {
       // Line markings
       const x2 = token.x + token.w;
       const y2 = token.y + token.h;
+      this.layer.style.display = "none";
       this.lineLayer.style.display = "block";
       this.line.setAttribute("x1", token.x.toString());
       this.line.setAttribute("y1", token.y.toString());
