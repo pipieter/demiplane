@@ -1,6 +1,6 @@
 import type { GridData } from "./models/grid";
 import type { Token } from "./models/token";
-import type { Transform } from "./models/transform";
+import type { Point, Transform } from "./models/transform";
 import type { User } from "./models/user";
 
 /** An error has occurred somewhere */
@@ -28,6 +28,18 @@ export interface SyncResponseMessage {
   users: User[];
   secret: string;
   me: User;
+}
+
+export interface Duplicate {
+  parentId: string;
+  childId: string;
+}
+
+/** Request to duplicate a token on the whiteboard */
+export interface DuplicateRequestMessage {
+  type: "request_duplicate";
+  duplicate: Duplicate[];
+  offset: Point;
 }
 
 /** Request to create a token on the whiteboard */
@@ -119,6 +131,7 @@ export interface UserDisconnectResponseMessage {
 export type RequestMessage =
   | SyncRequestMessage
   | CreateRequestMessage
+  | DuplicateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage
   | GridRequestMessage

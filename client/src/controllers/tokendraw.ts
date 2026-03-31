@@ -1,4 +1,6 @@
+import type { Duplicate } from "../messages";
 import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
+import type { Point } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
 import { util } from "../util";
@@ -6,8 +8,11 @@ import type TokenDrawView from "../views/tokendraw";
 import Controller from "./controller";
 
 class TokenDrawController extends Controller<TokenDrawView> {
+  pasteOffset: Point = { x: 8, y: 8 };
+
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
+    this.resetPasteOffset();
 
     this.view.listen("circle_create", ({ x, y, w, h, border, color }) => this.createCircle(border, color, x, y, w, h));
     this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
@@ -131,31 +136,8 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
-  private async createImage(href: string, x: number, y: number, w: number, h: number, r: number = 0) {
-    const id = crypto.randomUUID();
-    this.state.createToken({
-      type: "image",
-      id,
-      href,
-      x,
-      y,
-      w,
-      h,
-      r,
-    });
-    this.store.send({
-      type: "request_create",
-      create: {
-        type: "image",
-        id,
-        href,
-        x,
-        y,
-        w,
-        h,
-        r,
-      },
-    });
+  private resetPasteOffset() {
+    this.pasteOffset = { x: 8, y: 8 };
   }
 
   private async getImageClipboardBlob(tokens: Token[]): Promise<Blob | null> {
@@ -176,6 +158,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
   }
 
   private async writeTokensToClipboard(tokens: Token[]) {
+    this.resetPasteOffset();
     const clipboardData: Record<string, Blob> = {};
     const jsonString = JSON.stringify(tokens);
     clipboardData["text/plain"] = new Blob([jsonString], { type: "text/plain" });
@@ -224,45 +207,30 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
         if (!Array.isArray(parsed)) return;
 
-        const offset = 16;
-        const validTokens = parsed
+        const duplicatePairs: Duplicate[] = [];
+        const newTokens = parsed
           .filter((token) => isToken(token))
-          .map((token) => ({
-            ...token,
-            x: token.x + offset,
-            y: token.y + offset,
-          }));
+          .map((token) => {
+            const newToken = structuredClone(token);
+            newToken.id = crypto.randomUUID();
+            newToken.x += this.pasteOffset.x;
+            newToken.y += this.pasteOffset.y;
 
-        if (validTokens.length <= 0) return;
+            duplicatePairs.push({ parentId: token.id, childId: newToken.id });
+            return newToken;
+          });
 
-        this.writeTokensToClipboard(validTokens); // Update the clipboard with the new offset version
+        if (newTokens.length <= 0) return;
 
-        for (const token of validTokens) {
-          const type = token.type;
-          switch (type) {
-            case "circle":
-              this.createCircle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-              break;
+        this.pasteOffset.x += 8;
+        this.pasteOffset.y += 8;
 
-            case "rectangle":
-              this.createRectangle(token.border, token.color, token.x, token.y, token.w, token.h, token.r);
-              break;
-
-            case "image":
-              this.createImage(token.href, token.x, token.y, token.w, token.h, token.r);
-              break;
-
-            case "line": {
-              const x2 = token.x + token.w;
-              const y2 = token.y + token.h;
-              this.createLine(token.x, token.y, x2, y2, token.stroke, token.color);
-              break;
-            }
-
-            default:
-              throw `Unsupported paste-type '${type}'`;
-          }
-        }
+        this.state.createTokens(newTokens);
+        this.store.send({
+          type: "request_duplicate",
+          duplicate: duplicatePairs,
+          offset: this.pasteOffset,
+        });
       }
     } catch {
       return;

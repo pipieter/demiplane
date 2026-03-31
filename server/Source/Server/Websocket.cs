@@ -176,6 +176,21 @@ public partial class Server
                     break;
                 }
 
+            case DuplicateRequestMessage duplicate:
+                {
+                    foreach (Duplicate copy in duplicate.duplicate)
+                    {
+                        Token? clone = _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset) ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
+                        CreateResponseMessage response = new(clone);
+                        await BroadcastMessage(response, socket);
+
+                        Message? latestTokenMessage = _latestTokenMessages.Get(clone.id);
+                        if (latestTokenMessage != null)
+                            await BroadcastMessage(latestTokenMessage, socket);
+                    }
+                    break;
+                }
+
             case DeleteRequestMessage delete:
                 {
                     if (!_state.DeleteTokens(delete.delete))
