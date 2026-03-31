@@ -29,14 +29,9 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
-            Token? parent = _tokens.Find(existing => existing.id == parentId);
+            Token? parent = _tokens.Find(existing => existing.id == parentId) ?? _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
             if (parent == null)
-            {
-                parent = _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
-
-                if (parent == null)
-                    return null;
-            }
+                return null;
 
             Token clone = parent.Clone();
             clone.id = childId;

@@ -211,7 +211,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
         const newTokens = parsed
           .filter((token) => isToken(token))
           .map((token) => {
-            const newToken = token;
+            const newToken = structuredClone(token);
             newToken.id = crypto.randomUUID();
             newToken.x += this.pasteOffset.x;
             newToken.y += this.pasteOffset.y;
@@ -222,11 +222,14 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
         if (newTokens.length <= 0) return;
 
+        this.pasteOffset.x += 8;
+        this.pasteOffset.y += 8;
+
         this.state.createTokens(newTokens);
         this.store.send({
           type: "request_duplicate",
           duplicate: duplicatePairs,
-          offset: this.pasteOffset
+          offset: this.pasteOffset,
         });
       }
     } catch {
