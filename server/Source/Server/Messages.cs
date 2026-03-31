@@ -73,7 +73,7 @@ public class DuplicateRequestMessage(List<Duplicate> duplicate, Point offset) : 
 
     [JsonProperty(Required = Required.Always)]
     public List<Duplicate> duplicate = duplicate;
-    
+
     [JsonProperty(Required = Required.Always)]
     public Point offset = offset;
 }
