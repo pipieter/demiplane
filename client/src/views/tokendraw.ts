@@ -1,7 +1,6 @@
 import { Listener, ListenerContainer } from "../listener";
 import type Grid from "../models/grid";
 import { util } from "../util";
-import { line, curveCatmullRom } from "d3-shape";
 
 interface TokenDrawViewMap {
   circle_create: { x: number; y: number; w: number; h: number; border: number | null; color: string };
@@ -223,18 +222,18 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
         this.freedraw.setAttribute("stroke-width", `${this.getLineStrokeWidth()}px`);
         const last = this.freedrawPoints.at(-1);
         if (last && !evt.shiftKey) {
-          const s = 0.2;
+          const s = 0.5;
           const nx = last[0] + (x - last[0]) * s;
           const ny = last[1] + (y - last[1]) * s;
 
           if (Math.hypot(nx - last[0], ny - last[1]) > 1) {
             this.freedrawPoints.push([nx, ny]);
-            this.updateFreedrawLine();
           }
         } else {
           this.freedrawPoints.push([x, y]);
-          this.updateFreedrawLine();
         }
+
+        this.updateFreedrawLine();
         break;
       }
     }
@@ -309,17 +308,14 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     document.onkeydown = null;
   }
 
-  private lineGenerator = line<[number, number]>()
-    .curve(curveCatmullRom.alpha(0.9));
-
   private updateFreedrawLine() {
     if (this.freedrawPoints.length === 0) {
       this.freedraw.setAttribute("d", "M 0 0");
       return;
     }
 
-    const d = this.lineGenerator(this.freedrawPoints);
-    this.freedraw.setAttribute("d", d || "");
+    const combined = "M " + this.freedrawPoints.map(([x, y]) => `${x} ${y}`).join(" L ");
+    this.freedraw.setAttribute("d", combined);
   }
 
   private rasterizeFreedraw() {
@@ -345,12 +341,12 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     ctx.lineWidth = lineWidth;
 
     if (this.freedrawPoints.length > 1) {
-      const pathData = this.lineGenerator(this.freedrawPoints);
-
-      if (pathData) {
-        const path = new Path2D(pathData);
-        ctx.stroke(path);
+      ctx.beginPath();
+      ctx.moveTo(this.freedrawPoints[0][0], this.freedrawPoints[0][1]);
+      for (let i = 1; i < this.freedrawPoints.length; i++) {
+        ctx.lineTo(this.freedrawPoints[i][0], this.freedrawPoints[i][1]);
       }
+      ctx.stroke();
     }
 
     const base64 = canvas.toDataURL();
