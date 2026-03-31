@@ -180,7 +180,7 @@ public partial class Server
                 {
                     foreach (Duplicate copy in duplicate.duplicate)
                     {
-                        Token? clone = _state.DuplicateToken(copy.parentId, copy.child) ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
+                        Token? clone = _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset) ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
                         CreateResponseMessage response = new(clone);
                         await BroadcastMessage(response, socket);
 

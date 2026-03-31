@@ -1,3 +1,4 @@
+using Demiplane.Messages;
 using Demiplane.Model;
 
 namespace Demiplane;
@@ -24,7 +25,7 @@ public class ConcurrentBoardState
         }
     }
 
-    public Token? DuplicateToken(string parentId, Token child)
+    public Token? DuplicateToken(string parentId, string childId, Point offset)
     {
         lock (_lock)
         {
@@ -38,9 +39,9 @@ public class ConcurrentBoardState
             }
 
             Token clone = parent.Clone();
-            clone.id = child.id;
-            clone.x = child.x;
-            clone.y = child.y;
+            clone.id = childId;
+            clone.x += offset.x;
+            clone.y += offset.y;
 
             _tokens.Add(clone);
             return clone;

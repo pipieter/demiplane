@@ -1,5 +1,6 @@
 import type { Duplicate } from "../messages";
 import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
+import type { Point } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
 import { util } from "../util";
@@ -7,8 +8,11 @@ import type TokenDrawView from "../views/tokendraw";
 import Controller from "./controller";
 
 class TokenDrawController extends Controller<TokenDrawView> {
+  pasteOffset: Point = { x: 8, y: 8 };
+
   constructor(store: Store, state: State, view: TokenDrawView) {
     super(store, state, view);
+    this.resetPasteOffset();
 
     this.view.listen("circle_create", ({ x, y, w, h, border, color }) => this.createCircle(border, color, x, y, w, h));
     this.view.listen("rectangle_create", ({ x, y, w, h, border, color }) =>
@@ -132,6 +136,10 @@ class TokenDrawController extends Controller<TokenDrawView> {
     });
   }
 
+  private resetPasteOffset() {
+    this.pasteOffset = { x: 8, y: 8 };
+  }
+
   private async getImageClipboardBlob(tokens: Token[]): Promise<Blob | null> {
     if (tokens.length > 1) return null;
     if (tokens[0].type !== "image") return null;
@@ -150,6 +158,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
   }
 
   private async writeTokensToClipboard(tokens: Token[]) {
+    this.resetPasteOffset();
     const clipboardData: Record<string, Blob> = {};
     const jsonString = JSON.stringify(tokens);
     clipboardData["text/plain"] = new Blob([jsonString], { type: "text/plain" });
@@ -198,30 +207,27 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
         if (!Array.isArray(parsed)) return;
 
-        const offset = 8;
         const duplicatePairs: Duplicate[] = [];
         const newTokens = parsed
           .filter((token) => isToken(token))
           .map((token) => {
             const newToken = token;
             newToken.id = crypto.randomUUID();
-            newToken.x += offset;
-            newToken.y += offset;
+            newToken.x += this.pasteOffset.x;
+            newToken.y += this.pasteOffset.y;
 
-            duplicatePairs.push({ parentId: token.id, child: newToken });
+            duplicatePairs.push({ parentId: token.id, childId: newToken.id });
             return newToken;
           });
 
         if (newTokens.length <= 0) return;
 
         this.state.createTokens(newTokens);
-
         this.store.send({
           type: "request_duplicate",
           duplicate: duplicatePairs,
+          offset: this.pasteOffset
         });
-
-        this.writeTokensToClipboard(newTokens); // Update the clipboard with the new offset version
       }
     } catch {
       return;

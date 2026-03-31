@@ -54,19 +54,28 @@ public class CreateRequestMessage(Token create) : Message
     public Token create = create;
 }
 
-public class Duplicate(string parentId, Token child)
+public class Duplicate(string parentId, string childId)
 {
     public string parentId = parentId;
-    public Token child = child;
+    public string childId = childId;
 }
 
-public class DuplicateRequestMessage(List<Duplicate> duplicate) : Message
+public class Point(int x, int y)
+{
+    public int x = x;
+    public int y = y;
+}
+
+public class DuplicateRequestMessage(List<Duplicate> duplicate, Point offset) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "request_duplicate";
 
     [JsonProperty(Required = Required.Always)]
     public List<Duplicate> duplicate = duplicate;
+    
+    [JsonProperty(Required = Required.Always)]
+    public Point offset = offset;
 }
 
 public class CreateResponseMessage(Token create) : Message
