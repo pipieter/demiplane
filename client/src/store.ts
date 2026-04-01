@@ -15,7 +15,7 @@ class SocketListeners extends Listener<SocketListenerMap> {
 
 class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
   private url: string;
-  public socket: WebSocket;
+  private socket: WebSocket;
   private secret: string | null;
   private reconnectAttempts = 0;
 
@@ -28,7 +28,7 @@ class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
     this.bindSocketListeners();
   }
 
-  public openWebSocket() {
+  public attemptOpenWebSocket() {
     if (this.socket.readyState !== WebSocket.CLOSED) return;
 
     try {
@@ -36,6 +36,10 @@ class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
     } finally {
       this.bindSocketListeners();
     }
+  }
+
+  public getSocketState(): number {
+    return this.socket.readyState;
   }
 
   public bindSocketListeners() {
@@ -50,7 +54,7 @@ class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
       this.reconnectAttempts++;
 
       this.emit("close", evt);
-      setTimeout(() => this.openWebSocket(), delay);
+      setTimeout(() => this.attemptOpenWebSocket(), delay);
     };
 
     this.socket.onmessage = (evt: MessageEvent) => this.emit("message", evt);

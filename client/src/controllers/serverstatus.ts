@@ -32,8 +32,8 @@ class ServerStatusController extends Controller<ServerStatusView> {
       this.timeout();
     }, 12000);
 
-    if (this.store.socket.readyState === WebSocket.CLOSED) {
-      this.store.openWebSocket();
+    if (this.store.getSocketState() === WebSocket.CLOSED) {
+      this.store.attemptOpenWebSocket();
       return;
     }
 
