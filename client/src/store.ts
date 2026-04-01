@@ -1,4 +1,4 @@
-import { Listener, ListenerContainer } from "./listener";
+import { Listener } from "./listener";
 import type { RequestMessage } from "./messages";
 
 export interface SocketListenerMap {
@@ -7,20 +7,14 @@ export interface SocketListenerMap {
   message: MessageEvent;
 }
 
-class SocketListeners extends Listener<SocketListenerMap> {
-  protected override keys(): (keyof SocketListenerMap)[] {
-    return ["open", "close", "message"];
-  }
-}
-
-class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
+class Store extends Listener<SocketListenerMap> {
   private url: string;
   private socket: WebSocket;
   private secret: string | null;
   private reconnectAttempts = 0;
 
   constructor(url: string) {
-    super(new SocketListeners());
+    super();
 
     this.url = url;
     this.socket = new WebSocket(this.url);

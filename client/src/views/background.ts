@@ -1,23 +1,17 @@
-import { Listener, ListenerContainer } from "../listener";
+import { Listener } from "../listener";
 import server from "../server";
 
 interface BackgroundViewMap {
   background_upload: File;
 }
 
-class BackgroundViewListeners extends Listener<BackgroundViewMap> {
-  protected override keys(): (keyof BackgroundViewMap)[] {
-    return ["background_upload"];
-  }
-}
-
-class BackgroundView extends ListenerContainer<BackgroundViewListeners, BackgroundViewMap> {
+class BackgroundView extends Listener<BackgroundViewMap> {
   public input: HTMLInputElement;
   public image: SVGImageElement;
   public layers: SVGSVGElement[];
 
   constructor() {
-    super(new BackgroundViewListeners());
+    super();
 
     this.input = document.getElementById("upload-background-button") as HTMLInputElement;
     this.image = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
