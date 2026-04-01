@@ -1,21 +1,89 @@
-import type { RequestMessage } from "./messages";
+import type { RequestMessage, ResponseMessage } from "./messages";
+import type State from "./state";
 
 class Store {
   private url: string;
-  private socket: WebSocket;
+  public socket: WebSocket;
   private secret: string | null;
 
-  constructor(url: string, socket: WebSocket) {
+  constructor(url: string, state: State) {
     this.url = url;
-    this.socket = socket;
+    this.socket = new WebSocket(this.url);;
     this.secret = localStorage.getItem("secret");
 
-    this.socket.onopen = this.onopen.bind(this);
+    this.bindSocketListeners(state);
   }
 
   private onopen = () => {
     this.send({ type: "request_sync", secret: this.getSecretToken() });
   };
+
+  public openWebhook(state: State) {
+    if (this.socket.readyState !== WebSocket.CLOSED) return;
+    this.socket = new WebSocket(this.url);
+    this.bindSocketListeners(state);
+  }
+
+  public bindSocketListeners(state: State) {
+    this.socket.onopen = this.onopen.bind(this);
+    this.socket.addEventListener("error", () => {
+      setTimeout(() => this.openWebhook(state), 10000);
+    });
+
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data) as ResponseMessage;
+
+      switch (data.type) {
+        case "create":
+          state.createToken(data.create);
+          break;
+
+        case "delete":
+          state.removeTokens(data.delete);
+          break;
+
+        case "grid":
+          state.setGrid(data.grid);
+          break;
+
+        case "background": {
+          state.setBackground(data.background.href, data.background.width, data.background.height);
+          break;
+        }
+
+        case "transform":
+          state.transformToken(data.transform);
+          break;
+
+        case "user_change":
+          state.setUser(data.user);
+          break;
+
+        case "user_disconnect":
+          state.removeUser(data.userId);
+          break;
+
+        case "sync":
+          state.clearTokens();
+          state.clearSelected();
+          state.setGrid(data.grid);
+          state.setBackground(data.background.href, data.background.width, data.background.height);
+          state.createTokens(data.tokens);
+          state.setUsers(data.users);
+          this.setSecretToken(data.secret);
+          state.setMe(data.me);
+          break;
+
+        case "error":
+          alert(`An error has occurred, re-syncing. '${data.message}'`);
+          this.send({ type: "request_sync", secret: this.getSecretToken() });
+          break;
+
+        default:
+          throw `Unknown message type: ${JSON.stringify(data)}`;
+      }
+    };
+  }
 
   public async uploadImage(base64: string): Promise<string> {
     const url = `${this.url}/images`;

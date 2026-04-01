@@ -1,4 +1,3 @@
-import type { ResponseMessage } from "./messages";
 import server from "./server";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
@@ -27,9 +26,8 @@ import HoverController from "./controllers/hover";
 import ServerStatusView from "./views/serverstatus";
 import ServerStatusController from "./controllers/serverstatus";
 
-const socket = new WebSocket(server.url);
-const store = new Store(server.url, socket);
 const state = new State();
+const store = new Store(server.url, state);
 
 const grid = state.getGrid();
 
@@ -50,7 +48,7 @@ new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
-new ServerStatusController(store, state, serverStatusView, socket);
+new ServerStatusController(store, state, serverStatusView);
 new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
 new SidebarController(store, state, headerView);
@@ -59,56 +57,4 @@ new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new HoverController(store, state, hoverView);
 
-socket.onmessage = function (event) {
-  const data = JSON.parse(event.data) as ResponseMessage;
 
-  switch (data.type) {
-    case "create":
-      state.createToken(data.create);
-      break;
-
-    case "delete":
-      state.removeTokens(data.delete);
-      break;
-
-    case "grid":
-      state.setGrid(data.grid);
-      break;
-
-    case "background": {
-      state.setBackground(data.background.href, data.background.width, data.background.height);
-      break;
-    }
-
-    case "transform":
-      state.transformToken(data.transform);
-      break;
-
-    case "user_change":
-      state.setUser(data.user);
-      break;
-
-    case "user_disconnect":
-      state.removeUser(data.userId);
-      break;
-
-    case "sync":
-      state.clearTokens();
-      state.clearSelected();
-      state.setGrid(data.grid);
-      state.setBackground(data.background.href, data.background.width, data.background.height);
-      state.createTokens(data.tokens);
-      state.setUsers(data.users);
-      store.setSecretToken(data.secret);
-      state.setMe(data.me);
-      break;
-
-    case "error":
-      alert(`An error has occurred, re-syncing. '${data.message}'`);
-      store.send({ type: "request_sync", secret: store.getSecretToken() });
-      break;
-
-    default:
-      throw `Unknown message type: ${JSON.stringify(data)}`;
-  }
-};
