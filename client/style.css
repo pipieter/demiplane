@@ -1,5 +1,6 @@
 @import url('sidebar.css');
 @import url('whiteboard.css');
+@import url('usercursors.css');
 
 :root {
   /* Overridden in code. */

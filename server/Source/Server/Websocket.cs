@@ -262,6 +262,14 @@ public partial class Server
                     await BroadcastMessage(response);
                     break;
                 }
+
+            case UserPositionRequestMessage user:
+                {
+                    User userData = _state.EditUserPosition(user.user.secret, user.user.position) ?? throw new Exception("Could not find user.");
+                    UserChangeResponseMessage response = new(userData);
+                    await BroadcastMessage(response, socket); // Cursor position is only broadcasted to all other users.
+                    break;
+                }
         }
     }
 }

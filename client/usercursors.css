@@ -1,0 +1,14 @@
+#user-cursors {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+#user-cursors > * {
+    transition: transform 0.1s linear;
+    will-change: transform;
+    position: absolute;
+}
