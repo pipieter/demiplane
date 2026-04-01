@@ -84,6 +84,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.lineButton.addEventListener("click", () => this.begin("line"));
     this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
     this.tokenUploadInput.addEventListener("change", (evt) => {
+      this.begin(null); // Unselect current drawing on toke upload
       const file = (evt.target as HTMLInputElement).files?.item(0);
       if (!file) throw "Could not open file.";
       this.uploadToken(file);
