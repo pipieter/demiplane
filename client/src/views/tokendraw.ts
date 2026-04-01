@@ -243,7 +243,19 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
 
       case "freedraw": {
         this.freedraw.setAttribute("stroke-width", `${this.getLineStrokeWidth()}px`);
-        this.freedrawPoints.push([x, y]);
+        const last = this.freedrawPoints.at(-1);
+        if (last && !this.grid.shouldGridlock(evt)) {
+          const s = 0.5;
+          const nx = last[0] + (x - last[0]) * s;
+          const ny = last[1] + (y - last[1]) * s;
+
+          if (Math.hypot(nx - last[0], ny - last[1]) > 1) {
+            this.freedrawPoints.push([nx, ny]);
+          }
+        } else {
+          this.freedrawPoints.push([x, y]);
+        }
+
         this.updateFreedrawLine();
         break;
       }

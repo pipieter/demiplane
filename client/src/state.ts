@@ -23,7 +23,7 @@ class State extends Listener<StateListenerMap> {
   private users: Record<string, User>;
   private myId: string;
   private background: Background;
-  private grid: Grid;
+  public readonly grid: Grid;
   private viewport: Viewport;
 
   constructor() {
@@ -129,10 +129,6 @@ class State extends Listener<StateListenerMap> {
     for (const user of users) {
       this.setUser(user);
     }
-  }
-
-  public getGrid(): Grid {
-    return this.grid;
   }
 
   public setGrid(grid: GridData) {
