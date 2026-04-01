@@ -56,5 +56,3 @@ new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new HoverController(store, state, hoverView);
-
-

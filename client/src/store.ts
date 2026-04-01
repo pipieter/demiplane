@@ -8,7 +8,7 @@ class Store {
 
   constructor(url: string, state: State) {
     this.url = url;
-    this.socket = new WebSocket(this.url);;
+    this.socket = new WebSocket(this.url);
     this.secret = localStorage.getItem("secret");
 
     this.bindSocketListeners(state);
@@ -18,16 +18,15 @@ class Store {
     this.send({ type: "request_sync", secret: this.getSecretToken() });
   };
 
-  public onSocketOpen = () => { };
-  public onSocketClose = () => { };
+  public onSocketOpen = () => {};
+  public onSocketClose = () => {};
 
   public openWebhook(state: State) {
     if (this.socket.readyState !== WebSocket.CLOSED) return;
 
     try {
       this.socket = new WebSocket(this.url);
-    }
-    finally {
+    } finally {
       this.bindSocketListeners(state);
     }
   }
