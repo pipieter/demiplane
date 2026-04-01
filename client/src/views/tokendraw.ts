@@ -33,6 +33,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly freedrawButton: HTMLButtonElement;
   private readonly tokenUploadInput: HTMLInputElement;
   private readonly colorInput: HTMLInputElement;
+  private readonly drawButtons: Map<string, HTMLButtonElement>;
 
   private readonly borderCheckbox: HTMLInputElement;
   private readonly borderNumber: HTMLInputElement;
@@ -59,6 +60,13 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
     this.lineButton = document.getElementById("begin-line-button") as HTMLButtonElement;
     this.freedrawButton = document.getElementById("begin-drawing-button") as HTMLButtonElement;
+    this.drawButtons = new Map([
+      ["circle", this.circleButton],
+      ["rectangle", this.rectangleButton],
+      ["line", this.lineButton],
+      ["freedraw", this.freedrawButton],
+    ]);
+
     this.tokenUploadInput = document.getElementById("upload-token-button") as HTMLInputElement;
     this.colorInput = document.getElementById("draw-color-input") as HTMLInputElement;
 
@@ -76,6 +84,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.lineButton.addEventListener("click", () => this.begin("line"));
     this.freedrawButton.addEventListener("click", () => this.begin("freedraw"));
     this.tokenUploadInput.addEventListener("change", (evt) => {
+      this.begin(null); // Unselect current drawing on toke upload
       const file = (evt.target as HTMLInputElement).files?.item(0);
       if (!file) throw "Could not open file.";
       this.uploadToken(file);
@@ -85,57 +94,77 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.updateColors();
   }
 
-  private begin(type: TokenDrawType) {
+  private begin(type: TokenDrawType | null) {
+    // Clear all button styling
+    [...this.drawButtons.values()].forEach((button) => button.classList.remove("selected"));
+
+    if (type === this.type) {
+      type = null; // unselect
+    }
+
+    if (type === null) {
+      this.type = null;
+      this.mouseDown = false;
+      this.cursor.style.display = "none";
+      this.circle.style.display = "none";
+      this.rectangle.style.display = "none";
+      this.line.style.display = "none";
+      this.freedraw.style.display = "none";
+      this.layer.style.display = "none";
+      this.layer.onmousedown = null;
+      this.layer.onmouseup = null;
+      this.layer.onmousemove = null;
+      document.onkeydown = null;
+      this.grid.viewport.enable();
+      return;
+    }
+
+    this.type = type;
     this.grid.viewport.disable();
     this.mouseDown = false;
     this.cursor.style.display = "";
     this.layer.style.display = "";
     this.layer.style.pointerEvents = "";
-    this.type = type;
+    this.drawButtons.get(type)?.classList.add("selected");
 
     document.onkeydown = (evt) => this.onkeydown(evt);
     this.layer.onmouseup = () => this.onmouseup();
     this.layer.onmousedown = (evt) => this.onmousedown(evt);
     this.layer.onmousemove = (evt) => this.onmousemove(evt);
 
-    switch (type) {
-      case "circle":
-        this.circle.style.display = "none";
-        this.circle.setAttribute("cx", "0");
-        this.circle.setAttribute("cy", "0");
-        this.circle.setAttribute("rx", "0");
-        this.circle.setAttribute("ry", "0");
-        break;
+    this.hideDrawingLayers();
+  }
 
-      case "rectangle":
-        this.rectangle.style.display = "none";
-        this.rectangle.setAttribute("x", "0");
-        this.rectangle.setAttribute("y", "0");
-        this.rectangle.setAttribute("width", "0");
-        this.rectangle.setAttribute("height", "0");
-        break;
+  private hideDrawingLayers() {
+    // Hide the drawing layers so they aren't visible until the user starts drawing again
 
-      case "line":
-        this.line.style.display = "none";
-        this.line.setAttribute("x1", "0");
-        this.line.setAttribute("y1", "0");
-        this.line.setAttribute("x2", "0");
-        this.line.setAttribute("y2", "0");
-        break;
+    this.circle.style.display = "none";
+    this.circle.setAttribute("cx", "0");
+    this.circle.setAttribute("cy", "0");
+    this.circle.setAttribute("rx", "0");
+    this.circle.setAttribute("ry", "0");
 
-      case "freedraw":
-        this.freedraw.style.display = "none";
-        this.freedrawPoints = [];
-        this.updateFreedrawLine();
-        break;
-    }
+    this.rectangle.style.display = "none";
+    this.rectangle.setAttribute("x", "0");
+    this.rectangle.setAttribute("y", "0");
+    this.rectangle.setAttribute("width", "0");
+    this.rectangle.setAttribute("height", "0");
+
+    this.line.style.display = "none";
+    this.line.setAttribute("x1", "0");
+    this.line.setAttribute("y1", "0");
+    this.line.setAttribute("x2", "0");
+    this.line.setAttribute("y2", "0");
+
+    this.freedraw.style.display = "none";
+    this.freedrawPoints = [];
+    this.updateFreedrawLine();
   }
 
   private onmousedown(evt: MouseEvent) {
     // Cancel on right click
     if (evt.buttons & 2) {
-      this.cancel();
-      return;
+      return this.begin(null);
     }
 
     // Begin drawing on left click
@@ -163,7 +192,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
         case "freedraw":
           this.freedraw.style.display = "";
-          this.freedrawPoints.push([x, y]);
+          this.freedrawPoints = [[x, y]];
           this.updateFreedrawLine();
           break;
       }
@@ -263,37 +292,39 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       }
 
       case "freedraw": {
-        const rasterized = this.rasterizeFreedraw();
+        const bbox = this.freedraw.getBBox();
+        const x = bbox.x;
+        const y = bbox.y;
+        const width = bbox.width;
+        const height = bbox.height;
+        const lineWidth = this.getLineStrokeWidth();
+        const color = this.colorInput.value;
+        const rasterized = util.rasterizeLine(
+          structuredClone(this.freedrawPoints),
+          x,
+          y,
+          width,
+          height,
+          lineWidth,
+          color,
+        );
         this.emit("image_create", rasterized);
+        this.freedrawPoints = [];
         break;
       }
     }
 
-    this.cancel();
+    this.mouseDown = false;
+    this.hideDrawingLayers();
   }
 
   private onkeydown(evt: KeyboardEvent) {
-    if (evt.key === "Escape") this.cancel();
+    if (evt.key === "Escape") this.begin(null);
   }
 
   private updateCursor(x: number, y: number) {
     this.cursor.setAttribute("cx", x.toString());
     this.cursor.setAttribute("cy", y.toString());
-  }
-
-  private cancel() {
-    this.mouseDown = false;
-    this.cursor.style.display = "none";
-    this.circle.style.display = "none";
-    this.rectangle.style.display = "none";
-    this.line.style.display = "none";
-    this.freedraw.style.display = "none";
-    this.layer.style.display = "none";
-    this.layer.onmousedown = null;
-    this.layer.onmouseup = null;
-    this.layer.onmousemove = null;
-    this.grid.viewport.enable();
-    document.onkeydown = null;
   }
 
   private updateFreedrawLine() {
@@ -304,53 +335,6 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
     const combined = "M " + this.freedrawPoints.map(([x, y]) => `${x} ${y}`).join(" L ");
     this.freedraw.setAttribute("d", combined);
-  }
-
-  private rasterizeFreedraw() {
-    const bbox = this.freedraw.getBBox();
-    const x = bbox.x;
-    const y = bbox.y;
-    const width = bbox.width;
-    const height = bbox.height;
-    const lineWidth = this.getLineStrokeWidth();
-
-    const canvas = document.createElement("canvas");
-    const color = this.colorInput.value;
-
-    // A small addition is required to ensure that the line doesn't get cut off at the borders
-    canvas.width = width + 2 * lineWidth;
-    canvas.height = height + 2 * lineWidth;
-
-    const ctx = canvas.getContext("2d")!;
-    ctx.translate(-x + lineWidth, -y + lineWidth);
-    ctx.fillStyle = color;
-    ctx.strokeStyle = color;
-    ctx.lineCap = "round";
-    ctx.lineWidth = lineWidth;
-
-    if (this.freedrawPoints.length > 1) {
-      ctx.beginPath();
-      ctx.moveTo(this.freedrawPoints[0][0], this.freedrawPoints[0][1]);
-      for (let i = 1; i < this.freedrawPoints.length; i++) {
-        ctx.lineTo(this.freedrawPoints[i][0], this.freedrawPoints[i][1]);
-      }
-      ctx.stroke();
-    }
-
-    const base64 = canvas.toDataURL();
-    // Because the image is slightly larger due to the line padding, a small shift is required
-    const targetX = x - lineWidth;
-    const targetY = y - lineWidth;
-    const targetWidth = width + 2 * lineWidth;
-    const targetHeight = height + 2 * lineWidth;
-
-    return {
-      base64,
-      x: targetX,
-      y: targetY,
-      w: targetWidth,
-      h: targetHeight,
-    };
   }
 
   private getBorder(): number | null {
@@ -364,11 +348,6 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
   private updateColors() {
     const color = this.colorInput.value ?? "black";
-    this.cursor.setAttribute("fill", color);
-    this.circle.setAttribute("stroke", color);
-    this.line.setAttribute("stroke", color);
-    this.rectangle.setAttribute("stroke", color);
-    this.freedraw.setAttribute("stroke", color);
     document.documentElement.style.setProperty("--draw-color", color);
   }
 
