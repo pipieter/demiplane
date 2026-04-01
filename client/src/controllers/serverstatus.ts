@@ -8,8 +8,8 @@ class ServerStatusController extends Controller<ServerStatusView> {
 
   constructor(store: Store, state: State, view: ServerStatusView) {
     super(store, state, view);
-    this.store.onSocketOpen = () => this.view.setOnline();
-    this.store.onSocketClose = () => this.view.setOffline();
+    this.store.addOpenListener(() => this.view.setOnline());
+    this.store.addCloseListener(() => this.view.setOffline());
     this.state.listen("user_change", () => {
       this.clearSyncTimeout();
       this.view.setOnline();
@@ -33,7 +33,7 @@ class ServerStatusController extends Controller<ServerStatusView> {
     }, 12000);
 
     if (this.store.socket.readyState === WebSocket.CLOSED) {
-      this.store.openWebhook();
+      this.store.openWebSocket();
       return;
     }
 

@@ -58,7 +58,7 @@ new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new HoverController(store, state, hoverView);
 
-store.onSocketMessage = (event) => {
+store.addMessageListener((event) => {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
@@ -110,4 +110,4 @@ store.onSocketMessage = (event) => {
     default:
       throw `Unknown message type: ${JSON.stringify(data)}`;
   }
-};
+});

@@ -6,19 +6,22 @@ class Store {
   private secret: string | null;
   private reconnectAttempts = 0;
 
-  public onSocketOpen = () => {};
-  public onSocketClose = () => {};
-  public onSocketMessage = (_event: MessageEvent) => {};
+  private openListeners = new Set<() => void>();
+  private closeListeners = new Set<() => void>();
+  private messageListeners = new Set<(event: MessageEvent) => void>();
 
   constructor(url: string) {
     this.url = url;
     this.socket = new WebSocket(this.url);
     this.secret = localStorage.getItem("secret");
-
     this.bindSocketListeners();
   }
 
-  public openWebhook() {
+  public addOpenListener = (fn: () => void) => this.openListeners.add(fn);
+  public addCloseListener = (fn: () => void) => this.closeListeners.add(fn);
+  public addMessageListener = (fn: (e: MessageEvent) => void) => this.messageListeners.add(fn);
+
+  public openWebSocket() {
     if (this.socket.readyState !== WebSocket.CLOSED) return;
 
     try {
@@ -31,20 +34,20 @@ class Store {
   public bindSocketListeners() {
     this.socket.onopen = () => {
       this.reconnectAttempts = 0;
+      this.openListeners.forEach((listener) => listener());
       this.send({ type: "request_sync", secret: this.getSecretToken() });
-      this.onSocketOpen();
     };
 
     this.socket.onclose = () => {
       const delay = Math.max(Math.min(1000 * 2 ** this.reconnectAttempts, 30000), 5000);
       this.reconnectAttempts++;
 
-      this.onSocketClose();
-      setTimeout(() => this.openWebhook(), delay);
+      this.closeListeners.forEach((listener) => listener());
+      setTimeout(() => this.openWebSocket(), delay);
     };
 
     this.socket.onmessage = (event) => {
-      this.onSocketMessage(event);
+      this.messageListeners.forEach((listener) => listener(event));
     };
   }
 
