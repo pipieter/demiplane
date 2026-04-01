@@ -1,8 +1,8 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 
-class TokenEditView extends TokenListenerContainer {
+class TokenEditView extends TokenListener {
   private editX: HTMLInputElement;
   private editY: HTMLInputElement;
   private editW: HTMLInputElement;

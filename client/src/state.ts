@@ -1,4 +1,4 @@
-import { Listener, ListenerContainer } from "./listener";
+import { Listener } from "./listener";
 import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
@@ -17,22 +17,7 @@ export interface StateListenerMap {
   token_delete: string[];
 }
 
-class StateListeners extends Listener<StateListenerMap> {
-  protected override keys(): (keyof StateListenerMap)[] {
-    return [
-      "background_change",
-      "grid_change",
-      "user_change",
-      "user_disconnect",
-      "token_create",
-      "token_select",
-      "token_transform",
-      "token_delete",
-    ];
-  }
-}
-
-class State extends ListenerContainer<StateListeners, StateListenerMap> {
+class State extends Listener<StateListenerMap> {
   private tokens: Token[];
   private selected: Token[];
   private users: Record<string, User>;
@@ -42,7 +27,7 @@ class State extends ListenerContainer<StateListeners, StateListenerMap> {
   private viewport: Viewport;
 
   constructor() {
-    super(new StateListeners());
+    super();
 
     this.tokens = [];
     this.selected = [];

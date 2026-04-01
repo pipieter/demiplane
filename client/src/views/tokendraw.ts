@@ -1,4 +1,4 @@
-import { Listener, ListenerContainer } from "../listener";
+import { Listener } from "../listener";
 import type Grid from "../models/grid";
 import { util } from "../util";
 
@@ -9,15 +9,9 @@ interface TokenDrawViewMap {
   line_create: { x1: number; y1: number; x2: number; y2: number; stroke: number; color: string };
 }
 
-class TokenDrawViewListeners extends Listener<TokenDrawViewMap> {
-  protected override keys(): (keyof TokenDrawViewMap)[] {
-    return ["circle_create", "rectangle_create", "image_create", "line_create"];
-  }
-}
-
 type TokenDrawType = "circle" | "rectangle" | "freedraw" | "line";
 
-class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawViewMap> {
+class TokenDrawView extends Listener<TokenDrawViewMap> {
   private grid: Grid;
 
   private readonly layer: SVGSVGElement;
@@ -45,7 +39,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   private readonly current: { x: number; y: number };
 
   constructor(grid: Grid) {
-    super(new TokenDrawViewListeners());
+    super();
 
     this.grid = grid;
 

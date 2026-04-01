@@ -1,7 +1,7 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
-class TokenListView extends TokenListenerContainer {
+class TokenListView extends TokenListener {
   private list: HTMLUListElement;
   private checkbox: HTMLInputElement;
 
