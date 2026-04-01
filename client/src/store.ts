@@ -6,9 +6,9 @@ class Store {
   private secret: string | null;
   private reconnectAttempts = 0;
 
-  public onSocketOpen = () => { };
-  public onSocketClose = () => { };
-  public onSocketMessage = (_event: MessageEvent) => { };
+  public onSocketOpen = () => {};
+  public onSocketClose = () => {};
+  public onSocketMessage = (_event: MessageEvent) => {};
 
   constructor(url: string) {
     this.url = url;
@@ -43,7 +43,9 @@ class Store {
       setTimeout(() => this.openWebhook(), delay);
     };
 
-    this.socket.onmessage = (event) => { this.onSocketMessage(event) };
+    this.socket.onmessage = (event) => {
+      this.onSocketMessage(event);
+    };
   }
 
   public async uploadImage(base64: string): Promise<string> {
