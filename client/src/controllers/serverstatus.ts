@@ -33,7 +33,7 @@ class ServerStatusController extends Controller<ServerStatusView> {
     }, 12000);
 
     if (this.store.socket.readyState === WebSocket.CLOSED) {
-      this.store.openWebhook(this.state);
+      this.store.openWebhook();
       return;
     }
 
