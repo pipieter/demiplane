@@ -65,4 +65,51 @@ function isUserTyping(): boolean {
   return isInput || isContentEditable;
 }
 
-export const util = { readBase64, mouseOnElement, isUserTyping, createLocalImage };
+function rasterizeLine(
+  points: [number, number][],
+  offsetX: number,
+  offsetY: number,
+  width: number,
+  height: number,
+  lineWidth: number,
+  color: string,
+) {
+  const canvas = document.createElement("canvas");
+
+  // A small addition is required to ensure that the line doesn't get cut off at the borders
+  canvas.width = width + 2 * lineWidth;
+  canvas.height = height + 2 * lineWidth;
+
+  const ctx = canvas.getContext("2d")!;
+  ctx.translate(-offsetX + lineWidth, -offsetY + lineWidth);
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineCap = "round";
+  ctx.lineWidth = lineWidth;
+
+  if (points.length > 1) {
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i][0], points[i][1]);
+    }
+    ctx.stroke();
+  }
+
+  const base64 = canvas.toDataURL();
+  // Because the image is slightly larger due to the line padding, a small shift is required
+  const targetX = offsetX - lineWidth;
+  const targetY = offsetY - lineWidth;
+  const targetWidth = width + 2 * lineWidth;
+  const targetHeight = height + 2 * lineWidth;
+
+  return {
+    base64,
+    x: targetX,
+    y: targetY,
+    w: targetWidth,
+    h: targetHeight,
+  };
+}
+
+export const util = { readBase64, mouseOnElement, isUserTyping, createLocalImage, rasterizeLine };
