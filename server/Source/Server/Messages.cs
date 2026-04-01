@@ -205,7 +205,7 @@ public record struct RequestUserPosition(string secret, Point? position)
     [JsonProperty(Required = Required.Always)]
     public string secret = secret;
 
-    [JsonProperty(Required = Required.Always)]
+    [JsonProperty(Required = Required.AllowNull)]
     public Point? position = position;
 }
 
