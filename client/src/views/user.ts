@@ -1,23 +1,17 @@
-import { Listener, ListenerContainer } from "../listener";
+import { Listener } from "../listener";
 import type { User } from "../models/user";
 
 interface UserViewMap {
   user_change: { name: string; color: string };
 }
 
-class UserViewListeners extends Listener<UserViewMap> {
-  protected override keys(): (keyof UserViewMap)[] {
-    return ["user_change"];
-  }
-}
-
-class UserView extends ListenerContainer<UserViewListeners, UserViewMap> {
+class UserView extends Listener<UserViewMap> {
   private nameInput: HTMLInputElement;
   private colorInput: HTMLInputElement;
   private userList: HTMLUListElement;
 
   constructor() {
-    super(new UserViewListeners());
+    super();
 
     this.nameInput = document.getElementById("user-input-name") as HTMLInputElement;
     this.colorInput = document.getElementById("user-input-color") as HTMLInputElement;

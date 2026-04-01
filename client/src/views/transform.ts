@@ -1,10 +1,10 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
 import { util } from "../util";
 
-class TransformView extends TokenListenerContainer {
+class TransformView extends TokenListener {
   private grid: Grid;
 
   private container: HTMLDivElement;

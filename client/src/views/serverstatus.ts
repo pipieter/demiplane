@@ -1,23 +1,17 @@
-import { Listener, ListenerContainer } from "../listener";
+import { Listener } from "../listener";
 
 interface ServerStatusViewMap {
   manual_sync: { isSyncing: boolean };
 }
 
-class ServerStatusListeners extends Listener<ServerStatusViewMap> {
-  protected override keys(): (keyof ServerStatusViewMap)[] {
-    return ["manual_sync"];
-  }
-}
-
-class ServerStatusView extends ListenerContainer<ServerStatusListeners, ServerStatusViewMap> {
+class ServerStatusView extends Listener<ServerStatusViewMap> {
   private container: HTMLElement;
   private statusSymbol: HTMLElement;
   private statusText: HTMLParagraphElement;
   private isSyncing: boolean;
 
   constructor() {
-    super(new ServerStatusListeners());
+    super();
 
     this.container = document.getElementById("server-status") as unknown as HTMLElement;
     this.statusSymbol = document.getElementById("server-status-icon") as unknown as HTMLElement;
