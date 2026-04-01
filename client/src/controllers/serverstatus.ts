@@ -5,13 +5,11 @@ import Controller from "./controller";
 
 class ServerStatusController extends Controller<ServerStatusView> {
   private syncTimeoutId: number | null = null;
-  private readonly socket: WebSocket;
 
-  constructor(store: Store, state: State, view: ServerStatusView, socket: WebSocket) {
+  constructor(store: Store, state: State, view: ServerStatusView) {
     super(store, state, view);
-    this.socket = socket;
-    this.socket.addEventListener("open", () => this.view.setOnline());
-    this.socket.addEventListener("close", () => this.view.setOffline());
+    this.store.listen("open", () => this.view.setOnline());
+    this.store.listen("close", () => this.view.setOffline());
     this.state.listen("user_change", () => {
       this.clearSyncTimeout();
       this.view.setOnline();
@@ -33,6 +31,11 @@ class ServerStatusController extends Controller<ServerStatusView> {
     this.syncTimeoutId = window.setTimeout(() => {
       this.timeout();
     }, 12000);
+
+    if (this.store.getSocketState() === WebSocket.CLOSED) {
+      this.store.attemptOpenWebSocket();
+      return;
+    }
 
     try {
       this.store.send({
