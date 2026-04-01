@@ -58,7 +58,7 @@ new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new HoverController(store, state, hoverView);
 
-store.addMessageListener((event) => {
+store.listen("message", (event) => {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {

@@ -1,25 +1,32 @@
+import { Listener, ListenerContainer } from "./listener";
 import type { RequestMessage } from "./messages";
 
-class Store {
+export interface SocketListenerMap {
+  open: Event;
+  close: CloseEvent;
+  message: MessageEvent;
+}
+
+class SocketListeners extends Listener<SocketListenerMap> {
+  protected override keys(): (keyof SocketListenerMap)[] {
+    return ["open", "close", "message"];
+  }
+}
+
+class Store extends ListenerContainer<SocketListeners, SocketListenerMap> {
   private url: string;
   public socket: WebSocket;
   private secret: string | null;
   private reconnectAttempts = 0;
 
-  private openListeners = new Set<() => void>();
-  private closeListeners = new Set<() => void>();
-  private messageListeners = new Set<(event: MessageEvent) => void>();
-
   constructor(url: string) {
+    super(new SocketListeners());
+
     this.url = url;
     this.socket = new WebSocket(this.url);
     this.secret = localStorage.getItem("secret");
     this.bindSocketListeners();
   }
-
-  public addOpenListener = (fn: () => void) => this.openListeners.add(fn);
-  public addCloseListener = (fn: () => void) => this.closeListeners.add(fn);
-  public addMessageListener = (fn: (e: MessageEvent) => void) => this.messageListeners.add(fn);
 
   public openWebSocket() {
     if (this.socket.readyState !== WebSocket.CLOSED) return;
@@ -32,23 +39,21 @@ class Store {
   }
 
   public bindSocketListeners() {
-    this.socket.onopen = () => {
+    this.socket.onopen = (evt: Event) => {
       this.reconnectAttempts = 0;
-      this.openListeners.forEach((listener) => listener());
+      this.emit("open", evt);
       this.send({ type: "request_sync", secret: this.getSecretToken() });
     };
 
-    this.socket.onclose = () => {
+    this.socket.onclose = (evt: CloseEvent) => {
       const delay = Math.max(Math.min(1000 * 2 ** this.reconnectAttempts, 30000), 5000);
       this.reconnectAttempts++;
 
-      this.closeListeners.forEach((listener) => listener());
+      this.emit("close", evt);
       setTimeout(() => this.openWebSocket(), delay);
     };
 
-    this.socket.onmessage = (event) => {
-      this.messageListeners.forEach((listener) => listener(event));
-    };
+    this.socket.onmessage = (evt: MessageEvent) => this.emit("message", evt);
   }
 
   public async uploadImage(base64: string): Promise<string> {

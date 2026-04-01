@@ -8,8 +8,8 @@ class ServerStatusController extends Controller<ServerStatusView> {
 
   constructor(store: Store, state: State, view: ServerStatusView) {
     super(store, state, view);
-    this.store.addOpenListener(() => this.view.setOnline());
-    this.store.addCloseListener(() => this.view.setOffline());
+    this.store.listen("open", () => this.view.setOnline());
+    this.store.listen("close", () => this.view.setOffline());
     this.state.listen("user_change", () => {
       this.clearSyncTimeout();
       this.view.setOnline();
