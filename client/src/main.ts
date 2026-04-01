@@ -1,4 +1,3 @@
-import type { ResponseMessage } from "./messages";
 import server from "./server";
 import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
@@ -24,10 +23,12 @@ import UserView from "./views/user";
 import UserController from "./controllers/user";
 import HoverView from "./views/hover";
 import HoverController from "./controllers/hover";
+import ServerStatusView from "./views/serverstatus";
+import ServerStatusController from "./controllers/serverstatus";
+import type { ResponseMessage } from "./messages";
 
-const socket = new WebSocket(server.url);
-const store = new Store(server.url, socket);
 const state = new State();
+const store = new Store(server.url);
 
 const grid = state.getGrid();
 
@@ -35,6 +36,7 @@ const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
 const transformView = new TransformView(grid);
 const selectionView = new SelectionView();
+const serverStatusView = new ServerStatusView();
 const tokenDrawView = new TokenDrawView(grid);
 const gridView = new GridView();
 const headerView = new SidebarView();
@@ -47,6 +49,7 @@ new BackgroundController(store, state, backgroundView);
 new TokenController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
+new ServerStatusController(store, state, serverStatusView);
 new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
 new SidebarController(store, state, headerView);
@@ -55,7 +58,7 @@ new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new HoverController(store, state, hoverView);
 
-socket.onmessage = function (event) {
+store.listen("message", (event) => {
   const data = JSON.parse(event.data) as ResponseMessage;
 
   switch (data.type) {
@@ -107,4 +110,4 @@ socket.onmessage = function (event) {
     default:
       throw `Unknown message type: ${JSON.stringify(data)}`;
   }
-};
+});
