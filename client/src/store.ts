@@ -18,17 +18,32 @@ class Store {
     this.send({ type: "request_sync", secret: this.getSecretToken() });
   };
 
+  public onSocketOpen = () => { };
+  public onSocketClose = () => { };
+
   public openWebhook(state: State) {
     if (this.socket.readyState !== WebSocket.CLOSED) return;
-    this.socket = new WebSocket(this.url);
-    this.bindSocketListeners(state);
+
+    try {
+      this.socket = new WebSocket(this.url);
+    }
+    finally {
+      this.bindSocketListeners(state);
+    }
   }
 
   public bindSocketListeners(state: State) {
-    this.socket.onopen = this.onopen.bind(this);
-    this.socket.addEventListener("error", () => {
-      setTimeout(() => this.openWebhook(state), 10000);
-    });
+    this.socket.onopen = () => {
+      this.onopen();
+      this.onSocketOpen();
+    };
+
+    this.socket.onclose = () => {
+      this.onSocketClose();
+      {
+        setTimeout(() => this.openWebhook(state), 5000);
+      }
+    };
 
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data) as ResponseMessage;
