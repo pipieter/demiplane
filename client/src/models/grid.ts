@@ -52,6 +52,10 @@ class Grid {
     };
   }
 
+  public shouldGridlock(evt: MouseEvent) {
+    return evt.shiftKey ? !this.defaultLocked : this.defaultLocked;
+  }
+
   public getCoordinates(evt: MouseEvent, enableGridLock: boolean = true) {
     const { x, y } = this.viewport.getTranslatedCoords(evt.offsetX, evt.offsetY);
 
@@ -59,12 +63,7 @@ class Grid {
       return { x, y };
     }
 
-    let gridLocked = this.defaultLocked;
-    if (evt.shiftKey) {
-      gridLocked = !gridLocked; // Inverse behavior on shift
-    }
-
-    if (gridLocked) {
+    if (this.shouldGridlock(evt)) {
       return this.getLockedCoordinates(x, y);
     }
 

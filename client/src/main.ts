@@ -30,14 +30,12 @@ import type { ResponseMessage } from "./messages";
 const state = new State();
 const store = new Store(server.url);
 
-const grid = state.getGrid();
-
 const tokenView = new TokenView();
 const backgroundView = new BackgroundView();
-const transformView = new TransformView(grid);
+const transformView = new TransformView(state.grid);
 const selectionView = new SelectionView();
 const serverStatusView = new ServerStatusView();
-const tokenDrawView = new TokenDrawView(grid);
+const tokenDrawView = new TokenDrawView(state.grid);
 const gridView = new GridView();
 const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();

@@ -250,7 +250,7 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
       case "freedraw": {
         this.freedraw.setAttribute("stroke-width", `${this.getLineStrokeWidth()}px`);
         const last = this.freedrawPoints.at(-1);
-        if (last && !evt.shiftKey) {
+        if (last && !this.grid.shouldGridlock(evt)) {
           const s = 0.5;
           const nx = last[0] + (x - last[0]) * s;
           const ny = last[1] + (y - last[1]) * s;
