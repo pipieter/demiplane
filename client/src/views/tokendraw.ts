@@ -132,37 +132,33 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
     this.layer.onmousedown = (evt) => this.onmousedown(evt);
     this.layer.onmousemove = (evt) => this.onmousemove(evt);
 
-    switch (type) {
-      case "circle":
-        this.circle.style.display = "none";
-        this.circle.setAttribute("cx", "0");
-        this.circle.setAttribute("cy", "0");
-        this.circle.setAttribute("rx", "0");
-        this.circle.setAttribute("ry", "0");
-        break;
+    this.hideDrawingLayers();
+  }
 
-      case "rectangle":
-        this.rectangle.style.display = "none";
-        this.rectangle.setAttribute("x", "0");
-        this.rectangle.setAttribute("y", "0");
-        this.rectangle.setAttribute("width", "0");
-        this.rectangle.setAttribute("height", "0");
-        break;
+  private hideDrawingLayers() {
+    // Hide the drawing layers so they aren't visible until the user starts drawing again
 
-      case "line":
-        this.line.style.display = "none";
-        this.line.setAttribute("x1", "0");
-        this.line.setAttribute("y1", "0");
-        this.line.setAttribute("x2", "0");
-        this.line.setAttribute("y2", "0");
-        break;
+    this.circle.style.display = "none";
+    this.circle.setAttribute("cx", "0");
+    this.circle.setAttribute("cy", "0");
+    this.circle.setAttribute("rx", "0");
+    this.circle.setAttribute("ry", "0");
 
-      case "freedraw":
-        this.freedraw.style.display = "none";
-        this.freedrawPoints = [];
-        this.updateFreedrawLine();
-        break;
-    }
+    this.rectangle.style.display = "none";
+    this.rectangle.setAttribute("x", "0");
+    this.rectangle.setAttribute("y", "0");
+    this.rectangle.setAttribute("width", "0");
+    this.rectangle.setAttribute("height", "0");
+
+    this.line.style.display = "none";
+    this.line.setAttribute("x1", "0");
+    this.line.setAttribute("y1", "0");
+    this.line.setAttribute("x2", "0");
+    this.line.setAttribute("y2", "0");
+
+    this.freedraw.style.display = "none";
+    this.freedrawPoints = [];
+    this.updateFreedrawLine();
   }
 
   private onmousedown(evt: MouseEvent) {
@@ -261,8 +257,6 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
   }
 
   private onmouseup() {
-    this.mouseDown = false;
-
     switch (this.type) {
       case "circle": {
         const x = Math.min(this.start.x, this.current.x);
@@ -315,9 +309,13 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
           color,
         );
         this.emit("image_create", rasterized);
+        this.freedrawPoints = [];
         break;
       }
     }
+
+    this.mouseDown = false;
+    this.hideDrawingLayers();
   }
 
   private onkeydown(evt: KeyboardEvent) {
@@ -350,11 +348,6 @@ class TokenDrawView extends ListenerContainer<TokenDrawViewListeners, TokenDrawV
 
   private updateColors() {
     const color = this.colorInput.value ?? "black";
-    this.cursor.setAttribute("fill", color);
-    this.circle.setAttribute("stroke", color);
-    this.line.setAttribute("stroke", color);
-    this.rectangle.setAttribute("stroke", color);
-    this.freedraw.setAttribute("stroke", color);
     document.documentElement.style.setProperty("--draw-color", color);
   }
 
