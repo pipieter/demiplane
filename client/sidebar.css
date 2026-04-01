@@ -93,7 +93,7 @@
   text-shadow: 0 0 2px var(--dark-tertiary);
 }
 
-.draw-button:focus {
+.draw-button.selected {
   color: var(--draw-color);
   background-color: var(--dark-secondary);
   text-shadow: 0 0 1px white;
