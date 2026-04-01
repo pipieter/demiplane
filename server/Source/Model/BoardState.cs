@@ -1,3 +1,4 @@
+using Demiplane.Messages;
 using Demiplane.Model;
 
 namespace Demiplane;
@@ -6,6 +7,8 @@ public class ConcurrentBoardState
 {
     private readonly Lock _lock = new();
     private readonly List<Token> _tokens = [];
+    private readonly Queue<Token> _deletedTokens = new();
+    private const int MaxDeletedTokens = 256;
     private readonly List<User> _users = [];
     private readonly Grid _grid = new(64, 0, 0);
     private readonly Background _background = new(null, 1024, 1024);
@@ -22,6 +25,24 @@ public class ConcurrentBoardState
         }
     }
 
+    public Token? DuplicateToken(string parentId, string childId, Point offset)
+    {
+        lock (_lock)
+        {
+            Token? parent = _tokens.Find(existing => existing.id == parentId) ?? _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
+            if (parent == null)
+                return null;
+
+            Token clone = parent.Clone();
+            clone.id = childId;
+            clone.x += offset.x;
+            clone.y += offset.y;
+
+            _tokens.Add(clone);
+            return clone;
+        }
+    }
+
     public bool DeleteTokens(List<string> ids)
     {
         lock (_lock)
@@ -32,6 +53,10 @@ public class ConcurrentBoardState
 
             foreach (Token token in tokensToRemove)
             {
+                if (_deletedTokens.Count >= MaxDeletedTokens)
+                    _deletedTokens.Dequeue();
+
+                _deletedTokens.Enqueue(token);
                 _tokens.Remove(token);
             }
             return true;
