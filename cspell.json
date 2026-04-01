@@ -21,10 +21,12 @@
         "ondelete",
         "ontransform",
         "resizebox",
+        "serverstatus",
         "tokendraw",
         "tokenedit",
         "tokenlist",
-        "wwwroot"
+        "wwwroot",
+        "xmark"
     ],
     "ignoreWords": [],
     "import": []
