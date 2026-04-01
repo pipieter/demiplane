@@ -17,11 +17,11 @@ class UserCursorController extends Controller<UserCursorsView> {
       this.view.renderUserCursor(user);
     });
 
-    document.addEventListener("mousemove", (evt) => {
+    document.body.addEventListener("pointermove", (evt) => {
       this.updatePosition(evt);
     });
 
-    document.addEventListener("mouseout", (evt) => {
+    document.body.addEventListener("pointerout", (evt) => {
       this.hidePosition(evt);
     });
   }
