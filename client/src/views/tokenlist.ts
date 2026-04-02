@@ -58,11 +58,13 @@ class TokenListView extends TokenListener {
     nameInput.type = "text";
     nameInput.value = token.name;
     nameInput.classList.add("token-name-input");
+    nameInput.maxLength = 36;
+    nameInput.minLength = 1;
 
     nameInput.addEventListener("click", (e) => e.stopPropagation());
 
     nameInput.addEventListener("change", () => {
-      this.onRename(token, nameInput.value);
+      this.onRename(token, nameInput);
     });
 
     nameInput.addEventListener("keydown", (e) => {
@@ -79,11 +81,13 @@ class TokenListView extends TokenListener {
     this.emit("tokens_select", [token]);
   }
 
-  private onRename(token: Token, name: string) {
-    name = name.trim();
-
-    if (!name) return;
+  private onRename(token: Token, input: HTMLInputElement) {
+    const name = input.value.trim();
     if (token.name === name) return;
+    if (!name || name.length > input.maxLength || name.length < input.minLength) {
+      input.value = token.name;
+      return;
+    }
 
     this.emit("token_transform", {
       id: token.id,

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Demiplane.Util;
 using Newtonsoft.Json;
 
@@ -10,7 +9,6 @@ public abstract class Token(string id, string name, int x, int y, int w, int h, 
     public string id = id;
 
     [JsonProperty(Required = Required.Always)]
-    [StringLength(50, MinimumLength = 2)]
     public string name = name;
 
     [JsonProperty(Required = Required.Always)]
