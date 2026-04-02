@@ -187,9 +187,11 @@
             />
             <circle id="whiteboard-drawing-cursor" fill="var(--draw-color)" r="4px" stroke="var(--draw-color)" stroke-width="1" />
           </svg>
-          <div id="user-cursors" width="1024px" height="1024px">
-          </div>
-        </g>
+<foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
+  <div id="user-cursors" width="100%" height="100%"></div>
+  </div>
+</foreignObject>
+</g>
         </svg>
     </div>
 
