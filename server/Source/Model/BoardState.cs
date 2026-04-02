@@ -188,7 +188,7 @@ public class ConcurrentBoardState
         }
     }
 
-    public bool TransformToken(string id, int x, int y, int w, int h, int r)
+    public bool TransformToken(string id, string name, int x, int y, int w, int h, int r)
     {
         lock (_lock)
         {
@@ -196,6 +196,7 @@ public class ConcurrentBoardState
             if (token == null)
                 return false;
 
+            token.name = name;
             token.x = x;
             token.y = y;
             token.w = w;

@@ -141,10 +141,13 @@ public class BackgroundResponseMessage(Background background) : Message
     public Background background = background;
 }
 
-public record struct Transform(string id, int x, int y, int w, int h, int r)
+public record struct Transform(string id, string name, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
+
+    [JsonProperty(Required = Required.Always)]
+    public string name = name;
 
     [JsonProperty(Required = Required.Always)]
     public int x = x;

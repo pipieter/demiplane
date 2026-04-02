@@ -1,3 +1,4 @@
+import type { Transform } from "../models/transform";
 import type { StateListenerMap } from "../state";
 import type State from "../state";
 import type Store from "../store";
@@ -9,11 +10,17 @@ class TokenListController extends Controller<TokenListView> {
     super(store, state, view);
 
     this.view.listen("tokens_select", (selected) => this.state.selectTokens(selected));
+    this.view.listen("token_transform", (transform) => this.onRename(transform));
 
     const listens = ["token_delete", "token_create", "token_select", "token_transform"] as (keyof StateListenerMap)[];
     for (const listen of listens) {
       this.state.listen(listen, () => this.view.update(this.state.getTokens(), this.state.getSelected()));
     }
+  }
+
+  private onRename(transform: Transform) {
+    this.state.transformToken(transform);
+    this.store.send({ type: "request_transform", transform });
   }
 }
 

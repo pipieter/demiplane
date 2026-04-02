@@ -51,21 +51,49 @@ class TokenListView extends TokenListener {
     };
     const iconSymbol = symbols[token.type] ?? ["fa-solid", "fa-question"];
     const iconWeight = "border" in token ? (token.border ? "fa-regular" : "fa-solid") : "fa-solid";
-
     const iconElement = document.createElement("i");
-    const nameElement = document.createElement("p");
-
     iconElement.classList.add(iconSymbol, iconWeight);
-    nameElement.innerText = token.name;
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.value = token.name;
+    nameInput.classList.add("token-name-input");
+
+    nameInput.addEventListener("click", (e) => e.stopPropagation());
+
+    nameInput.addEventListener("change", () => {
+      this.onRename(token, nameInput.value);
+    });
+
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") nameInput.blur(); // Trigger change-event
+    });
 
     li.appendChild(iconElement);
-    li.appendChild(nameElement);
+    li.appendChild(nameInput);
 
     return li;
   }
 
   private onselect(token: Token) {
     this.emit("tokens_select", [token]);
+  }
+
+  private onRename(token: Token, name: string) {
+    name = name.trim();
+
+    if (!name) return;
+    if (token.name === name) return;
+
+    this.emit("token_transform", {
+      id: token.id,
+      name,
+      x: token.x,
+      y: token.y,
+      h: token.h,
+      w: token.w,
+      r: token.r,
+    });
   }
 }
 

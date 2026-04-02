@@ -79,7 +79,7 @@ class TransformView extends TokenListener {
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.emit("token_transform", { id: token.id, x, y, w, h, r: token.r });
+    this.emit("token_transform", { id: token.id, name: token.name, x, y, w, h, r: token.r });
   }
 
   public setSelected(tokens: Token[]) {
@@ -262,6 +262,7 @@ class TransformView extends TokenListener {
 
     this.emit("token_transform", {
       id: token.id,
+      name: token.name,
       x,
       y,
       w,
@@ -299,6 +300,7 @@ class TransformView extends TokenListener {
     this.updateBox();
     this.emit("token_transform", {
       id: token.id,
+      name: token.name,
       x: token.x,
       y: token.y,
       w: token.w,
@@ -310,7 +312,15 @@ class TransformView extends TokenListener {
   private finishTransform() {
     const token = this.selected[0];
     if (token)
-      this.emit("token_transform_finish", { id: token.id, x: token.x, y: token.y, w: token.w, h: token.h, r: token.r });
+      this.emit("token_transform_finish", {
+        id: token.id,
+        name: token.name,
+        x: token.x,
+        y: token.y,
+        w: token.w,
+        h: token.h,
+        r: token.r,
+      });
 
     document.onmousemove = null;
     document.onmouseup = null;
