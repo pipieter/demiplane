@@ -194,3 +194,20 @@ button:disabled {
   margin: 0;
   padding: 0;
 }
+
+.token-name-input {
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+  font-family: inherit;
+  cursor: text;
+  padding: 2px 4px;
+}
+
+.token-name-input:focus {
+  background: white;
+  color: black;
+  border-color: var(--info);
+  outline: none;
+  cursor: text;
+}

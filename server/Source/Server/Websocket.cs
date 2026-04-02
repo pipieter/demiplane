@@ -226,18 +226,19 @@ public partial class Server
             case TransformRequestMessage transform:
                 {
                     string id = transform.transform.id;
+                    string name = transform.transform.name;
                     int x = transform.transform.x;
                     int y = transform.transform.y;
                     int w = transform.transform.w;
                     int h = transform.transform.h;
                     int r = transform.transform.r;
-                    if (!_state.TransformToken(id, x, y, w, h, r))
+                    if (!_state.TransformToken(id, name, x, y, w, h, r))
                     {
                         _latestTokenMessages.Add(id, transform);
                         break;
                     }
 
-                    TransformResponseMessage response = new(new Transform(id, x, y, w, h, r));
+                    TransformResponseMessage response = new(new Transform(id, name, x, y, w, h, r));
                     await BroadcastMessage(response, socket);
                     break;
                 }

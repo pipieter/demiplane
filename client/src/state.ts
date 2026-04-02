@@ -73,6 +73,7 @@ class State extends Listener<StateListenerMap> {
   public transformToken(transform: Transform) {
     const token = this.tokens.find((token) => token.id === transform.id);
     if (token) {
+      token.name = transform.name;
       token.x = transform.x;
       token.y = transform.y;
       token.w = transform.w;

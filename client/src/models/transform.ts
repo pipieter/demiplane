@@ -1,5 +1,6 @@
 export interface Transform {
   id: string;
+  name: string;
   x: number;
   y: number;
   w: number;
