@@ -51,13 +51,12 @@ class TokenListView extends TokenListener {
     };
     const iconSymbol = symbols[token.type] ?? ["fa-solid", "fa-question"];
     const iconWeight = "border" in token ? (token.border ? "fa-regular" : "fa-solid") : "fa-solid";
-    const name = `Unnamed ${token.type}`; // TODO give tokens a name
 
     const iconElement = document.createElement("i");
     const nameElement = document.createElement("p");
 
     iconElement.classList.add(iconSymbol, iconWeight);
-    nameElement.innerText = name;
+    nameElement.innerText = token.name;
 
     li.appendChild(iconElement);
     li.appendChild(nameElement);
