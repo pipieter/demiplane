@@ -10,7 +10,7 @@ class TokenListController extends Controller<TokenListView> {
     super(store, state, view);
 
     this.view.listen("tokens_select", (selected) => this.state.selectTokens(selected));
-    this.view.listen("token_transform", (transform) => this.onRename(transform));
+    this.view.listen("token_transform", (transform) => this.onTransform(transform));
 
     const listens = ["token_delete", "token_create", "token_select", "token_transform"] as (keyof StateListenerMap)[];
     for (const listen of listens) {
@@ -18,7 +18,7 @@ class TokenListController extends Controller<TokenListView> {
     }
   }
 
-  private onRename(transform: Transform) {
+  private onTransform(transform: Transform) {
     this.state.transformToken(transform);
     this.store.send({ type: "request_transform", transform });
   }
