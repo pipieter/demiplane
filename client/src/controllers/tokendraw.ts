@@ -47,7 +47,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
   ) {
     const circle: TokenCircle = {
       type: "circle",
-      name: "Unnamed Circle",
+      name: "New Circle",
       id: crypto.randomUUID(),
       border,
       color,
@@ -73,7 +73,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
   ) {
     const rectangle: TokenRectangle = {
       type: "rectangle",
-      name: "Unnamed Rectangle",
+      name: "New Rectangle",
       id: crypto.randomUUID(),
       border,
       color,
@@ -91,7 +91,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
   private createLine(x1: number, y1: number, x2: number, y2: number, stroke: number, color: string) {
     const line: TokenLine = {
       type: "line",
-      name: "Unnamed Line",
+      name: "New Line",
       id: crypto.randomUUID(),
       x: x1,
       y: y1,
@@ -108,7 +108,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
   private async createFreedraw(base64: string, x: number, y: number, w: number, h: number) {
     const id = crypto.randomUUID();
-    const name = "Unnamed Drawing";
+    const name = "New Image";
 
     // Create the token locally
     const { href: localHref } = await util.createLocalImage(base64);
