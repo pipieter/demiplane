@@ -1,18 +1,16 @@
-export abstract class Listener<T> {
+export class Listener<T> {
   // eslint-disable-next-line
-  private map: Map<keyof T, any[]>;
+  private listenerMap: Map<keyof T, any[]>;
 
   constructor() {
-    this.map = new Map();
-    for (const key of this.keys()) {
-      this.map.set(key, []);
-    }
+    this.listenerMap = new Map();
   }
 
-  protected abstract keys(): (keyof T)[];
-
   private listeners<K extends keyof T>(type: K): ((value: T[K]) => void)[] {
-    return this.map.get(type) ?? [];
+    if (this.listenerMap.get(type) === undefined) {
+      this.listenerMap.set(type, []);
+    }
+    return this.listenerMap.get(type)!;
   }
 
   public listen<K extends keyof T>(type: K, listener: (value: T[K]) => void) {
@@ -21,21 +19,5 @@ export abstract class Listener<T> {
 
   public emit<K extends keyof T>(type: K, value: T[K]) {
     this.listeners(type).forEach((listener) => listener(value));
-  }
-}
-
-export abstract class ListenerContainer<L extends Listener<T>, T> {
-  private listeners: L;
-
-  constructor(listeners: L) {
-    this.listeners = listeners;
-  }
-
-  public listen<K extends keyof T>(type: K, listener: (value: T[K]) => void) {
-    this.listeners.listen(type, listener);
-  }
-
-  public emit<K extends keyof T>(type: K, value: T[K]) {
-    this.listeners.emit(type, value);
   }
 }

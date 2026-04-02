@@ -1,17 +1,11 @@
-import { Listener, ListenerContainer } from "../listener";
+import { Listener } from "../listener";
 
 interface GridViewMap {
   grid_change: { size: number; offsetX: number; offsetY: number };
   set_default_grid_locked: boolean;
 }
 
-class GridViewListeners extends Listener<GridViewMap> {
-  protected override keys(): (keyof GridViewMap)[] {
-    return ["grid_change", "set_default_grid_locked"];
-  }
-}
-
-class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
+class GridView extends Listener<GridViewMap> {
   private defaultLockedInput: HTMLInputElement;
   private sizeInput: HTMLInputElement;
   private offsetXInput: HTMLInputElement;
@@ -20,7 +14,7 @@ class GridView extends ListenerContainer<GridViewListeners, GridViewMap> {
   private path: SVGPathElement;
 
   constructor() {
-    super(new GridViewListeners());
+    super();
 
     this.defaultLockedInput = document.getElementById("grid-global-checkbox") as HTMLInputElement;
     this.sizeInput = document.getElementById("grid-size") as HTMLInputElement;
