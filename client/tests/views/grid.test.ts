@@ -23,10 +23,9 @@ describe("GridView", () => {
 
   describe("Input Handling", () => {
     test("should emit grid_change when size is updated", () => {
-      const sizeInput = document.getElementById("grid-size") as HTMLInputElement;
-      sizeInput.value = "100";
+      view.sizeInput.value = "100";
 
-      sizeInput.dispatchEvent(new Event("change"));
+      view.sizeInput.dispatchEvent(new Event("change"));
 
       expect(emitSpy).toHaveBeenCalledWith("grid_change", {
         size: 100,
@@ -36,9 +35,8 @@ describe("GridView", () => {
     });
 
     test("should emit set_default_grid_locked when checkbox changes", () => {
-      const checkbox = document.getElementById("grid-global-checkbox") as HTMLInputElement;
-      checkbox.checked = true;
-      checkbox.dispatchEvent(new Event("change"));
+      view.defaultLockedInput.checked = true;
+      view.defaultLockedInput.dispatchEvent(new Event("change"));
 
       expect(emitSpy).toHaveBeenCalledWith("set_default_grid_locked", true);
     });
@@ -52,19 +50,12 @@ describe("GridView", () => {
 
       view.set(size, x, y);
 
-      const sizeInput = document.getElementById("grid-size") as HTMLInputElement;
-      const xInput = document.getElementById("grid-offset-X") as HTMLInputElement;
-      expect(sizeInput.value).toBe("128");
-
-      expect(xInput.min).toBe("-64");
-      expect(xInput.max).toBe("64");
-
-      const pattern = document.getElementById("grid-pattern")!;
-      expect(pattern.getAttribute("width")).toBe("128px");
-      expect(pattern.getAttribute("patternTransform")).toBe("translate(10, 20)");
-
-      const path = pattern.querySelector("path")!;
-      expect(path.getAttribute("d")).toBe("M 128 0 L 0 0 0 128");
+      expect(view.sizeInput.value).toBe("128");
+      expect(view.offsetXInput.min).toBe("-64");
+      expect(view.offsetXInput.max).toBe("64");
+      expect(view.pattern.getAttribute("width")).toBe("128px");
+      expect(view.pattern.getAttribute("patternTransform")).toBe("translate(10, 20)");
+      expect(view.path.getAttribute("d")).toBe("M 128 0 L 0 0 0 128");
     });
   });
 });
