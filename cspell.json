@@ -25,6 +25,7 @@
         "tokendraw",
         "tokenedit",
         "tokenlist",
+        "vitest",
         "wwwroot",
         "xmark"
     ],
