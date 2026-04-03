@@ -1,8 +1,8 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 
-class TokenEditView extends TokenListenerContainer {
+class TokenEditView extends TokenListener {
   private editX: HTMLInputElement;
   private editY: HTMLInputElement;
   private editW: HTMLInputElement;
@@ -72,6 +72,7 @@ class TokenEditView extends TokenListenerContainer {
     if (!this.selected) return;
 
     const id = this.selected.id;
+    const name = this.selected.name;
     const x = parseInt(this.editX.value || "0");
     const y = parseInt(this.editY.value || "0");
     const r = parseInt(this.editR.value || "0");
@@ -82,7 +83,7 @@ class TokenEditView extends TokenListenerContainer {
     w = Math.max(w, 0);
     h = Math.max(h, 0);
 
-    this.emit("token_transform", { id, x, y, w, h, r });
+    this.emit("token_transform", { id, name, x, y, w, h, r });
   }
 
   public ondelete() {

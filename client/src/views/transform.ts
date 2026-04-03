@@ -1,10 +1,10 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
 import { util } from "../util";
 
-class TransformView extends TokenListenerContainer {
+class TransformView extends TokenListener {
   private grid: Grid;
 
   private container: HTMLDivElement;
@@ -79,7 +79,7 @@ class TransformView extends TokenListenerContainer {
 
     if (!util.mouseOnElement(event, this.container)) return;
 
-    this.emit("token_transform", { id: token.id, x, y, w, h, r: token.r });
+    this.emit("token_transform", { id: token.id, name: token.name, x, y, w, h, r: token.r });
   }
 
   public setSelected(tokens: Token[]) {
@@ -110,6 +110,7 @@ class TransformView extends TokenListenerContainer {
       const h = token.h + offset * 2;
 
       this.layer.style.display = "block";
+      this.lineLayer.style.display = "none";
       this.box.setAttribute("x", x.toString());
       this.box.setAttribute("y", y.toString());
       this.box.setAttribute("width", w.toString());
@@ -126,6 +127,7 @@ class TransformView extends TokenListenerContainer {
       // Line markings
       const x2 = token.x + token.w;
       const y2 = token.y + token.h;
+      this.layer.style.display = "none";
       this.lineLayer.style.display = "block";
       this.line.setAttribute("x1", token.x.toString());
       this.line.setAttribute("y1", token.y.toString());
@@ -260,6 +262,7 @@ class TransformView extends TokenListenerContainer {
 
     this.emit("token_transform", {
       id: token.id,
+      name: token.name,
       x,
       y,
       w,
@@ -297,6 +300,7 @@ class TransformView extends TokenListenerContainer {
     this.updateBox();
     this.emit("token_transform", {
       id: token.id,
+      name: token.name,
       x: token.x,
       y: token.y,
       w: token.w,
@@ -308,7 +312,15 @@ class TransformView extends TokenListenerContainer {
   private finishTransform() {
     const token = this.selected[0];
     if (token)
-      this.emit("token_transform_finish", { id: token.id, x: token.x, y: token.y, w: token.w, h: token.h, r: token.r });
+      this.emit("token_transform_finish", {
+        id: token.id,
+        name: token.name,
+        x: token.x,
+        y: token.y,
+        w: token.w,
+        h: token.h,
+        r: token.r,
+      });
 
     document.onmousemove = null;
     document.onmouseup = null;

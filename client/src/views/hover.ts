@@ -1,7 +1,7 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
-class HoverView extends TokenListenerContainer {
+class HoverView extends TokenListener {
   private objects: SVGSVGElement;
   private layer: SVGSVGElement;
   private box: SVGRectElement;

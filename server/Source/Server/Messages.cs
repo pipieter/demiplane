@@ -54,6 +54,30 @@ public class CreateRequestMessage(Token create) : Message
     public Token create = create;
 }
 
+public class Duplicate(string parentId, string childId)
+{
+    public string parentId = parentId;
+    public string childId = childId;
+}
+
+public class Point(int x, int y)
+{
+    public int x = x;
+    public int y = y;
+}
+
+public class DuplicateRequestMessage(List<Duplicate> duplicate, Point offset) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_duplicate";
+
+    [JsonProperty(Required = Required.Always)]
+    public List<Duplicate> duplicate = duplicate;
+
+    [JsonProperty(Required = Required.Always)]
+    public Point offset = offset;
+}
+
 public class CreateResponseMessage(Token create) : Message
 {
     [JsonProperty(Required = Required.Always)]
@@ -117,10 +141,13 @@ public class BackgroundResponseMessage(Background background) : Message
     public Background background = background;
 }
 
-public record struct Transform(string id, int x, int y, int w, int h, int r)
+public record struct Transform(string id, string name, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
+
+    [JsonProperty(Required = Required.Always)]
+    public string name = name;
 
     [JsonProperty(Required = Required.Always)]
     public int x = x;
@@ -213,6 +240,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
                 ["request_sync"] = typeof(SyncRequestMessage),
                 ["request_grid"] = typeof(GridRequestMessage),
                 ["request_create"] = typeof(CreateRequestMessage),
+                ["request_duplicate"] = typeof(DuplicateRequestMessage),
                 ["request_delete"] = typeof(DeleteRequestMessage),
                 ["request_transform"] = typeof(TransformRequestMessage),
                 ["request_background"] = typeof(BackgroundRequestMessage),

@@ -1,7 +1,7 @@
-import { TokenListenerContainer } from "../listeners";
+import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
-class TokenListView extends TokenListenerContainer {
+class TokenListView extends TokenListener {
   private list: HTMLUListElement;
   private checkbox: HTMLInputElement;
 
@@ -51,22 +51,53 @@ class TokenListView extends TokenListenerContainer {
     };
     const iconSymbol = symbols[token.type] ?? ["fa-solid", "fa-question"];
     const iconWeight = "border" in token ? (token.border ? "fa-regular" : "fa-solid") : "fa-solid";
-    const name = `Unnamed ${token.type}`; // TODO give tokens a name
-
     const iconElement = document.createElement("i");
-    const nameElement = document.createElement("p");
-
     iconElement.classList.add(iconSymbol, iconWeight);
-    nameElement.innerText = name;
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.value = token.name;
+    nameInput.classList.add("token-name-input");
+    nameInput.maxLength = 36;
+    nameInput.minLength = 1;
+
+    nameInput.addEventListener("click", (e) => e.stopPropagation());
+
+    nameInput.addEventListener("change", () => {
+      this.onRename(token, nameInput);
+    });
+
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") nameInput.blur(); // Trigger change-event
+    });
 
     li.appendChild(iconElement);
-    li.appendChild(nameElement);
+    li.appendChild(nameInput);
 
     return li;
   }
 
   private onselect(token: Token) {
     this.emit("tokens_select", [token]);
+  }
+
+  private onRename(token: Token, input: HTMLInputElement) {
+    const name = input.value.trim();
+    if (token.name === name) return;
+    if (!name || name.length > input.maxLength || name.length < input.minLength) {
+      input.value = token.name;
+      return;
+    }
+
+    this.emit("token_transform", {
+      id: token.id,
+      name,
+      x: token.x,
+      y: token.y,
+      h: token.h,
+      w: token.w,
+      r: token.r,
+    });
   }
 }
 

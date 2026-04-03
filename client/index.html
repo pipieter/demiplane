@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./styles/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   </head>
   <body>
@@ -48,7 +48,7 @@
           <label for="grid-global-checkbox">Enable grid-locking by default</label>
           <hr />
           <div class="tab-panel-row">
-            <label for="grid-size">Gridsize</label>
+            <label for="grid-size">Grid-size</label>
             <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
           </div>
           <div class="tab-panel-row">
@@ -175,27 +175,27 @@
             <ellipse
               id="whiteboard-drawing-circle"
               fill="none"
-              stroke="black"
+              stroke="var(--draw-color)"
               stroke-width="4px"
               style="display: none"
             />
             <rect
               id="whiteboard-drawing-rectangle"
               fill="none"
-              stroke="black"
+              stroke="var(--draw-color)"
               stroke-width="4px"
               style="display: none"
             />
-            <line id="whiteboard-drawing-line" stroke="black" stroke-width="4px" style="display: none" />
+            <line id="whiteboard-drawing-line" stroke="var(--draw-color)" stroke-width="4px" style="display: none" />
             <path
               id="whiteboard-drawing-free"
               fill="none"
-              stroke="black"
+              stroke="var(--draw-color)"
               stroke-width="10px"
               style="display: none"
               stroke-linecap="round"
             />
-            <circle id="whiteboard-drawing-cursor" fill="black" r="4px" stroke="black" stroke-width="1" />
+            <circle id="whiteboard-drawing-cursor" fill="var(--draw-color)" r="4px" stroke="var(--draw-color)" stroke-width="1" />
           </svg>
 
           <!-- Rectangular selection box -->
@@ -206,6 +206,11 @@
       </svg>
     </div>
 
+    <!-- Server Status -->
+    <div id="server-status" class="server-offline">
+      <i id="server-status-icon" class="fa-solid fa-xmark"></i>
+      <p id="server-status-text">Offline</p>
+    </div>
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

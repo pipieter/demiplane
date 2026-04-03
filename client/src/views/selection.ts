@@ -1,11 +1,11 @@
+import { TokenListener } from "../listeners";
 import calc from "../calc";
-import { TokenListenerContainer } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
 import type State from "../state";
 
-class SelectionView extends TokenListenerContainer {
+class SelectionView extends TokenListener {
   private background: SVGSVGElement;
   private selected: Token[];
   private grid: Grid;
