@@ -22,6 +22,8 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
+                  cache: 'npm'
+                  cache-dependency-path: './client/package-lock.json'
                   node-version: '24'
 
             - name: Install dependencies
@@ -42,6 +44,8 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
+                  cache: 'npm'
+                  cache-dependency-path: './client/package-lock.json'
                   node-version: '24'
 
             - name: Install dependencies
@@ -54,6 +58,7 @@ jobs:
     
     test:
       runs-on: ubuntu-latest
+      name: Vitest
       steps:
         - name: Checkout repo
           uses: actions/checkout@v4
@@ -61,6 +66,8 @@ jobs:
         - name: Set up Node.js
           uses: actions/setup-node@v4
           with:
+              cache: 'npm'
+              cache-dependency-path: './client/package-lock.json'
               node-version: '24'
 
         - name: Install dependencies
