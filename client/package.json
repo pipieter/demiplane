@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "prettier": "prettier package.json \"./src/**/*.ts\" --write",
-    "lint": "npx eslint ./src --ext .ts,.tsx"
+    "lint": "npx eslint ./src --ext .ts,.tsx",
+    "test": "vitest run"
   },
   "devDependencies": {
     "eslint": "^9.39.4",
@@ -16,7 +17,8 @@
     "prettier": "^3.8.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.1.2"
   },
   "dependencies": {
     "@types/d3-zoom": "^3.0.8",
