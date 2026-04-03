@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import State, { StateListenerMap } from "../src/state";
-import { mockUser, tokenMock } from "./mocking";
+import tokenMock, { mockUser } from "./mocking";
 import { Transform } from "../src/models/transform";
 
 describe("State Class", () => {
