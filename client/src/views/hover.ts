@@ -2,9 +2,9 @@ import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
 class HoverView extends TokenListener {
-  private objects: SVGSVGElement;
-  private layer: SVGSVGElement;
-  private box: SVGRectElement;
+  public readonly objects: SVGSVGElement;
+  public readonly layer: SVGSVGElement;
+  public readonly box: SVGRectElement;
   private hovered: Token | null;
   private observer: MutationObserver;
 

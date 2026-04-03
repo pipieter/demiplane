@@ -10,6 +10,17 @@ describe("GridView", () => {
     emitSpy = vi.spyOn(view, "emit");
   });
 
+  describe("Initialization", () => {
+    test("should find all required DOM elements", () => {
+      expect(view.defaultLockedInput).toBeDefined();
+      expect(view.sizeInput).toBeDefined();
+      expect(view.offsetXInput).toBeDefined();
+      expect(view.offsetYInput).toBeDefined();
+      expect(view.pattern).toBeDefined();
+      expect(view.path).toBeDefined();
+    });
+  });
+
   describe("Input Handling", () => {
     test("should emit grid_change when size is updated", () => {
       const sizeInput = document.getElementById("grid-size") as HTMLInputElement;

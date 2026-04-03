@@ -2,10 +2,10 @@
 
 class SidebarView {
   private selected: string | null; // Hidden if null
-  private tabs: HTMLElement[];
-  private content: HTMLElement;
-  private hideButton: HTMLButtonElement;
-  private tabButtons: HTMLButtonElement[];
+  public readonly tabs: HTMLElement[];
+  public readonly content: HTMLElement;
+  public readonly hideButton: HTMLButtonElement;
+  public readonly tabButtons: HTMLButtonElement[];
 
   constructor() {
     this.selected = null;

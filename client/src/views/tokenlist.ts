@@ -2,8 +2,8 @@ import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
 class TokenListView extends TokenListener {
-  private list: HTMLUListElement;
-  private checkbox: HTMLInputElement;
+  public readonly list: HTMLUListElement;
+  public readonly checkbox: HTMLInputElement;
 
   constructor() {
     super();

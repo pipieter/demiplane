@@ -14,23 +14,23 @@ type TokenDrawType = "circle" | "rectangle" | "freedraw" | "line";
 class TokenDrawView extends Listener<TokenDrawViewMap> {
   private grid: Grid;
 
-  private readonly layer: SVGSVGElement;
-  private readonly circle: SVGCircleElement;
-  private readonly rectangle: SVGRectElement;
-  private readonly line: SVGLineElement;
-  private readonly freedraw: SVGPathElement;
-  private readonly cursor: SVGCircleElement;
+  public readonly layer: SVGSVGElement;
+  public readonly circle: SVGCircleElement;
+  public readonly rectangle: SVGRectElement;
+  public readonly line: SVGLineElement;
+  public readonly freedraw: SVGPathElement;
+  public readonly cursor: SVGCircleElement;
 
-  private readonly circleButton: HTMLButtonElement;
-  private readonly rectangleButton: HTMLButtonElement;
-  private readonly lineButton: HTMLButtonElement;
-  private readonly freedrawButton: HTMLButtonElement;
-  private readonly tokenUploadInput: HTMLInputElement;
-  private readonly colorInput: HTMLInputElement;
-  private readonly drawButtons: Map<string, HTMLButtonElement>;
+  public readonly circleButton: HTMLButtonElement;
+  public readonly rectangleButton: HTMLButtonElement;
+  public readonly lineButton: HTMLButtonElement;
+  public readonly freedrawButton: HTMLButtonElement;
+  public readonly tokenUploadInput: HTMLInputElement;
+  public readonly colorInput: HTMLInputElement;
+  public readonly drawButtons: Map<string, HTMLButtonElement>;
 
-  private readonly borderCheckbox: HTMLInputElement;
-  private readonly borderNumber: HTMLInputElement;
+  public readonly borderCheckbox: HTMLInputElement;
+  public readonly borderNumber: HTMLInputElement;
 
   private type: TokenDrawType | null;
   private mouseDown: boolean;

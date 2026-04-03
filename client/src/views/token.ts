@@ -2,7 +2,7 @@ import type { Token } from "../models/token";
 import server from "../server";
 
 class TokenView {
-  private layer: SVGSVGElement;
+  public readonly layer: SVGSVGElement;
 
   constructor() {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;

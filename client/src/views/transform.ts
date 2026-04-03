@@ -7,17 +7,17 @@ import { util } from "../util";
 class TransformView extends TokenListener {
   private grid: Grid;
 
-  private container: HTMLDivElement;
+  public readonly container: HTMLDivElement;
   private dragOffset: Point | null = null;
 
-  private layer: SVGSVGElement;
-  private box: SVGRectElement;
-  private handles: SVGRectElement[];
-  private rotateHandle: SVGCircleElement;
-  private rotateLine: SVGLineElement;
+  public readonly layer: SVGSVGElement;
+  public readonly box: SVGRectElement;
+  public readonly handles: SVGRectElement[];
+  public readonly rotateHandle: SVGCircleElement;
+  public readonly rotateLine: SVGLineElement;
 
-  private lineLayer: SVGSVGElement;
-  private line: SVGLineElement;
+  public readonly lineLayer: SVGSVGElement;
+  public readonly line: SVGLineElement;
 
   private direction: string | null;
   private selected: Token[];
