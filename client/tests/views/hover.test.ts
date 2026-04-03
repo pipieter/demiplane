@@ -3,12 +3,10 @@ import HoverView from "../../src/views/hover";
 import TokenView from "../../src/views/token";
 import mockToken from "../mocking";
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
-import State from "../../src/state";
 
 describe("HoverView", () => {
   let view: HoverView;
   let tokenView: TokenView;
-  let state: State;
 
   let rectToken: TokenRectangle;
   let circleToken: TokenCircle;
@@ -18,7 +16,6 @@ describe("HoverView", () => {
   beforeEach(() => {
     view = new HoverView();
     tokenView = new TokenView();
-    state = new State();
 
     rectToken = mockToken.getRect({ x: 100, y: 100, r: 35 });
     circleToken = mockToken.getCircle({ x: 200, y: 200, r: -40 });
@@ -26,7 +23,6 @@ describe("HoverView", () => {
     imageToken = mockToken.getImage({ x: 400, y: 400, r: 180 });
 
     for (const token of [rectToken, circleToken, lineToken, imageToken]) {
-      state.createToken(token);
       tokenView.create(token);
       view.makeHoverable(token);
     }
