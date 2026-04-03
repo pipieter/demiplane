@@ -14,12 +14,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node
         uses: actions/setup-node@v4
         with:
-            cache: 'npm'
-            cache-dependency-path: './client/package-lock.json'
-            node-version: '24'
+          node-version: '20'
+
+      - name: Install cspell
+        run: npm install -g cspell
 
       - name: Run Spell Check
-        run: npm run cspell
+        run: cspell "**/*.{cs,md,ts,tsx,css,html}" --no-progress
