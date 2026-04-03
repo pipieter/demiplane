@@ -9,9 +9,11 @@
     "preview": "vite preview",
     "prettier": "prettier package.json \"./src/**/*.ts\" --write",
     "lint": "npx eslint ./src --ext .ts,.tsx",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cspell": "cspell **/*.{cs,md,ts,tsx,css,html}"
   },
   "devDependencies": {
+    "cspell": "^9.7.0",
     "eslint": "^9.39.4",
     "eslint-plugin-unused-imports": "^4.3.0",
     "prettier": "^3.8.1",
