@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import State from "../src/state";
 import { mockUser, tokenMock } from "./mocking";
 import { Transform } from "../src/models/transform";
@@ -6,20 +6,42 @@ import { Transform } from "../src/models/transform";
 describe("State Class", () => {
   let state: State;
 
+  let tokenCreate: Mock;
+  let tokenDelete: Mock;
+  let tokenSelect: Mock;
+  let tokenTransform: Mock;
+  let userDisconnect: Mock;
+  let gridChange: Mock;
+  let backgroundChange: Mock;
+
   beforeEach(() => {
     state = new State();
+
+    tokenCreate = vi.fn();
+    tokenDelete = vi.fn();
+    tokenSelect = vi.fn();
+    tokenTransform = vi.fn();
+    userDisconnect = vi.fn();
+    gridChange = vi.fn();
+    backgroundChange = vi.fn();
+    state.listen("token_create", tokenCreate);
+    state.listen("token_delete", tokenDelete);
+    state.listen("token_select", tokenSelect);
+    state.listen("token_transform", tokenTransform);
+    state.listen("user_disconnect", userDisconnect);
+    state.listen("grid_change", gridChange);
+    state.listen("background_change", backgroundChange);
+
   });
 
   describe("Token Management", () => {
     test("Should add token and emit token_create", () => {
       const token = tokenMock.getRect();
-      const spy = vi.fn();
 
-      state.listen("token_create", spy);
       state.createToken(token);
 
       expect(state.getTokens()).toContain(token);
-      expect(spy).toHaveBeenCalledWith(token);
+      expect(tokenCreate).toHaveBeenCalledWith(token);
     });
 
     test("Should remove tokens and emit token_delete and token_select", () => {
@@ -28,17 +50,11 @@ describe("State Class", () => {
       state.createTokens([token1, token2]);
       state.selectTokens([token1]);
 
-      const deleteSpy = vi.fn();
-      const selectSpy = vi.fn();
-
-      state.listen("token_delete", deleteSpy);
-      state.listen("token_select", selectSpy);
-
       state.removeTokens(token1.id);
 
       expect(state.getTokens()).not.toContain(token1);
-      expect(deleteSpy).toHaveBeenCalledWith([token1.id]);
-      expect(selectSpy).toHaveBeenCalledWith([[token1], []]);
+      expect(tokenDelete).toHaveBeenCalledWith([token1.id]);
+      expect(tokenSelect).toHaveBeenCalledWith([[token1], []]);
     });
 
     test("Should transform a token and emit token_transform", () => {
@@ -55,13 +71,10 @@ describe("State Class", () => {
         r: token.r + 50,
       };
 
-      const spy = vi.fn();
-      state.listen("token_transform", spy);
-
       state.transformToken(transform);
 
       const updatedToken = state.getTokens()[0];
-      expect(spy).toHaveBeenCalledWith([token, transform]);
+      expect(tokenTransform).toHaveBeenCalledWith([token, transform]);
       expect(updatedToken.name).toBe(transform.name);
       expect(updatedToken.x).toBe(transform.x);
       expect(updatedToken.y).toBe(transform.y);
@@ -84,34 +97,26 @@ describe("State Class", () => {
       const user = mockUser.getUser();
       state.setUser(user);
 
-      const spy = vi.fn();
-      state.listen("user_disconnect", spy);
-
       state.removeUser(user.id);
 
-      expect(spy).toHaveBeenCalledWith(user.id);
+      expect(userDisconnect).toHaveBeenCalledWith(user.id);
     });
   });
 
   describe("Grid and Background", () => {
     test("should update grid and emit grid_change", () => {
       const gridData = { size: 50, offset: { x: 10, y: 10 } };
-      const spy = vi.fn();
 
-      state.listen("grid_change", spy);
       state.setGrid(gridData);
 
       expect(state.grid.size).toBe(50);
-      expect(spy).toHaveBeenCalled();
+      expect(gridChange).toHaveBeenCalled();
     });
 
     test("should update background and emit background_change", () => {
-      const spy = vi.fn();
-      state.listen("background_change", spy);
-
       state.setBackground("https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?q=80&w=1000", 1000, 1000);
 
-      expect(spy).toHaveBeenCalled();
+      expect(backgroundChange).toHaveBeenCalled();
     });
   });
 });
