@@ -1,14 +1,11 @@
 using System.Collections.Concurrent;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Security.Cryptography;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
 using Demiplane.Services;
 using Demiplane.Util;
 using Microsoft.AspNetCore.Http;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Demiplane.Server;
@@ -180,7 +177,9 @@ public partial class Server
                 {
                     foreach (Duplicate copy in duplicate.duplicate)
                     {
-                        Token? clone = _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset) ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
+                        Token? clone =
+                            _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset)
+                            ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
                         CreateResponseMessage response = new(clone);
                         await BroadcastMessage(response, socket);
 
@@ -261,6 +260,19 @@ public partial class Server
                     UserChangeResponseMessage response = new(userData);
                     // Note: we also respond to the socket we communicate with
                     await BroadcastMessage(response);
+                    break;
+                }
+
+            case LayerRequestMessage layer:
+                {
+                    string id = layer.token;
+                    if (!_state.SetTokenLayer(id, layer.layer))
+                    {
+                        _latestTokenMessages.Add(id, layer);
+                        break;
+                    }
+                    LayerResponseMessage response = new(layer.layer, id);
+                    await BroadcastMessage(response, socket);
                     break;
                 }
         }

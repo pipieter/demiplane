@@ -12,13 +12,14 @@
       <aside class="sidebar-content" id="sidebar-content">
         <section id="tab-draw" class="tab-panel">
           <h2>Drawing</h2>
-          <hr>
+          <hr />
           <div class="square-button-container tab-panel-row">
             <button id="begin-circle-button" class="draw-button"><i class="fa-solid fa-circle"></i></button>
             <button id="begin-rect-button" class="draw-button"><i class="fa-solid fa-square"></i></button>
             <button id="begin-line-button" class="draw-button"><i class="fa-solid fa-minus"></i></button>
-            <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed;"><i
-                class="fa-solid fa-t"></i></button>
+            <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed">
+              <i class="fa-solid fa-t"></i>
+            </button>
             <button id="begin-drawing-button" class="draw-button"><i class="fa-solid fa-pencil"></i></button>
           </div>
           <div class="tab-panel-row color-picker-wrapper">
@@ -30,19 +31,19 @@
             <label for="draw-border-checkbox">Border</label>
             <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
             <label for="draw-border-number">Width</label>
-            </div>
-            <hr>
-            <div class="tab-panel-row">
-              <label for="upload-token-button" class="label-button">
+          </div>
+          <hr />
+          <div class="tab-panel-row">
+            <label for="upload-token-button" class="label-button">
               <i class="fa-solid fa-image"></i> Upload a token
               <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
-              </label>
+            </label>
           </div>
         </section>
 
         <section id="tab-grid" class="tab-panel" hidden>
           <h2>Grid settings</h2>
-          <hr>
+          <hr />
           <input type="checkbox" id="grid-global-checkbox" />
           <label for="grid-global-checkbox">Enable grid-locking by default</label>
           <hr />
@@ -58,7 +59,7 @@
             <label for="grid-offset-Y">Y-offset</label>
             <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
           </div>
-          <hr>
+          <hr />
           <label for="upload-background-button" class="label-button">
             <i class="fa-regular fa-image"></i> Upload background
             <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
@@ -67,7 +68,7 @@
 
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
-          <hr>
+          <hr />
           <div class="tab-panel-row">
             <label for="token-edit-x">x</label>
             <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
@@ -86,9 +87,22 @@
           </div>
           <div class="tab-panel row">
             <label for="token-edit-r">angle</label>
-            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+            <input
+              id="token-edit-r"
+              type="number"
+              name="token-edit-r"
+              min="-180"
+              max="180"
+              step="1"
+              value="0"
+              disabled
+            />
           </div>
           <button id="token-edit-delete" disabled>Delete</button>
+          <br />
+          <button id="token-edit-move-up">Move up</button>
+          <br />
+          <button id="token-edit-move-down">Move down</button>
           <hr />
           <div id="token-list-container">
             <input type="checkbox" id="token-list-checkbox" />
@@ -99,12 +113,12 @@
 
         <section id="tab-user" class="tab-panel" hidden>
           <h2>User Settings</h2>
-          <hr>
+          <hr />
           <label for="user-input-name">Name</label>
           <input id="user-input-name" type="text" name="user-input-name" />
           <label for="user-input-color">Color</label>
           <input id="user-input-color" type="color" name="user-input-color" />
-          <hr>
+          <hr />
           <ul id="user-list" class="side-menu-list"></ul>
         </section>
       </aside>
@@ -185,7 +199,13 @@
               style="display: none"
               stroke-linecap="round"
             />
-            <circle id="whiteboard-drawing-cursor" fill="var(--draw-color)" r="4px" stroke="var(--draw-color)" stroke-width="1" />
+            <circle
+              id="whiteboard-drawing-cursor"
+              fill="var(--draw-color)"
+              r="4px"
+              stroke="var(--draw-color)"
+              stroke-width="1"
+            />
           </svg>
         </g>
       </svg>

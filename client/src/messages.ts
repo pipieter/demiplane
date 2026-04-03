@@ -78,6 +78,20 @@ export interface TransformResponseMessage {
   transform: Transform;
 }
 
+/** Request to change a token's layer */
+export interface LayerRequestMessage {
+  type: "request_layer_change";
+  token: string;
+  layer: number;
+}
+
+/** Change a token's layer */
+export interface LayerResponseMessage {
+  type: "layer_change";
+  token: string;
+  layer: number;
+}
+
 /** Request the grid to be adjusted */
 export interface GridRequestMessage {
   type: "request_grid";
@@ -134,15 +148,18 @@ export type RequestMessage =
   | DuplicateRequestMessage
   | DeleteRequestMessage
   | TransformRequestMessage
+  | LayerRequestMessage
   | GridRequestMessage
   | BackgroundRequestMessage
   | UserChangeRequestMessage;
+
 export type ResponseMessage =
   | ErrorResponseMessage
   | SyncResponseMessage
   | CreateResponseMessage
   | DeleteResponseMessage
   | TransformResponseMessage
+  | LayerResponseMessage
   | GridResponseMessage
   | BackgroundResponseMessage
   | UserChangeResponseMessage

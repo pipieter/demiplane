@@ -100,6 +100,10 @@ store.listen("message", (event) => {
       state.setMe(data.me);
       break;
 
+    case "layer_change":
+      state.setTokenLayer(data.token, data.layer);
+      break;
+
     case "error":
       alert(`An error has occurred, re-syncing. '${data.message}'`);
       store.send({ type: "request_sync", secret: store.getSecretToken() });
