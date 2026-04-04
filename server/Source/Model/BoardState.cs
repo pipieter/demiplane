@@ -216,8 +216,8 @@ public class ConcurrentBoardState
             if (token == null)
                 return false;
 
-            layer = Math.Min(layer, 0);
-            layer = Math.Max(layer, _tokens.Count - 1);
+            layer = Math.Max(layer, 0);
+            layer = Math.Min(layer, _tokens.Count - 1);
             int index = _tokens.IndexOf(token);
 
             _tokens.RemoveAt(index);
