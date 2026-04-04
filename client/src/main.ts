@@ -101,7 +101,7 @@ store.listen("message", (event) => {
       break;
 
     case "layer_change":
-      state.setTokenLayer(data.token, data.layer);
+      state.setTokenLayer(data.tokenId, data.layer);
       break;
 
     case "error":

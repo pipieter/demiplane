@@ -195,7 +195,7 @@ public class LayerResponseMessage(int layer, string token) : Message
     public int layer = layer;
 
     [JsonProperty(Required = Required.Always)]
-    public string token = token;
+    public string tokenId = token;
 }
 
 public class LayerRequestMessage(int layer, string token) : Message
@@ -207,7 +207,7 @@ public class LayerRequestMessage(int layer, string token) : Message
     public int layer = layer;
 
     [JsonProperty(Required = Required.Always)]
-    public string token = token;
+    public string tokenId = token;
 }
 
 public record struct RequestUser(string secret, string name, string color)

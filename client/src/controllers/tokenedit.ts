@@ -30,7 +30,7 @@ class TokenEditController extends Controller<TokenEditView> {
 
   private onlayerchange(token: Token, layer: number) {
     this.state.setTokenLayer(token.id, layer);
-    this.store.send({ type: "request_layer_change", token: token.id, layer });
+    this.store.send({ type: "request_layer_change", tokenId: token.id, layer });
   }
 }
 

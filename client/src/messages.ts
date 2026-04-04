@@ -81,14 +81,14 @@ export interface TransformResponseMessage {
 /** Request to change a token's layer */
 export interface LayerRequestMessage {
   type: "request_layer_change";
-  token: string;
+  tokenId: string;
   layer: number;
 }
 
 /** Change a token's layer */
 export interface LayerResponseMessage {
   type: "layer_change";
-  token: string;
+  tokenId: string;
   layer: number;
 }
 

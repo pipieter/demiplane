@@ -265,7 +265,7 @@ public partial class Server
 
             case LayerRequestMessage layer:
                 {
-                    string id = layer.token;
+                    string id = layer.tokenId;
                     if (!_state.SetTokenLayer(id, layer.layer))
                     {
                         _latestTokenMessages.Add(id, layer);
