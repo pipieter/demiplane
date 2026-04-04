@@ -12,7 +12,7 @@ public class Program
 
     public static void Main(string[] args)
     {
-        Env.Load(Path.Combine("..", ".env"));
+        _ = Env.Load(Path.Combine("..", ".env"));
         CreateHostBuilder(args).Build().Run();
     }
 
@@ -21,8 +21,8 @@ public class Program
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseStartup<Server.Server>();
-                webBuilder.UseUrls(URL);
+                _ = webBuilder.UseStartup<Server.Server>();
+                _ = webBuilder.UseUrls(URL);
             });
     }
 }

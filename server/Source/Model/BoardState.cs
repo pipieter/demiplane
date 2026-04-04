@@ -18,7 +18,9 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             if (_tokens.Find(existing => existing.id == token.id) != null)
+            {
                 return false;
+            }
 
             _tokens.Add(token);
             return true;
@@ -31,7 +33,9 @@ public class ConcurrentBoardState
         {
             Token? parent = _tokens.Find(existing => existing.id == parentId) ?? _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
             if (parent == null)
+            {
                 return null;
+            }
 
             Token clone = parent.Clone();
             clone.id = childId;
@@ -49,15 +53,19 @@ public class ConcurrentBoardState
         {
             List<Token> tokensToRemove = [.. _tokens.Where(token => ids.Contains(token.id))];
             if (tokensToRemove.Count != ids.Count)
+            {
                 return false;
+            }
 
             foreach (Token token in tokensToRemove)
             {
                 if (_deletedTokens.Count >= MaxDeletedTokens)
-                    _deletedTokens.Dequeue();
+                {
+                    _ = _deletedTokens.Dequeue();
+                }
 
                 _deletedTokens.Enqueue(token);
-                _tokens.Remove(token);
+                _ = _tokens.Remove(token);
             }
             return true;
         }
@@ -67,9 +75,11 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
-            var token = _tokens.Find(token => token.id == id);
+            Token? token = _tokens.Find(token => token.id == id);
             if (token == null)
+            {
                 return false;
+            }
 
             token.x = x;
             token.y = y;
@@ -90,7 +100,9 @@ public class ConcurrentBoardState
         lock (_lock)
         {
             if (_users.Find(existing => existing.id == user.id) != null)
+            {
                 return false;
+            }
 
             _users.Add(user);
             return true;
@@ -103,7 +115,9 @@ public class ConcurrentBoardState
         {
             User? user = _users.Find(existing => existing.id == userId);
             if (user == null)
+            {
                 return false;
+            }
 
             // TODO - Currently users are in-memory only, so we just mark them as 'inactive'.
             // Down the line they could be stored externally and maybe fully deleted from the board state (Unless we need user-history of sorts.)
@@ -126,7 +140,9 @@ public class ConcurrentBoardState
         {
             User? user = GetUser(secret);
             if (user == null)
+            {
                 return null;
+            }
 
             user.isActive = true;
             user.name = name;
@@ -192,9 +208,11 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
-            var token = _tokens.Find(token => token.id == id);
+            Token? token = _tokens.Find(token => token.id == id);
             if (token == null)
+            {
                 return false;
+            }
 
             token.name = name;
             token.x = x;
