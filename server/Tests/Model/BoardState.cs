@@ -36,7 +36,7 @@ public class BoardStateTests
     public void AddingExistingTokensFails()
     {
         MockBoardState state = new();
-        Token existing = state.Tokens()[0];
+        Token existing = state.Tokens().First();
         Token token = existing.Clone();
 
         Assert.That(state.AddToken(token), Is.False);
@@ -49,5 +49,41 @@ public class BoardStateTests
         string id = "non-existing";
 
         Assert.That(state.DeleteTokens([id]), Is.False);
+    }
+
+    [Test]
+    public void DuplicateExistingTokenSucceeds()
+    {
+        MockBoardState state = new();
+
+        string childId = "child";
+        Token parent = state.Tokens().First();
+
+        Assert.That(state.DuplicateToken(parent.id, childId, new(10, 10)), !Is.Null);
+    }
+
+    [Test]
+    public void DuplicateDeletedTokenSucceeds()
+    {
+        MockBoardState state = new();
+
+        string childId = "child";
+        Token parent = state.Tokens().First();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(state.DeleteTokens([parent.id]), Is.True);
+            Assert.That(state.DuplicateToken(parent.id, childId, new(10, 10)), !Is.Null);
+        });
+    }
+
+    [Test]
+    public void DuplicateNonExistingTokenFails()
+    {
+        MockBoardState state = new();
+        string nonExistingParentId = "non-existing";
+        string id = "token";
+
+        Assert.That(state.DuplicateToken(nonExistingParentId, id, new(10, 10)), Is.Null);
     }
 }
