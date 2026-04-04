@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
+using System.Runtime.Serialization;
 using System.Text;
 using Demiplane.Messages;
 using Demiplane.Model;
@@ -24,11 +25,13 @@ public class Socket(WebSocket socket)
 
     public async Task<string> ReceiveAsync()
     {
-        var response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
+        WebSocketReceiveResult response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
         if (response.MessageType == WebSocketMessageType.Close)
+        {
             WantsToClose = true;
+        }
 
-        var message = Encoding.UTF8.GetString(_buffer, 0, response.Count);
+        string message = Encoding.UTF8.GetString(_buffer, 0, response.Count);
         return message;
     }
 
@@ -36,7 +39,7 @@ public class Socket(WebSocket socket)
     {
         string message = await ReceiveAsync();
         T body =
-            Json.Deserialize<T>(message) ?? throw new Exception($"Could not parse {typeof(T).Name} from '{message}'");
+            Json.Deserialize<T>(message) ?? throw new SerializationException($"Could not parse {typeof(T).Name} from '{message}'");
         return body;
     }
 
@@ -66,13 +69,13 @@ public partial class Server
     /// In order to catch these errors, the most recent messages that did not succeed related
     /// to each token are remembered, such that when the token does finish creating these
     /// changes can be made immediately.
-    private readonly TimedTokenMessageDictionary _latestTokenMessages = new(5000);
+    private readonly TimedTokenMessageHistory _latestTokenMessages = new(5000);
 
     private async Task HandleWebSocket(HttpContext context)
     {
         WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
         Socket socket = new(webSocket);
-        _clients.TryAdd(socket, "");
+        _ = _clients.TryAdd(socket, "");
 
         while (socket.IsOpen)
         {
@@ -81,8 +84,8 @@ public partial class Server
             {
                 string userId = _clients[socket];
                 UserDisconnectResponseMessage response = new(userId);
-                _state.DisconnectUser(userId);
-                _clients.TryRemove(socket, out _);
+                _ = _state.DisconnectUser(userId);
+                _ = _clients.TryRemove(socket, out _);
                 await socket.CloseAsync();
                 socket.Dispose();
                 await BroadcastMessage(response, socket);
@@ -107,7 +110,10 @@ public partial class Server
         foreach (Socket client in _clients.Keys)
         {
             if (client == ignoreSocket)
+            {
                 continue;
+            }
+
             await client.SendAsync(JsonConvert.SerializeObject(message));
         }
     }
@@ -115,7 +121,9 @@ public partial class Server
     private async Task ProcessMessage(Socket socket, string? message)
     {
         if (message == null)
+        {
             return;
+        }
 
         Message? body = Json.Deserialize<Message>(message);
 
@@ -130,20 +138,26 @@ public partial class Server
                     {
                         user = _state.GetUser(secret);
                         if (user == null)
+                        {
                             secret = null; // Forces creation of a new user.
+                        }
                     }
 
                     if (secret == null)
                     {
                         user = UserService.GenerateUser(_state.Users());
                         if (!_state.AddUser(user))
-                            throw new Exception("Could not register user.");
+                        {
+                            throw new InvalidOperationException("Could not register user.");
+                        }
                     }
 
                     if (user == null)
-                        throw new Exception("Failed to validate user.");
+                    {
+                        throw new KeyNotFoundException("Failed to validate user.");
+                    }
 
-                    _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
+                    _ = _clients.AddOrUpdate(socket, user.id, (key, oldValue) => user.id);
                     SyncResponseMessage syncResponse = new(
                         [.. _state.Tokens()],
                         _state.GetBackground(),
@@ -161,14 +175,18 @@ public partial class Server
             case CreateRequestMessage create:
                 {
                     if (!_state.AddToken(create.create))
-                        throw new Exception("Could not add token.");
+                    {
+                        throw new InvalidOperationException("Could not add token.");
+                    }
 
                     CreateResponseMessage response = new(create.create);
                     await BroadcastMessage(response, socket);
 
                     Message? latestTokenMessage = _latestTokenMessages.Get(create.create.id);
                     if (latestTokenMessage != null)
+                    {
                         await BroadcastMessage(latestTokenMessage, socket);
+                    }
 
                     break;
                 }
@@ -177,15 +195,15 @@ public partial class Server
                 {
                     foreach (Duplicate copy in duplicate.duplicate)
                     {
-                        Token? clone =
-                            _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset)
-                            ?? throw new Exception($"Could not duplicate token: '{copy.parentId}'");
+                        Token? clone = _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset) ?? throw new InvalidOperationException($"Could not duplicate token: '{copy.parentId}'");
                         CreateResponseMessage response = new(clone);
                         await BroadcastMessage(response, socket);
 
                         Message? latestTokenMessage = _latestTokenMessages.Get(clone.id);
                         if (latestTokenMessage != null)
+                        {
                             await BroadcastMessage(latestTokenMessage, socket);
+                        }
                     }
                     break;
                 }
@@ -194,12 +212,15 @@ public partial class Server
                 {
                     if (!_state.DeleteTokens(delete.delete))
                     {
-                        foreach (var id in delete.delete)
+                        foreach (string id in delete.delete)
+                        {
                             _latestTokenMessages.Add(id, new DeleteRequestMessage([id]));
+                        }
+
                         break;
                     }
 
-                    var response = new DeleteResponseMessage(delete.delete);
+                    DeleteResponseMessage response = new(delete.delete);
                     await BroadcastMessage(response, socket);
                     break;
                 }
@@ -207,11 +228,13 @@ public partial class Server
             case BackgroundRequestMessage background:
                 {
                     Asset asset =
-                        _assetService.Find(background.href)
+                        AssetService.Find(background.href)
                         ?? throw new FileNotFoundException($"Could not find {background.href}");
 
                     if (!Image.IsImage(asset.Path))
+                    {
                         throw new FormatException($"File at {background.href} is not an image!");
+                    }
 
                     (int width, int height) = Image.GetSize(asset.Path);
                     Background found = new(background.href, width, height);
@@ -245,7 +268,9 @@ public partial class Server
             case GridRequestMessage grid:
                 {
                     if (!_state.SetGrid(grid.grid.size, grid.grid.offset.x, grid.grid.offset.y))
-                        throw new Exception("Could not set grid.");
+                    {
+                        throw new InvalidOperationException("Could not set grid.");
+                    }
 
                     GridResponseMessage response = new(_state.GetGrid());
                     await BroadcastMessage(response, socket);
@@ -256,7 +281,7 @@ public partial class Server
                 {
                     User userData =
                         _state.EditUser(user.user.secret, user.user.name, user.user.color)
-                        ?? throw new Exception("Could not find user.");
+                        ?? throw new InvalidOperationException("Could not find user.");
                     UserChangeResponseMessage response = new(userData);
                     // Note: we also respond to the socket we communicate with
                     await BroadcastMessage(response);
@@ -275,6 +300,9 @@ public partial class Server
                     await BroadcastMessage(response, socket);
                     break;
                 }
+
+            default:
+                break;
         }
     }
 }

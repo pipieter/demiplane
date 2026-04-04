@@ -251,30 +251,26 @@ public class UserDisconnectResponseMessage(string userId) : Message
 
 public class MessageJsonConverter : Json.TypeConverter<Message>
 {
-    public override Dictionary<string, Type> TypeMap
+    public override Dictionary<string, Type> TypeMap => new()
     {
-        get =>
-            new()
-            {
-                ["error"] = typeof(ErrorResponseMessage),
-                ["sync"] = typeof(SyncResponseMessage),
-                ["grid"] = typeof(GridResponseMessage),
-                ["create"] = typeof(CreateResponseMessage),
-                ["delete"] = typeof(DeleteResponseMessage),
-                ["transform"] = typeof(TransformResponseMessage),
-                ["background"] = typeof(BackgroundResponseMessage),
-                ["user_change"] = typeof(UserChangeResponseMessage),
-                ["layer_change"] = typeof(LayerResponseMessage),
-                ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
-                ["request_sync"] = typeof(SyncRequestMessage),
-                ["request_grid"] = typeof(GridRequestMessage),
-                ["request_create"] = typeof(CreateRequestMessage),
-                ["request_duplicate"] = typeof(DuplicateRequestMessage),
-                ["request_delete"] = typeof(DeleteRequestMessage),
-                ["request_transform"] = typeof(TransformRequestMessage),
-                ["request_background"] = typeof(BackgroundRequestMessage),
-                ["request_user_change"] = typeof(UserChangeRequestMessage),
-                ["request_layer_change"] = typeof(LayerRequestMessage),
-            };
-    }
+        ["error"] = typeof(ErrorResponseMessage),
+        ["sync"] = typeof(SyncResponseMessage),
+        ["grid"] = typeof(GridResponseMessage),
+        ["create"] = typeof(CreateResponseMessage),
+        ["delete"] = typeof(DeleteResponseMessage),
+        ["transform"] = typeof(TransformResponseMessage),
+        ["background"] = typeof(BackgroundResponseMessage),
+        ["user_change"] = typeof(UserChangeResponseMessage),
+        ["layer_change"] = typeof(LayerResponseMessage),
+        ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
+        ["request_sync"] = typeof(SyncRequestMessage),
+        ["request_grid"] = typeof(GridRequestMessage),
+        ["request_create"] = typeof(CreateRequestMessage),
+        ["request_duplicate"] = typeof(DuplicateRequestMessage),
+        ["request_delete"] = typeof(DeleteRequestMessage),
+        ["request_transform"] = typeof(TransformRequestMessage),
+        ["request_background"] = typeof(BackgroundRequestMessage),
+        ["request_user_change"] = typeof(UserChangeRequestMessage),
+        ["request_layer_change"] = typeof(LayerRequestMessage),
+    };
 }

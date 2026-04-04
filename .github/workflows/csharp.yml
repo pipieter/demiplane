@@ -27,8 +27,11 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Check formatting
-        run: dotnet format --verify-no-changes
+      - name: Check analyzers
+        run: dotnet format analyzers -v d --severity error --verify-no-changes
+
+      - name: Check style
+        run: dotnet format style -v d --severity error --verify-no-changes
 
   test:
     name: Test
