@@ -230,9 +230,11 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
-            var token = _tokens.Find(token => token.id == id);
+            Token? token = _tokens.Find(token => token.id == id);
             if (token == null)
+            {
                 return false;
+            }
 
             layer = Math.Max(layer, 0);
             layer = Math.Min(layer, _tokens.Count - 1);

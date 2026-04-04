@@ -23,19 +23,19 @@ public class StateTests
             int w = 10;
             int h = 20;
             int r = i * 30;
-            _state.AddToken(new TokenCircle(id, id, color, null, x, y, w, h, r));
+            _ = _state.AddToken(new TokenCircle(id, id, color, null, x, y, w, h, r));
         }
     }
 
     [Test]
-    public void MovingTokenLayer_Succeeds()
+    public void MovingTokenLayerSucceeds()
     {
         List<Token> tokens = _state.Tokens();
         Assert.That(tokens, Is.Not.Empty);
 
         const int newLayer = 5;
         Token token = tokens[0];
-        var success = _state.SetTokenLayer(token.id, newLayer);
+        bool success = _state.SetTokenLayer(token.id, newLayer);
 
         List<Token> newTokens = _state.Tokens();
         Assert.Multiple(() =>
@@ -46,14 +46,14 @@ public class StateTests
     }
 
     [Test]
-    public void MovingNonExistentTokenLayer_Fails()
+    public void MovingNonExistentTokenLayerFails()
     {
         List<Token> tokens = _state.Tokens();
         Assert.That(tokens, Is.Not.Empty);
 
         const string fakeId = "fake-id";
         const int newLayer = 5;
-        var success = _state.SetTokenLayer(fakeId, newLayer);
+        bool success = _state.SetTokenLayer(fakeId, newLayer);
 
         Assert.That(success, Is.False);
     }
@@ -62,13 +62,13 @@ public class StateTests
     [TestCase(5, 5)]
     [TestCase(-10, 0)]
     [TestCase(100, 9)] // _state has ten tokens, which gets clamped to length - 1
-    public void MovingTokenLayerClamps_Success(int layer, int actual)
+    public void MovingTokenLayerClampsSuccess(int layer, int actual)
     {
         List<Token> tokens = _state.Tokens();
         Assert.That(tokens, Is.Not.Empty);
 
         Token token = tokens[0];
-        var success = _state.SetTokenLayer(token.id, layer);
+        bool success = _state.SetTokenLayer(token.id, layer);
         List<Token> newTokens = _state.Tokens();
 
         Assert.Multiple(() =>
