@@ -18,7 +18,9 @@ public static class Json
     public static T? Deserialize<T>(string value)
     {
         if (value.Length == 0)
+        {
             throw new JsonException("Cannot parse empty JSON string!");
+        }
 
         JsonConverter[] converters = [new TokenJsonConverter(), new MessageJsonConverter()];
         JsonSerializerSettings settings = new()
@@ -52,18 +54,19 @@ public static class Json
         {
             JObject? obj = JObject.Load(reader);
             if (obj == null)
+            {
                 return null;
+            }
 
             string? typeName = obj["type"]?.Value<string>();
 
             if (typeName == null)
+            {
                 return null;
+            }
 
             Type? type = TypeMap[typeName];
-            if (type == null)
-                return null;
-
-            return obj.ToObject(type, serializer);
+            return type == null ? null : obj.ToObject(type, serializer);
         }
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)

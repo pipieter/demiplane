@@ -15,29 +15,28 @@ public class AssetService
 
     public AssetService()
     {
-        Directory.CreateDirectory(Root);
-        Directory.CreateDirectory(ImageRoot);
+        _ = Directory.CreateDirectory(Root);
+        _ = Directory.CreateDirectory(ImageRoot);
     }
 
-    public Asset? UploadImage(string data)
+    public static Asset? UploadImage(string data)
     {
         string name = $"image-{Guid.NewGuid()}";
         string? filename = Image.SaveBase64Image(name, ImageRoot, data);
 
         if (filename == null)
+        {
             return null;
+        }
 
         string path = $"{ImageRoot}/{filename}";
         string href = $"/images/{filename}";
         return new(path, href);
     }
 
-    public Asset? Find(string href)
+    public static Asset? Find(string href)
     {
         string path = $"{Root}{href}";
-        if (!File.Exists(path))
-            return null;
-
-        return new(path, href);
+        return !File.Exists(path) ? null : new(path, href);
     }
 }

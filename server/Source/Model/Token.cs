@@ -25,7 +25,7 @@ public abstract class Token(string id, string name, int x, int y, int w, int h, 
     [JsonProperty(Required = Required.Always)]
     public int r = r;
 
-    abstract public Token Clone();
+    public abstract Token Clone();
 }
 
 public class TokenCircle(string id, string name, string color, int? border, int x, int y, int w, int h, int r) : Token(id, name, x, y, w, h, r)
@@ -95,15 +95,11 @@ public class TokenImage(string id, string name, string href, int x, int y, int w
 
 public class TokenJsonConverter : Json.TypeConverter<Token>
 {
-    public override Dictionary<string, Type> TypeMap
+    public override Dictionary<string, Type> TypeMap => new()
     {
-        get =>
-            new()
-            {
-                ["image"] = typeof(TokenImage),
-                ["circle"] = typeof(TokenCircle),
-                ["rectangle"] = typeof(TokenRectangle),
-                ["line"] = typeof(TokenLine),
-            };
-    }
+        ["image"] = typeof(TokenImage),
+        ["circle"] = typeof(TokenCircle),
+        ["rectangle"] = typeof(TokenRectangle),
+        ["line"] = typeof(TokenLine),
+    };
 }
