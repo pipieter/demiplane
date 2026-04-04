@@ -2,7 +2,7 @@ using Demiplane.Messages;
 
 namespace Demiplane.Server;
 
-public class TimedTokenMessageDictionary(long timeoutMs)
+public class TimedTokenMessageHistory(long timeoutMs)
 {
     private readonly Dictionary<string, Message> _messages = [];
     private readonly Dictionary<string, long> _timestamps = [];

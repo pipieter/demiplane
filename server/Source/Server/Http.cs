@@ -12,7 +12,7 @@ internal sealed class ImageUploadDto(string data)
 
 public partial class Server
 {
-    private async Task HandleHttpPost(HttpContext context)
+    private static async Task HandleHttpPost(HttpContext context)
     {
         if (context.Request.Path == "/images")
         {
@@ -20,10 +20,10 @@ public partial class Server
         }
     }
 
-    private async Task HandleImageUpload(HttpContext context)
+    private static async Task HandleImageUpload(HttpContext context)
     {
         context.Request.EnableBuffering();
-        using StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true);
+        using StreamReader reader = new(context.Request.Body, Encoding.UTF8, leaveOpen: true);
         string body = await reader.ReadToEndAsync();
         context.Request.Body.Position = 0; // Reset the stream position
 
@@ -42,7 +42,7 @@ public partial class Server
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = 400;
             await context.Response.WriteAsync(
-                /*lang=json,strict*/
+                                     /*lang=json,strict*/
                                      "{\"status\": \"error\", \"message\":\"Invalid or missing data field, expected string.\"}"
             );
             return;

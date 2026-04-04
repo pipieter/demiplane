@@ -1,4 +1,3 @@
-using Demiplane.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +7,6 @@ namespace Demiplane.Server;
 
 public partial class Server
 {
-    private readonly AssetService _assetService = new();
     private readonly ConcurrentBoardState _state = new();
 
     public static void ConfigureServices(IServiceCollection services)
@@ -23,7 +21,7 @@ public partial class Server
         });
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment __)
     {
         _ = app.UseWebSockets();
         _ = app.UseCors("AllowAllCors");

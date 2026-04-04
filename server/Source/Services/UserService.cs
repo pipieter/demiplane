@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using Demiplane.Model;
 
+namespace Demiplane.Services;
+
 public class UserService
 {
     public static User GenerateUser(List<User> users)
