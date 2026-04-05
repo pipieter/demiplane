@@ -86,4 +86,52 @@ public class BoardStateTests
 
         Assert.That(state.DuplicateToken(nonExistingParentId, id, new(10, 10)), Is.Null);
     }
+
+    [Test]
+    public void MovingTokenLayerSucceeds()
+    {
+        MockBoardState state = new();
+
+        const int newLayer = 5;
+        Token token = state.Tokens().First();
+        bool success = state.SetTokenLayer(token.id, newLayer);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(success, Is.True);
+            Assert.That(state.Tokens().IndexOf(token), Is.EqualTo(newLayer));
+        });
+    }
+
+    [Test]
+    public void MovingNonExistentTokenLayerFails()
+    {
+        MockBoardState state = new();
+        Assert.That(state.Tokens(), Is.Not.Empty);
+
+        const string fakeId = "fake-id";
+        const int newLayer = 5;
+        bool success = state.SetTokenLayer(fakeId, newLayer);
+
+        Assert.That(success, Is.False);
+    }
+
+    [Test]
+    [TestCase(5, 5)]
+    [TestCase(-10, 0)]
+    [TestCase(100, 12)] // _state has thirteen tokens, which gets clamped to length - 1
+    public void MovingTokenLayerClampsSuccess(int layer, int actual)
+    {
+        MockBoardState state = new();
+        Assert.That(state.Tokens(), Is.Not.Empty);
+
+        Token token = state.Tokens().First();
+        bool success = state.SetTokenLayer(token.id, layer);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(success, Is.True);
+            Assert.That(state.Tokens().IndexOf(token), Is.EqualTo(actual));
+        });
+    }
 }
