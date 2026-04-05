@@ -7,6 +7,7 @@ interface TokenListenerMap {
   token_transform_finish: Transform;
   tokens_select: Token[];
   tokens_delete: Token[];
+  token_layer_change: [Token, number];
 }
 
 export class TokenListener extends Listener<TokenListenerMap> {}

@@ -117,6 +117,19 @@ class TokenView {
         element.setAttribute("transform", `rotate(${token.r} 0 0)`);
     }
   }
+
+  public setlayer(token: Token, layer: number) {
+    const children = [...this.layer.children];
+    const element = document.getElementById(token.id) as Element;
+    const index = children.indexOf(element);
+
+    if (index < 0) return;
+
+    children.splice(index, 1);
+    children.splice(layer, 0, element);
+
+    this.layer.replaceChildren(...children);
+  }
 }
 
 export default TokenView;

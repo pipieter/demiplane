@@ -10,6 +10,7 @@ class TokenController extends Controller<TokenView> {
 
     this.state.listen("token_create", (token) => this.create(token));
     this.state.listen("token_transform", ([token, _]) => this.redraw(token));
+    this.state.listen("token_layer_change", ([token, layer]) => this.setlayer(token, layer));
     this.state.listen("token_delete", (ids) => this.remove(ids));
   }
 
@@ -23,6 +24,10 @@ class TokenController extends Controller<TokenView> {
 
   public remove(ids: string[]) {
     this.view.remove(ids);
+  }
+
+  public setlayer(token: Token, layer: number) {
+    this.view.setlayer(token, layer);
   }
 }
 

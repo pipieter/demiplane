@@ -288,6 +288,19 @@ public partial class Server
                     break;
                 }
 
+            case LayerRequestMessage layer:
+                {
+                    string id = layer.tokenId;
+                    if (!_state.SetTokenLayer(id, layer.layer))
+                    {
+                        _latestTokenMessages.Add(id, layer);
+                        break;
+                    }
+                    LayerResponseMessage response = new(layer.layer, id);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
+
             default:
                 break;
         }
