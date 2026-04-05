@@ -37,10 +37,13 @@ public class SyncResponseMessage(Token[] tokens, Background background, Grid gri
 
     [JsonProperty(Required = Required.Always)]
     public Grid grid = grid;
+
     [JsonProperty(Required = Required.Always)]
     public User[] users = users;
+
     [JsonProperty(Required = Required.Always)]
     public string secret = me.secret;
+
     [JsonProperty(Required = Required.Always)]
     public User me = me;
 }
@@ -160,6 +163,7 @@ public record struct Transform(string id, string name, int x, int y, int w, int 
 
     [JsonProperty(Required = Required.Always)]
     public int h = h;
+
     [JsonProperty(Required = Required.Always)]
     public int r = r;
 }
@@ -180,6 +184,30 @@ public class TransformResponseMessage(Transform transform) : Message
 
     [JsonProperty(Required = Required.Always)]
     public Transform transform = transform;
+}
+
+public class LayerResponseMessage(int layer, string token) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "layer_change";
+
+    [JsonProperty(Required = Required.Always)]
+    public int layer = layer;
+
+    [JsonProperty(Required = Required.Always)]
+    public string tokenId = token;
+}
+
+public class LayerRequestMessage(int layer, string token) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_layer_change";
+
+    [JsonProperty(Required = Required.Always)]
+    public int layer = layer;
+
+    [JsonProperty(Required = Required.Always)]
+    public string tokenId = token;
 }
 
 public record struct RequestUser(string secret, string name, string color)
@@ -233,6 +261,7 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
         ["transform"] = typeof(TransformResponseMessage),
         ["background"] = typeof(BackgroundResponseMessage),
         ["user_change"] = typeof(UserChangeResponseMessage),
+        ["layer_change"] = typeof(LayerResponseMessage),
         ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
         ["request_sync"] = typeof(SyncRequestMessage),
         ["request_grid"] = typeof(GridRequestMessage),
@@ -242,5 +271,6 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
         ["request_transform"] = typeof(TransformRequestMessage),
         ["request_background"] = typeof(BackgroundRequestMessage),
         ["request_user_change"] = typeof(UserChangeRequestMessage),
+        ["request_layer_change"] = typeof(LayerRequestMessage),
     };
 }

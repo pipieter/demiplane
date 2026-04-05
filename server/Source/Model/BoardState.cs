@@ -31,7 +31,9 @@ public class ConcurrentBoardState
     {
         lock (_lock)
         {
-            Token? parent = _tokens.Find(existing => existing.id == parentId) ?? _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
+            Token? parent =
+                _tokens.Find(existing => existing.id == parentId)
+                ?? _deletedTokens.FirstOrDefault(deleted => deleted.id == parentId);
             if (parent == null)
             {
                 return null;
@@ -220,6 +222,26 @@ public class ConcurrentBoardState
             token.w = w;
             token.h = h;
             token.r = r;
+            return true;
+        }
+    }
+
+    public bool SetTokenLayer(string id, int layer)
+    {
+        lock (_lock)
+        {
+            Token? token = _tokens.Find(token => token.id == id);
+            if (token == null)
+            {
+                return false;
+            }
+
+            layer = Math.Max(layer, 0);
+            layer = Math.Min(layer, _tokens.Count - 1);
+            int index = _tokens.IndexOf(token);
+
+            _tokens.RemoveAt(index);
+            _tokens.Insert(layer, token);
             return true;
         }
     }

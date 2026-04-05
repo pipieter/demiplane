@@ -15,6 +15,7 @@ export interface StateListenerMap {
   token_select: [Token[], Token[]];
   token_transform: [Token, Transform];
   token_delete: string[];
+  token_layer_change: [Token, number];
 }
 
 class State extends Listener<StateListenerMap> {
@@ -145,6 +146,23 @@ class State extends Listener<StateListenerMap> {
 
   public getViewport(): Viewport {
     return this.viewport;
+  }
+
+  public setTokenLayer(id: string, layer: number) {
+    const token = this.tokens.find((token) => token.id === id);
+    if (!token) return;
+
+    let index = this.tokens.indexOf(token);
+    index = Math.max(index, 0);
+    index = Math.min(index, this.tokens.length - 1);
+
+    const tokens = [...this.tokens];
+    tokens.splice(index, 1); // Remove the token
+    tokens.splice(layer, 0, token); // Insert the token at the layer
+
+    this.tokens = tokens;
+
+    this.emit("token_layer_change", [token, layer]);
   }
 }
 
