@@ -1,3 +1,5 @@
+import server from "./server";
+
 async function readBase64(file: File): Promise<string | null> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -48,6 +50,11 @@ async function getImageFromURLDimensions(url: string) {
 }
 
 async function createLocalImage(base64: string) {
+  if (base64.length >= server.maxFileSize) {
+    alert("File size too big!");
+    throw "File size too big!";
+  }
+
   const blob = base64ToBlob(base64);
   const href = URL.createObjectURL(blob);
   const { width, height } = await getImageFromURLDimensions(href);
