@@ -1,11 +1,11 @@
 import type { Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
-import type TokenView from "../views/token";
+import type TokenMapView from "../views/tokenmap";
 import Controller from "./controller";
 
-class TokenController extends Controller<TokenView> {
-  constructor(store: Store, state: State, view: TokenView) {
+class TokenMapController extends Controller<TokenMapView> {
+  constructor(store: Store, state: State, view: TokenMapView) {
     super(store, state, view);
 
     this.state.listen("token_create", (token) => this.create(token));
@@ -31,4 +31,4 @@ class TokenController extends Controller<TokenView> {
   }
 }
 
-export default TokenController;
+export default TokenMapController;

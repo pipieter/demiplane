@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenEditView from "../../src/views/tokenedit";
 import mocking from "../mocking";
-import TokenView from "../../src/views/token";
+import TokenMapView from "../../src/views/tokenmap";
 
 describe("TokenEditView", () => {
   let view: TokenEditView;
-  let tokenView: TokenView;
+  let tokenView: TokenMapView;
   let emitSpy: Mock;
   const tokens = mocking.token.getOneEach();
 
   beforeEach(() => {
     view = new TokenEditView();
-    tokenView = new TokenView();
+    tokenView = new TokenMapView();
     emitSpy = vi.spyOn(view, "emit");
 
     for (const token of tokens) {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import TokenView from "../../src/views/token";
+import TokenMapView from "../../src/views/tokenmap";
 import mocking from "../mocking";
 
 import { Token } from "../../src/models/token";
@@ -78,10 +78,10 @@ function assertDOMToken(token: Token) {
 }
 
 describe("TokenView", () => {
-  let view: TokenView;
+  let view: TokenMapView;
 
   beforeEach(() => {
-    view = new TokenView();
+    view = new TokenMapView();
   });
 
   describe("Initialization", () => {
