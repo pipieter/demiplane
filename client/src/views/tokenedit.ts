@@ -3,6 +3,7 @@ import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 
 class TokenEditView extends TokenListener {
+  private objectsLayer: SVGSVGElement;
   public readonly editX: HTMLInputElement;
   public readonly editY: HTMLInputElement;
   public readonly editW: HTMLInputElement;
@@ -10,11 +11,16 @@ class TokenEditView extends TokenListener {
   public readonly editR: HTMLInputElement;
   public readonly editElements: HTMLInputElement[];
   public readonly deleteButton: HTMLButtonElement;
+  private moveUpButton: HTMLButtonElement;
+  private moveDownButton: HTMLButtonElement;
+  private buttonElements: HTMLButtonElement[];
 
   private selected: Token | null;
 
   constructor() {
     super();
+
+    this.objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
 
     this.editX = document.getElementById("token-edit-x") as HTMLInputElement;
     this.editY = document.getElementById("token-edit-y") as HTMLInputElement;
@@ -22,12 +28,18 @@ class TokenEditView extends TokenListener {
     this.editH = document.getElementById("token-edit-h") as HTMLInputElement;
     this.editR = document.getElementById("token-edit-r") as HTMLInputElement;
     this.editElements = [this.editX, this.editY, this.editW, this.editH, this.editR];
+
     this.deleteButton = document.getElementById("token-edit-delete") as HTMLButtonElement;
+    this.moveUpButton = document.getElementById("token-edit-move-up") as HTMLButtonElement;
+    this.moveDownButton = document.getElementById("token-edit-move-down") as HTMLButtonElement;
+    this.buttonElements = [this.deleteButton, this.moveUpButton, this.moveDownButton];
 
     this.selected = null;
 
     this.editElements.forEach((input) => input.addEventListener("change", () => this.onchange()));
     this.deleteButton.addEventListener("click", () => this.ondelete());
+    this.moveUpButton.addEventListener("click", () => this.onmoveup());
+    this.moveDownButton.addEventListener("click", () => this.onmovedown());
   }
 
   public select(tokens: Token[]) {
@@ -55,12 +67,12 @@ class TokenEditView extends TokenListener {
 
   public disable() {
     this.editElements.forEach((element) => (element.disabled = true));
-    this.deleteButton.disabled = true;
+    this.buttonElements.forEach((element) => (element.disabled = true));
   }
 
   public enable(token: Token) {
     this.editElements.forEach((element) => (element.disabled = false));
-    this.deleteButton.disabled = false;
+    this.buttonElements.forEach((element) => (element.disabled = false));
     this.editX.value = token.x.toString();
     this.editY.value = token.y.toString();
     this.editW.value = token.w.toString();
@@ -86,10 +98,41 @@ class TokenEditView extends TokenListener {
     this.emit("token_transform", { id, name, x, y, w, h, r });
   }
 
-  public ondelete() {
+  private ondelete() {
     if (!this.selected) return;
 
     this.emit("tokens_delete", [this.selected]);
+  }
+
+  private selectedIndex() {
+    if (!this.selected) return null;
+
+    let i = 0;
+    for (const child of this.objectsLayer.children) {
+      if (child.getAttribute("id") === this.selected.id) {
+        return i;
+      }
+      i++;
+    }
+    return null;
+  }
+
+  private onmovedown() {
+    const index = this.selectedIndex();
+
+    if (!this.selected) return;
+    if (index === null) return;
+
+    this.emit("token_layer_change", [this.selected, Math.max(0, index - 1)]);
+  }
+
+  private onmoveup() {
+    const index = this.selectedIndex();
+
+    if (!this.selected) return;
+    if (index === null) return;
+
+    this.emit("token_layer_change", [this.selected, index + 1]);
   }
 }
 

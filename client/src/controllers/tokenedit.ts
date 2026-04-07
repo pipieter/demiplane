@@ -14,6 +14,7 @@ class TokenEditController extends Controller<TokenEditView> {
 
     this.view.listen("token_transform", (transform) => this.ontransform(transform));
     this.view.listen("tokens_delete", (tokens) => this.ondelete(tokens));
+    this.view.listen("token_layer_change", ([token, layer]) => this.onlayerchange(token, layer));
   }
 
   private ontransform(transform: Transform) {
@@ -25,6 +26,11 @@ class TokenEditController extends Controller<TokenEditView> {
     const ids = tokens.map((token) => token.id);
     this.state.removeTokens(ids);
     this.store.send({ type: "request_delete", delete: tokens.map((token) => token.id) });
+  }
+
+  private onlayerchange(token: Token, layer: number) {
+    this.state.setTokenLayer(token.id, layer);
+    this.store.send({ type: "request_layer_change", tokenId: token.id, layer });
   }
 }
 
