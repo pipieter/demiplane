@@ -2,9 +2,9 @@ import type { Transform } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";
 import type TransformView from "../views/transform";
-import Controller from "./controller";
+import { TokenController } from "./controller";
 
-class TransformController extends Controller<TransformView> {
+class TransformController extends TokenController<TransformView> {
   private readonly timeBetweenMessages = 50; // in milliseconds
   private timeSinceLastMessage: number;
 
@@ -13,7 +13,6 @@ class TransformController extends Controller<TransformView> {
 
     this.timeSinceLastMessage = 0;
 
-    this.view.listen("tokens_select", (tokens) => this.state.selectTokens(tokens));
     this.view.listen("token_transform", (transform) => this.ontransform(transform, false));
     this.view.listen("token_transform_finish", (transform) => this.ontransform(transform, true));
 
@@ -27,13 +26,14 @@ class TransformController extends Controller<TransformView> {
     });
   }
 
-  private ontransform(transform: Transform, force: boolean) {
+  protected override ontransform(transform: Transform, force?: boolean) {
+    // The transform controller listens to when the user moves a token on the map.
+    // In order to not spam the server, messages are sent once every so often, rather
+    // than continuously.
+
     this.state.transformToken(transform);
 
     const now = Date.now();
-
-    // Don't spam the server, only send messages once every so often
-    // If the message is forced, it is sent anyway
     if (now - this.timeSinceLastMessage < this.timeBetweenMessages && !force) {
       return;
     }
