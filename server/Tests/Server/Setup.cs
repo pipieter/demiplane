@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using Demiplane.Server;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 
@@ -7,7 +8,7 @@ namespace Demiplane.Tests;
 public class ServerTestSetup
 {
     protected IHost _server;
-    protected Server.Socket _socket;
+    protected Socket[] _sockets;
 
     [OneTimeSetUp]
     public void ServerSetUp()
@@ -22,18 +23,26 @@ public class ServerTestSetup
         _server.Dispose();
     }
 
-    [SetUp]
-    public async Task Setup()
+    private static async Task<Socket> CreateSocket()
     {
         ClientWebSocket socket = new();
         await socket.ConnectAsync(new Uri(Program.WebsocketURL), CancellationToken.None);
-        _socket = new(socket);
+        return new(socket);
+    }
+
+    [SetUp]
+    public async Task Setup()
+    {
+        _sockets = [await CreateSocket(), await CreateSocket(), await CreateSocket(), await CreateSocket()];
     }
 
     [TearDown]
     public async Task TearDown()
     {
-        await _socket.CloseAsync();
-        _socket.Dispose();
+        foreach (Socket socket in _sockets)
+        {
+            await socket.CloseAsync();
+            socket.Dispose();
+        }
     }
 }

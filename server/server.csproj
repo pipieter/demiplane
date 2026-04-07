@@ -7,9 +7,9 @@
     <StartupObject>Demiplane.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetEnv" Version="3.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.3.9" />
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>

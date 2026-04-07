@@ -1,4 +1,5 @@
 using Demiplane.Messages;
+using Demiplane.Server;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
@@ -19,11 +20,10 @@ public class InvalidMessageTests : ServerTestSetup
         "{'type': 'request_delete', 'delete': []", // This message contains an unclosed '}'
     ];
 
+    /*lang=json*/
     private static readonly string[] MissingFieldsMessages =
     [
-        /*lang=json*/
-                      "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200, 'r': 0}}",
-        /*lang=json*/
+        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200, 'r': 0}}",
         "{'type': 'request_delete'}",
     ];
 
@@ -32,10 +32,10 @@ public class InvalidMessageTests : ServerTestSetup
         "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': 5 'color': '#FF0000', 'x': 'x-value', 'y': 'y-value', 'w': 200, 'h': 200, 'r': 0}}",
     ];
 
+    /*lang=json*/
     private static readonly string[] TooManyFieldsMessage =
     [
-        /*lang=json*/
-                      "{'type': 'request_delete', 'delete': [], 'note': 'Delete these ASAP'}",
+        "{'type': 'request_delete', 'delete': [], 'note': 'Delete these ASAP'}",
     ];
 
     [Test, Timeout(5000)]
@@ -45,9 +45,10 @@ public class InvalidMessageTests : ServerTestSetup
     [TestCaseSource(nameof(TooManyFieldsMessage))]
     public async Task InvalidMessageFails(string request)
     {
-        await _socket.SendAsync(request);
+        Socket socket = _sockets[0];
+        await socket.SendAsync(request);
 
-        ErrorResponseMessage response = await _socket.ReceiveAsync<ErrorResponseMessage>();
+        ErrorResponseMessage response = await socket.ReceiveAsync<ErrorResponseMessage>();
         Assert.That(response.type, Is.EqualTo("error"));
     }
 }
