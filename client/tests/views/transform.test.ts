@@ -45,7 +45,7 @@ describe("TransformView", () => {
   });
 
   describe("Input Handling", () => {
-    test.each(tokens)("should emit 'token_transform' when dragging a $type token", (token) => {
+    test.each(tokens)("should emit 'token_continuous_transform' when dragging a $type token", (token) => {
       view.setSelected([token]);
       const element = document.getElementById(token.id)!;
       const clientX = 200;
@@ -60,7 +60,7 @@ describe("TransformView", () => {
 
       expect(emitSpy).toHaveBeenCalledWith("tokens_select", [token]);
       expect(emitSpy).toHaveBeenLastCalledWith(
-        "token_transform",
+        "token_continuous_transform",
         expect.objectContaining({
           id: token.id,
           name: token.name,

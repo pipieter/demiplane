@@ -17,18 +17,41 @@ abstract class Controller<View> {
 }
 
 export abstract class TokenController<View extends TokenListener> extends Controller<View> {
+  private lastContinuousTransformEvent: number;
+  private readonly timeBetweenContinuousTransformEvents = 50; // in milliseconds
+
   constructor(store: Store, state: State, view: View) {
     super(store, state, view);
+
+    this.lastContinuousTransformEvent = 0;
 
     this.view.listen("tokens_select", (tokens) => this.onselect(tokens));
     this.view.listen("tokens_delete", (tokens) => this.ondelete(tokens));
     this.view.listen("token_transform", (transform) => this.ontransform(transform));
-    this.view.listen("token_transform_finish", (transform) => this.ontransform(transform));
+    this.view.listen("token_continuous_transform", (transform) => this.ontransform_intermittent(transform));
     this.view.listen("token_layer_change", ([token, layer]) => this.onlayerchange(token, layer));
   }
 
   protected ontransform(transform: Transform) {
     this.state.transformToken(transform);
+    this.store.send({ type: "request_transform", transform });
+  }
+
+  protected ontransform_intermittent(transform: Transform) {
+    // Some transforms happen continuously, for example when a user drags a token on the map.
+    // In order to not spam the server, a delay is added between messages, rather than every
+    // time the event is fired. For fluid operations, the local token is still updated
+    // instantly.
+
+    this.state.transformToken(transform);
+
+    const now = Date.now();
+    const timeSinceLastEvent = now - this.lastContinuousTransformEvent;
+    if (timeSinceLastEvent < this.timeBetweenContinuousTransformEvents) {
+      return;
+    }
+
+    this.lastContinuousTransformEvent = now;
     this.store.send({ type: "request_transform", transform });
   }
 
