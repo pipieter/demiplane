@@ -74,7 +74,9 @@ function getImage(overrides: BaseOverrides & { href?: string } = {}): TokenImage
   };
 }
 
-const getOneEach = () => { return [getRect(), getCircle(), getLine(), getImage()] };
+const getOneEach = () => {
+  return [getRect(), getCircle(), getLine(), getImage()];
+};
 
 const token = { getRect, getCircle, getLine, getImage, getOneEach };
 
