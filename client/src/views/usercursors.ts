@@ -25,7 +25,8 @@ class UserCursorsView {
     const { x, y } = user.cursorPosition;
     cursor.style.opacity = "0.7";
     cursor.style.color = user.color;
-    cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    cursor.style.transform = `translate(${x}px, ${y}px)`;
+    cursor.classList.add("cursor");
   }
 }
 

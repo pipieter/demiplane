@@ -7,7 +7,8 @@
     pointer-events: none;
 }
 
-#user-cursors > * {
+.cursor {
+    margin-left: -5px; /* FontAwesome's cursor icon has a slight offset */
     transition: transform 0.1s linear;
     will-change: transform;
     position: absolute;
