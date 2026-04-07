@@ -1,15 +1,16 @@
 import type { Token } from "../models/token";
 import type State from "../state";
 import type Store from "../store";
-import type TokenView from "../views/token";
+import type TokenMapView from "../views/tokenmap";
 import Controller from "./controller";
 
-class TokenController extends Controller<TokenView> {
-  constructor(store: Store, state: State, view: TokenView) {
+class TokenMapController extends Controller<TokenMapView> {
+  constructor(store: Store, state: State, view: TokenMapView) {
     super(store, state, view);
 
     this.state.listen("token_create", (token) => this.create(token));
     this.state.listen("token_transform", ([token, _]) => this.redraw(token));
+    this.state.listen("token_layer_change", ([token, layer]) => this.setlayer(token, layer));
     this.state.listen("token_delete", (ids) => this.remove(ids));
   }
 
@@ -24,6 +25,10 @@ class TokenController extends Controller<TokenView> {
   public remove(ids: string[]) {
     this.view.remove(ids);
   }
+
+  public setlayer(token: Token, layer: number) {
+    this.view.setlayer(token, layer);
+  }
 }
 
-export default TokenController;
+export default TokenMapController;

@@ -6,9 +6,9 @@ interface BackgroundViewMap {
 }
 
 class BackgroundView extends Listener<BackgroundViewMap> {
-  public input: HTMLInputElement;
-  public image: SVGImageElement;
-  public layers: SVGSVGElement[];
+  public readonly input: HTMLInputElement;
+  public readonly image: SVGImageElement;
+  public readonly layers: SVGSVGElement[];
 
   constructor() {
     super();

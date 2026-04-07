@@ -3,10 +3,13 @@ using Newtonsoft.Json;
 
 namespace Demiplane.Model;
 
-public abstract class Token(string id, int x, int y, int w, int h, int r)
+public abstract class Token(string id, string name, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
     public string id = id;
+
+    [JsonProperty(Required = Required.Always)]
+    public string name = name;
 
     [JsonProperty(Required = Required.Always)]
     public int x = x;
@@ -22,10 +25,10 @@ public abstract class Token(string id, int x, int y, int w, int h, int r)
     [JsonProperty(Required = Required.Always)]
     public int r = r;
 
-    abstract public Token Clone();
+    public abstract Token Clone();
 }
 
-public class TokenCircle(string id, string color, int? border, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
+public class TokenCircle(string id, string name, string color, int? border, int x, int y, int w, int h, int r) : Token(id, name, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "circle";
@@ -38,11 +41,11 @@ public class TokenCircle(string id, string color, int? border, int x, int y, int
 
     public override TokenCircle Clone()
     {
-        return new(id, color, border, x, y, w, h, r);
+        return new(id, name, color, border, x, y, w, h, r);
     }
 }
 
-public class TokenRectangle(string id, string color, int? border, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
+public class TokenRectangle(string id, string name, string color, int? border, int x, int y, int w, int h, int r) : Token(id, name, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "rectangle";
@@ -55,11 +58,11 @@ public class TokenRectangle(string id, string color, int? border, int x, int y, 
 
     public override TokenRectangle Clone()
     {
-        return new(id, color, border, x, y, w, h, r);
+        return new(id, name, color, border, x, y, w, h, r);
     }
 }
 
-public class TokenLine(string id, string color, int stroke, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
+public class TokenLine(string id, string name, string color, int stroke, int x, int y, int w, int h, int r) : Token(id, name, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "line";
@@ -72,11 +75,11 @@ public class TokenLine(string id, string color, int stroke, int x, int y, int w,
 
     public override TokenLine Clone()
     {
-        return new(id, color, stroke, x, y, w, h, r);
+        return new(id, name, color, stroke, x, y, w, h, r);
     }
 }
 
-public class TokenImage(string id, string href, int x, int y, int w, int h, int r) : Token(id, x, y, w, h, r)
+public class TokenImage(string id, string name, string href, int x, int y, int w, int h, int r) : Token(id, name, x, y, w, h, r)
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "image";
@@ -86,21 +89,17 @@ public class TokenImage(string id, string href, int x, int y, int w, int h, int 
 
     public override TokenImage Clone()
     {
-        return new(id, href, x, y, w, h, r);
+        return new(id, name, href, x, y, w, h, r);
     }
 }
 
 public class TokenJsonConverter : Json.TypeConverter<Token>
 {
-    public override Dictionary<string, Type> TypeMap
+    public override Dictionary<string, Type> TypeMap => new()
     {
-        get =>
-            new()
-            {
-                ["image"] = typeof(TokenImage),
-                ["circle"] = typeof(TokenCircle),
-                ["rectangle"] = typeof(TokenRectangle),
-                ["line"] = typeof(TokenLine),
-            };
-    }
+        ["image"] = typeof(TokenImage),
+        ["circle"] = typeof(TokenCircle),
+        ["rectangle"] = typeof(TokenRectangle),
+        ["line"] = typeof(TokenLine),
+    };
 }

@@ -21,7 +21,9 @@ public class InvalidMessageTests : ServerTestSetup
 
     private static readonly string[] MissingFieldsMessages =
     [
-        "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200, 'r': 0}}",
+        /*lang=json*/
+                      "{'type': 'request_create', 'create': {'type': 'circle', 'id': '123', 'border': null,'color': '#FF0000', 'x': 200, 'h': 200, 'r': 0}}",
+        /*lang=json*/
         "{'type': 'request_delete'}",
     ];
 
@@ -32,7 +34,8 @@ public class InvalidMessageTests : ServerTestSetup
 
     private static readonly string[] TooManyFieldsMessage =
     [
-        "{'type': 'request_delete', 'delete': [], 'note': 'Delete these ASAP'}",
+        /*lang=json*/
+                      "{'type': 'request_delete', 'delete': [], 'note': 'Delete these ASAP'}",
     ];
 
     [Test, Timeout(5000)]
@@ -40,11 +43,11 @@ public class InvalidMessageTests : ServerTestSetup
     [TestCaseSource(nameof(MissingFieldsMessages))]
     [TestCaseSource(nameof(InvalidFieldMessages))]
     [TestCaseSource(nameof(TooManyFieldsMessage))]
-    public async Task InvalidMessage_Fails(string request)
+    public async Task InvalidMessageFails(string request)
     {
         await _socket.SendAsync(request);
 
-        var response = await _socket.ReceiveAsync<ErrorResponseMessage>();
+        ErrorResponseMessage response = await _socket.ReceiveAsync<ErrorResponseMessage>();
         Assert.That(response.type, Is.EqualTo("error"));
     }
 }

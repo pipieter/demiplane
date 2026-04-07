@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Demiplane.Util;
 
 public class Image
@@ -29,7 +27,9 @@ public class Image
     public static string? SaveBase64Image(string name, string directory, string base64)
     {
         if (!ExtractImageDataFromBase64(base64, out string extension, out string data))
+        {
             return null;
+        }
 
         string filename = $"{name}.{extension}";
         string path = $"{directory}/{filename}";
@@ -42,10 +42,13 @@ public class Image
     public static bool IsImage(string path)
     {
         if (!File.Exists(path))
+        {
             return false;
+        }
+
         try
         {
-            SixLabors.ImageSharp.Image.Load(path);
+            _ = SixLabors.ImageSharp.Image.Load(path);
             return true;
         }
         catch

@@ -1,8 +1,8 @@
 import type { Token } from "../models/token";
 import server from "../server";
 
-class TokenView {
-  private layer: SVGSVGElement;
+class TokenMapView {
+  public readonly layer: SVGSVGElement;
 
   constructor() {
     this.layer = document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement;
@@ -117,6 +117,19 @@ class TokenView {
         element.setAttribute("transform", `rotate(${token.r} 0 0)`);
     }
   }
+
+  public setlayer(token: Token, layer: number) {
+    const children = [...this.layer.children];
+    const element = document.getElementById(token.id) as Element;
+    const index = children.indexOf(element);
+
+    if (index < 0) return;
+
+    children.splice(index, 1);
+    children.splice(layer, 0, element);
+
+    this.layer.replaceChildren(...children);
+  }
 }
 
-export default TokenView;
+export default TokenMapView;

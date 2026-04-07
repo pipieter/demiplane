@@ -3,8 +3,8 @@ import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
 import State from "./state";
 import Store from "./store";
-import TokenView from "./views/token";
-import TokenController from "./controllers/token";
+import TokenMapView from "./views/tokenmap";
+import TokenMapController from "./controllers/tokenmap";
 import TransformController from "./controllers/transform";
 import TransformView from "./views/transform";
 import SelectionView from "./views/selection";
@@ -32,7 +32,7 @@ import UserCursorsView from "./views/usercursors";
 const state = new State();
 const store = new Store(server.url);
 
-const tokenView = new TokenView();
+const tokenView = new TokenMapView();
 const backgroundView = new BackgroundView();
 const transformView = new TransformView(state.grid);
 const selectionView = new SelectionView();
@@ -47,7 +47,7 @@ const userCursorView = new UserCursorsView();
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
-new TokenController(store, state, tokenView);
+new TokenMapController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
 new ServerStatusController(store, state, serverStatusView);
@@ -102,6 +102,10 @@ store.listen("message", (event) => {
       state.setUsers(data.users);
       store.setSecretToken(data.secret);
       state.setMe(data.me);
+      break;
+
+    case "layer_change":
+      state.setTokenLayer(data.tokenId, data.layer);
       break;
 
     case "error":

@@ -1,5 +1,6 @@
 interface AbstractToken {
   id: string;
+  name: string;
   x: number;
   y: number;
   w: number;

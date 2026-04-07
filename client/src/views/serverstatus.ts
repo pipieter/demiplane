@@ -5,9 +5,9 @@ interface ServerStatusViewMap {
 }
 
 class ServerStatusView extends Listener<ServerStatusViewMap> {
-  private container: HTMLElement;
-  private statusSymbol: HTMLElement;
-  private statusText: HTMLParagraphElement;
+  public readonly container: HTMLElement;
+  public readonly statusSymbol: HTMLElement;
+  public readonly statusText: HTMLParagraphElement;
   private isSyncing: boolean;
 
   constructor() {

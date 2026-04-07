@@ -2,7 +2,7 @@ import { TokenListener } from "../listeners";
 import type { Token } from "../models/token";
 
 class SelectionView extends TokenListener {
-  private background: SVGSVGElement;
+  public readonly background: SVGSVGElement;
   private selected: Token[];
 
   constructor() {

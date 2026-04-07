@@ -2,7 +2,7 @@ using Demiplane.Messages;
 
 namespace Demiplane.Server;
 
-public class TimedTokenMessageDictionary(long timeoutMs)
+public class TimedTokenMessageHistory(long timeoutMs)
 {
     private readonly Dictionary<string, Message> _messages = [];
     private readonly Dictionary<string, long> _timestamps = [];
@@ -28,12 +28,14 @@ public class TimedTokenMessageDictionary(long timeoutMs)
         lock (_lock)
         {
             if (!_messages.ContainsKey(token))
+            {
                 return null;
+            }
 
             if (Now() - _timestamps[token] > _timeoutMs)
             {
-                _messages.Remove(token);
-                _timestamps.Remove(token);
+                _ = _messages.Remove(token);
+                _ = _timestamps.Remove(token);
                 return null;
             }
 
