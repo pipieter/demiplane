@@ -158,7 +158,9 @@ public class ConcurrentBoardState
     {
         User? user = GetUser(secret);
         if (user == null)
+        {
             return null;
+        }
 
         user.cursorPosition = position;
         return user;
