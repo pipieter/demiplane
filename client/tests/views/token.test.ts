@@ -6,20 +6,33 @@ import { Token } from "../../src/models/token";
 
 function assertDOMToken(token: Token) {
   const drawn = document.getElementById(token.id);
-  expect(drawn).not.toBeNull();
   expect(drawn instanceof SVGElement).toBe(true);
+
+  if (token.type === "circle" || token.type === "rectangle") {
+    if (token.border) {
+      expect(drawn?.getAttribute("fill")).toBe("none");
+      expect(drawn?.getAttribute("stroke")).toBe(token.color);
+      expect(drawn?.getAttribute("stroke-width")).toBe(`${token.border}px`);
+    } else {
+      expect(drawn?.getAttribute("fill")).toBe(token.color);
+      expect(drawn?.getAttribute("stroke")).toBe("none");
+    }
+  }
 
   switch (token.type) {
     case "circle": {
+      const cx = token.x + token.w / 2;
+      const cy = token.y + token.h / 2;
+
       const borderOffset = token.border ? token.border / 2 : 0;
       const rx = token.w / 2 - borderOffset;
       const ry = token.h / 2 - borderOffset;
 
       expect(drawn?.tagName).toBe("ellipse");
-      expect(drawn?.getAttribute("cx")).toBeCloseTo(token.x + rx);
-      expect(drawn?.getAttribute("cy")).toBeCloseTo(token.y + ry);
+      expect(drawn?.getAttribute("cx")).toBeCloseTo(cx);
+      expect(drawn?.getAttribute("cy")).toBeCloseTo(cy);
       expect(drawn?.getAttribute("rx")).toBeCloseTo(rx);
-      expect(drawn?.getAttribute("rx")).toBeCloseTo(ry);
+      expect(drawn?.getAttribute("ry")).toBeCloseTo(ry);
       expect(drawn?.getAttribute("transform")).toContain(`rotate(${token.r}`);
       break;
     }
@@ -78,7 +91,7 @@ describe("TokenView", () => {
   });
 
   describe("Token Creation", () => {
-    test.each(mocking.token.getOneEach())("should be able to create $type", (token) => {
+    test.each(mocking.token.getAllVariants())("should be able to create $type ($name)", (token) => {
       const shouldBeNull = document.getElementById(token.id);
       expect(shouldBeNull).toBeNull();
 
@@ -88,7 +101,7 @@ describe("TokenView", () => {
   });
 
   describe("Token Redrawing", () => {
-    test.each(mocking.token.getOneEach())("should be able to create $type", (token) => {
+    test.each(mocking.token.getAllVariants())("should be able to create $type ($name)", (token) => {
       view.create(token);
       token.x += 100;
       token.y += 100;
@@ -102,7 +115,7 @@ describe("TokenView", () => {
   });
 
   describe("Token Deletion", () => {
-    test.each(mocking.token.getOneEach())("should remove $type from the DOM", (token) => {
+    test.each(mocking.token.getAllVariants())("should remove $type ($name) from the DOM", (token) => {
       view.create(token);
 
       expect(document.getElementById(token.id)).not.toBeNull();

@@ -32,6 +32,14 @@ describe("TokenDrawView", () => {
     emitSpy = vi.spyOn(view, "emit");
   });
 
+  const simulateDraw = (x1: number, y1: number, x2: number, y2: number) => {
+    view.layer.onmousedown!(new MouseEvent("mousedown", { buttons: 1, clientX: x1, clientY: y1 }));
+
+    view.layer.onmousemove!(new MouseEvent("mousemove", { buttons: 1, clientX: x2, clientY: y2 }));
+
+    view.layer.onmouseup!(new MouseEvent("mouseup"));
+  };
+
   describe("Initialization", () => {
     test("should find all required DOM elements", () => {
       expect(view.layer).toBeDefined();
@@ -191,6 +199,60 @@ describe("TokenDrawView", () => {
 
         expect(view.circleButton.classList).not.toContain("selected");
         expect(view.layer.style.display).toBe("none");
+      });
+    });
+
+    describe("Border Handling", () => {
+      const x1 = 0,
+        y1 = 0;
+      const x2 = 50,
+        y2 = 50;
+      const border = 6;
+
+      test.each([
+        {
+          name: "circle",
+          button: "circleButton",
+          event: "circle_create",
+        },
+        {
+          name: "rectangle",
+          button: "rectangleButton",
+          event: "rectangle_create",
+        },
+      ])("should emit $event with border value when checkbox is checked", ({ button, event }) => {
+        const targetButton = view[button as keyof TokenDrawView] as HTMLButtonElement;
+
+        view.borderCheckbox.checked = true;
+        view.borderNumber.value = border.toString();
+
+        targetButton.click();
+
+        simulateDraw(x1, y1, x2, y2);
+
+        expect(emitSpy).toHaveBeenCalledWith(
+          event,
+          expect.objectContaining({
+            border,
+            w: x2 - x1,
+            h: y2 - y1,
+          }),
+        );
+      });
+
+      test("should emit null border when checkbox is unchecked", () => {
+        view.borderCheckbox.checked = false;
+        view.borderNumber.value = border.toString();
+
+        view.rectangleButton.click();
+        simulateDraw(x1, y1, x2, y1);
+
+        expect(emitSpy).toHaveBeenCalledWith(
+          "rectangle_create",
+          expect.objectContaining({
+            border: null,
+          }),
+        );
       });
     });
   });

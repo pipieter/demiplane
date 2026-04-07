@@ -74,11 +74,20 @@ function getImage(overrides: BaseOverrides & { href?: string } = {}): TokenImage
   };
 }
 
-const getOneEach = () => {
-  return [getRect(), getCircle(), getLine(), getImage()];
+const getOneEach = (overrides: BaseOverrides = {}) => {
+  return [getRect(overrides), getCircle(overrides), getLine(overrides), getImage(overrides)];
 };
 
-const token = { getRect, getCircle, getLine, getImage, getOneEach };
+const getAllVariants = () => {
+  return [
+    ...getOneEach({ name: "Basic" }),
+    ...getOneEach({ name: "Rotated", r: 180 }),
+    getRect({ name: "Border", border: 4 }),
+    getCircle({ name: "Border", border: 4 }),
+  ];
+};
+
+const token = { getRect, getCircle, getLine, getImage, getOneEach, getAllVariants };
 
 function getUser(overrides: Partial<User> = {}): User {
   return {
