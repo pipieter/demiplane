@@ -13,6 +13,7 @@ class Store extends Listener<SocketListenerMap> {
   private socket: WebSocket;
   private secret: string | null;
   private reconnectAttempts = 0;
+  private readonly lastMessageTypeTimestamps: Map<string, number> = new Map();
 
   constructor(url: string) {
     super();
@@ -77,8 +78,18 @@ class Store extends Listener<SocketListenerMap> {
     return data.href;
   }
 
-  public send(req: RequestMessage) {
+  public send(req: RequestMessage, cooldown: number = 0) {
     if (this.socket.readyState !== WebSocket.OPEN) return;
+
+    // Check for delay
+    const type = req.type;
+    const now = Date.now();
+    const lastMessageTime = this.lastMessageTypeTimestamps.get(type) ?? 0;
+    if (now - lastMessageTime < cooldown) {
+      return;
+    }
+
+    this.lastMessageTypeTimestamps.set(type, now);
     this.socket.send(JSON.stringify(req));
   }
 
