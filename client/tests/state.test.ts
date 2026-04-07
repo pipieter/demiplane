@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import State, { StateListenerMap } from "../src/state";
-import tokenMock, { mockUser } from "./mocking";
+import mocking from "./mocking";
 import { Transform } from "../src/models/transform";
 
 describe("State Class", () => {
@@ -33,7 +33,7 @@ describe("State Class", () => {
 
   describe("Token Management", () => {
     test("Should add token and emit token_create", () => {
-      const token = tokenMock.getRect();
+      const token = mocking.token.getRect();
 
       state.createToken(token);
 
@@ -42,8 +42,8 @@ describe("State Class", () => {
     });
 
     test("Should remove tokens and emit token_delete and token_select", () => {
-      const token1 = tokenMock.getCircle();
-      const token2 = tokenMock.getLine();
+      const token1 = mocking.token.getCircle();
+      const token2 = mocking.token.getLine();
       state.createTokens([token1, token2]);
       state.selectTokens([token1]);
 
@@ -55,7 +55,7 @@ describe("State Class", () => {
     });
 
     test("Should transform a token and emit token_transform", () => {
-      const token = tokenMock.getImage();
+      const token = mocking.token.getImage();
       state.createToken(token);
 
       const transform: Transform = {
@@ -83,7 +83,7 @@ describe("State Class", () => {
 
   describe("User Management", () => {
     test("Should set me and track the user correctly", () => {
-      const me = mockUser.getUser();
+      const me = mocking.user.getUser();
       state.setMe(me);
 
       expect(state.getMe()).toEqual(me);
@@ -91,7 +91,7 @@ describe("State Class", () => {
     });
 
     test("should emit user_disconnect when a user is removed", () => {
-      const user = mockUser.getUser();
+      const user = mocking.user.getUser();
       state.setUser(user);
 
       state.removeUser(user.id);

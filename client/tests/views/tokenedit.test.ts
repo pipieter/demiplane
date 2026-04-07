@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenEditView from "../../src/views/tokenedit";
-import tokenMock from "../mocking";
+import mocking from "../mocking";
 
 describe("TokenEditView", () => {
   let view: TokenEditView;
   let emitSpy: Mock;
-  const tokens = [tokenMock.getRect(), tokenMock.getCircle(), tokenMock.getLine(), tokenMock.getImage()];
+  const tokens = mocking.token.getOneEach();
 
   beforeEach(() => {
     view = new TokenEditView();

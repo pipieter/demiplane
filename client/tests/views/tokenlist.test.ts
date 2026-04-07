@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenListView from "../../src/views/tokenlist";
-import tokenMock from "../mocking";
+import mocking from "../mocking";
 
 describe("TokenListView", () => {
   let view: TokenListView;
   let emitSpy: Mock;
-  const tokens = [tokenMock.getRect(), tokenMock.getCircle()];
+  const tokens = [mocking.token.getRect(), mocking.token.getCircle()];
 
   beforeEach(() => {
     view = new TokenListView();

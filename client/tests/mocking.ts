@@ -74,8 +74,9 @@ function getImage(overrides: BaseOverrides & { href?: string } = {}): TokenImage
   };
 }
 
-const tokenMock = { getRect, getCircle, getLine, getImage };
-export default tokenMock;
+const getOneEach = () => { return [getRect(), getCircle(), getLine(), getImage()] };
+
+const token = { getRect, getCircle, getLine, getImage, getOneEach };
 
 function getUser(overrides: Partial<User> = {}): User {
   return {
@@ -86,4 +87,7 @@ function getUser(overrides: Partial<User> = {}): User {
   };
 }
 
-export const mockUser = { getUser };
+export const user = { getUser };
+
+const mocking = { user, token };
+export default mocking;

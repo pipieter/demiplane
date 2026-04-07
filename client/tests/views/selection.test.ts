@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import SelectionView from "../../src/views/selection";
 import TokenView from "../../src/views/token";
 import State from "../../src/state";
-import mockToken from "../mocking";
+import mocking from "../mocking";
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 
 describe("SelectionView", () => {
@@ -22,10 +22,10 @@ describe("SelectionView", () => {
     state = new State();
     emitSpy = vi.spyOn(view, "emit");
 
-    rectToken = mockToken.getRect({ x: 100, y: 100, r: 35 });
-    circleToken = mockToken.getCircle({ x: 200, y: 200, r: -40 });
-    lineToken = mockToken.getLine({ x: 300, y: 300, w: 120, h: 0 });
-    imageToken = mockToken.getImage({ x: 400, y: 400, r: 180 });
+    rectToken = mocking.token.getRect({ x: 100, y: 100, r: 35 });
+    circleToken = mocking.token.getCircle({ x: 200, y: 200, r: -40 });
+    lineToken = mocking.token.getLine({ x: 300, y: 300, w: 120, h: 0 });
+    imageToken = mocking.token.getImage({ x: 400, y: 400, r: 180 });
 
     for (const token of [rectToken, circleToken, lineToken, imageToken]) {
       state.createToken(token);

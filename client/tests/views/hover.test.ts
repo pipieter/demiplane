@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import HoverView from "../../src/views/hover";
 import TokenView from "../../src/views/token";
-import mockToken from "../mocking";
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
+import mocking from "../mocking";
 
 describe("HoverView", () => {
   let view: HoverView;
@@ -17,10 +17,10 @@ describe("HoverView", () => {
     view = new HoverView();
     tokenView = new TokenView();
 
-    rectToken = mockToken.getRect({ x: 100, y: 100, r: 35 });
-    circleToken = mockToken.getCircle({ x: 200, y: 200, r: -40 });
-    lineToken = mockToken.getLine({ x: 300, y: 300, w: 120, h: 0 });
-    imageToken = mockToken.getImage({ x: 400, y: 400, r: 180 });
+    rectToken = mocking.token.getRect({ x: 100, y: 100, r: 35 });
+    circleToken = mocking.token.getCircle({ x: 200, y: 200, r: -40 });
+    lineToken = mocking.token.getLine({ x: 300, y: 300, w: 120, h: 0 });
+    imageToken = mocking.token.getImage({ x: 400, y: 400, r: 180 });
 
     for (const token of [rectToken, circleToken, lineToken, imageToken]) {
       tokenView.create(token);
