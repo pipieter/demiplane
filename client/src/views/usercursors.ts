@@ -1,7 +1,7 @@
 import type { User } from "../models/user";
 
 class UserCursorsView {
-  private layer: HTMLElement;
+  public readonly layer: HTMLElement;
 
   constructor() {
     this.layer = document.getElementById("user-cursors") as unknown as HTMLElement;
@@ -13,7 +13,7 @@ class UserCursorsView {
     if (!cursor) {
       cursor = document.createElement("i");
       cursor.id = id;
-      cursor.classList.add("fa-solid", "fa-arrow-pointer");
+      cursor.classList.add("fa-solid", "fa-arrow-pointer", "cursor");
       this.layer.appendChild(cursor);
     }
 
@@ -26,7 +26,6 @@ class UserCursorsView {
     cursor.style.opacity = "0.7";
     cursor.style.color = user.color;
     cursor.style.transform = `translate(${x}px, ${y}px)`;
-    cursor.classList.add("cursor");
   }
 }
 

@@ -94,6 +94,7 @@ function getUser(overrides: Partial<User> = {}): User {
     id: crypto.randomUUID(),
     name: "User",
     color: "#ffffff",
+    cursorPosition: { x: 100, y: 100 },
     ...overrides,
   };
 }
