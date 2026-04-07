@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import SelectionView from "../../src/views/selection";
-import TokenView from "../../src/views/token";
+import TokenMapView from "../../src/views/tokenmap";
 import mocking from "../mocking";
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 
 describe("SelectionView", () => {
   let view: SelectionView;
-  let tokenView: TokenView;
+  let tokenView: TokenMapView;
   let emitSpy: Mock;
 
   let rectToken: TokenRectangle;
@@ -16,7 +16,7 @@ describe("SelectionView", () => {
 
   beforeEach(() => {
     view = new SelectionView();
-    tokenView = new TokenView();
+    tokenView = new TokenMapView();
     emitSpy = vi.spyOn(view, "emit");
 
     rectToken = mocking.token.getRect({ x: 100, y: 100, r: 35 });

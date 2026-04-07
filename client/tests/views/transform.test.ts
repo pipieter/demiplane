@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TransformView from "../../src/views/transform";
 import Grid from "../../src/models/grid";
 import Viewport from "../../src/models/viewport";
-import TokenView from "../../src/views/token";
+import TokenMapView from "../../src/views/tokenmap";
 import { Token } from "../../src/models/token";
 import mocking from "../mocking";
 import { util } from "../../src/util";
@@ -11,7 +11,7 @@ describe("TransformView", () => {
   let viewport: Viewport;
   let grid: Grid;
   let view: TransformView;
-  let tokenView: TokenView;
+  let tokenView: TokenMapView;
   let emitSpy: Mock;
 
   const tokens: Token[] = mocking.token.getOneEach();
@@ -20,7 +20,7 @@ describe("TransformView", () => {
     viewport = new Viewport();
     grid = new Grid(viewport);
     view = new TransformView(grid);
-    tokenView = new TokenView();
+    tokenView = new TokenMapView();
     emitSpy = vi.spyOn(view, "emit");
 
     for (const token of tokens) {
@@ -45,7 +45,7 @@ describe("TransformView", () => {
   });
 
   describe("Input Handling", () => {
-    test.each(tokens)("should emit 'token_transform' when dragging a $type token", (token) => {
+    test.each(tokens)("should emit 'token_continuous_transform' when dragging a $type token", (token) => {
       view.setSelected([token]);
       const element = document.getElementById(token.id)!;
       const clientX = 200;
@@ -60,7 +60,7 @@ describe("TransformView", () => {
 
       expect(emitSpy).toHaveBeenCalledWith("tokens_select", [token]);
       expect(emitSpy).toHaveBeenLastCalledWith(
-        "token_transform",
+        "token_continuous_transform",
         expect.objectContaining({
           id: token.id,
           name: token.name,

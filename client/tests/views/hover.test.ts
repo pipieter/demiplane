@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import HoverView from "../../src/views/hover";
-import TokenView from "../../src/views/token";
+import TokenMapView from "../../src/views/tokenmap";
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 import mocking from "../mocking";
 
 describe("HoverView", () => {
   let view: HoverView;
-  let tokenView: TokenView;
+  let tokenView: TokenMapView;
 
   let rectToken: TokenRectangle;
   let circleToken: TokenCircle;
@@ -15,7 +15,7 @@ describe("HoverView", () => {
 
   beforeEach(() => {
     view = new HoverView();
-    tokenView = new TokenView();
+    tokenView = new TokenMapView();
 
     rectToken = mocking.token.getRect({ x: 100, y: 100, r: 35 });
     circleToken = mocking.token.getCircle({ x: 200, y: 200, r: -40 });

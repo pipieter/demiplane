@@ -1,7 +1,7 @@
 import type { Token } from "../models/token";
 import server from "../server";
 
-class TokenView {
+class TokenMapView {
   public readonly layer: SVGSVGElement;
 
   constructor() {
@@ -132,4 +132,4 @@ class TokenView {
   }
 }
 
-export default TokenView;
+export default TokenMapView;
