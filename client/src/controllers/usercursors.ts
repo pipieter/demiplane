@@ -43,8 +43,6 @@ class UserCursorController extends Controller<UserCursorsView> {
   }
 
   updatePosition(evt: MouseEvent) {
-    // TODO Send null if out of whiteboard-pos
-    // const position = { x: evt.clientX, y: evt.clientY };
     const position = this.state.grid.getCoordinates(evt);
     this.emitPosition(position);
   }
