@@ -1,5 +1,6 @@
 import { Listener } from "./listener";
 import type { RequestMessage } from "./messages";
+import server from "./server";
 
 export interface SocketListenerMap {
   open: Event;
@@ -55,6 +56,8 @@ class Store extends Listener<SocketListenerMap> {
   }
 
   public async uploadImage(base64: string): Promise<string> {
+    if (base64.length >= server.maxFileSize) throw `File size too big!`;
+
     const url = `${this.url}/images`;
     const body = JSON.stringify({ data: base64 });
     const options = {

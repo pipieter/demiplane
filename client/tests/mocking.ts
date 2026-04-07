@@ -1,97 +1,104 @@
 import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../src/models/token";
 import { User } from "../src/models/user";
 
-function getRect(
-  name = "Test Rect",
-  border: number | null = null,
-  x = 0,
-  y = 0,
-  w = 64,
-  h = 64,
-  r = 0,
-): TokenRectangle {
+type BaseOverrides = {
+  name?: string;
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
+  r?: number;
+  color?: string;
+};
+
+function getRect(overrides: BaseOverrides & { border?: number | null } = {}): TokenRectangle {
   return {
     id: crypto.randomUUID(),
-    name,
+    name: "Test Rect",
     type: "rectangle",
     color: "#ff00ff",
-    border,
-    x,
-    y,
-    w,
-    h,
-    r,
+    border: null,
+    x: 0,
+    y: 0,
+    w: 64,
+    h: 64,
+    r: 0,
+    ...overrides,
   };
 }
 
-function getCircle(
-  name = "Test Circle",
-  border: number | null = null,
-  x = 0,
-  y = 0,
-  w = 64,
-  h = 64,
-  r = 0,
-): TokenCircle {
+function getCircle(overrides: BaseOverrides & { border?: number | null } = {}): TokenCircle {
   return {
     id: crypto.randomUUID(),
-    name,
+    name: "Test Circle",
     type: "circle",
     color: "#00ffff",
-    border,
-    x,
-    y,
-    w,
-    h,
-    r,
+    border: null,
+    x: 0,
+    y: 0,
+    w: 64,
+    h: 64,
+    r: 0,
+    ...overrides,
   };
 }
 
-function getLine(name = "Test Line", stroke = 4, x = 0, y = 0, w = 64, h = 64, r = 0): TokenLine {
+function getLine(overrides: BaseOverrides & { stroke?: number } = {}): TokenLine {
   return {
     id: crypto.randomUUID(),
-    name,
+    name: "Test Line",
     type: "line",
     color: "#ffff00",
-    stroke,
-    x,
-    y,
-    w,
-    h,
-    r,
+    stroke: 4,
+    x: 0,
+    y: 0,
+    w: 64,
+    h: 64,
+    r: 0,
+    ...overrides,
   };
 }
 
-function getImage(
-  name = "Test Circle",
-  href = "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?q=80&w=200",
-  x = 0,
-  y = 0,
-  w = 64,
-  h = 64,
-  r = 0,
-): TokenImage {
+function getImage(overrides: BaseOverrides & { href?: string } = {}): TokenImage {
   return {
     id: crypto.randomUUID(),
-    name,
+    name: "Test Image",
     type: "image",
-    href,
-    x,
-    y,
-    w,
-    h,
-    r,
+    href: "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?q=80&w=200",
+    x: 0,
+    y: 0,
+    w: 64,
+    h: 64,
+    r: 0,
+    ...overrides,
   };
 }
 
-export const tokenMock = { getRect, getCircle, getLine, getImage };
+const getOneEach = (overrides: BaseOverrides = {}) => {
+  return [getRect(overrides), getCircle(overrides), getLine(overrides), getImage(overrides)];
+};
 
-function getUser(name = "User", color = "#ffffff"): User {
+const getAllVariants = () => {
+  return [
+    ...getOneEach({ name: "Basic" }),
+    ...getOneEach({ name: "Rotated", r: 180 }),
+    getRect({ name: "Border", border: 4 }),
+    getCircle({ name: "Border", border: 4 }),
+  ];
+};
+
+const token = { getRect, getCircle, getLine, getImage, getOneEach, getAllVariants };
+
+function getUser(overrides: Partial<User> = {}): User {
   return {
     id: crypto.randomUUID(),
-    name,
-    color,
+    name: "User",
+    color: "#ffffff",
+    ...overrides,
   };
 }
 
-export const mockUser = { getUser };
+export const user = { getUser };
+
+const mocking = { user, token };
+export default mocking;

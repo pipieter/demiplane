@@ -6,12 +6,12 @@ interface GridViewMap {
 }
 
 class GridView extends Listener<GridViewMap> {
-  private defaultLockedInput: HTMLInputElement;
-  private sizeInput: HTMLInputElement;
-  private offsetXInput: HTMLInputElement;
-  private offsetYInput: HTMLInputElement;
-  private pattern: SVGPatternElement;
-  private path: SVGPathElement;
+  public readonly defaultLockedInput: HTMLInputElement;
+  public readonly sizeInput: HTMLInputElement;
+  public readonly offsetXInput: HTMLInputElement;
+  public readonly offsetYInput: HTMLInputElement;
+  public readonly pattern: SVGPatternElement;
+  public readonly path: SVGPathElement;
 
   constructor() {
     super();
