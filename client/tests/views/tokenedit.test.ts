@@ -1,26 +1,39 @@
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenEditView from "../../src/views/tokenedit";
 import mocking from "../mocking";
+import TokenView from "../../src/views/token";
 
 describe("TokenEditView", () => {
   let view: TokenEditView;
+  let tokenView: TokenView;
   let emitSpy: Mock;
   const tokens = mocking.token.getOneEach();
 
   beforeEach(() => {
     view = new TokenEditView();
+    tokenView = new TokenView();
     emitSpy = vi.spyOn(view, "emit");
+
+    for (const token of tokens) {
+      tokenView.create(token);
+    }
   });
 
   describe("Initialization", () => {
     test("should find all required DOM elements", () => {
+      expect(view.objectsLayer).toBeDefined();
+
       expect(view.editX).toBeDefined();
       expect(view.editY).toBeDefined();
       expect(view.editW).toBeDefined();
       expect(view.editH).toBeDefined();
       expect(view.editR).toBeDefined();
       expect(view.editElements.length).toBe(5);
+
       expect(view.deleteButton).toBeDefined();
+      expect(view.moveDownButton).toBeDefined();
+      expect(view.moveUpButton).toBeDefined();
+      expect(view.buttonElements.length).toBe(3);
     });
   });
 
@@ -112,6 +125,52 @@ describe("TokenEditView", () => {
 
         expect(emitSpy).toHaveBeenCalledWith("tokens_delete", [target]);
       });
+    });
+  });
+
+  describe("Sanitization", () => {
+    test("should enforce minimum dimensions of 0 on change", () => {
+      const target = tokens[0];
+      view.select([target]);
+
+      view.editW.value = "-50";
+      view.editW.dispatchEvent(new Event("change"));
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "token_transform",
+        expect.objectContaining({
+          w: 0,
+        }),
+      );
+    });
+  });
+
+  describe("Layer Manipulation", () => {
+    test("should emit 'token_layer_change' with incremented index when move up is clicked", () => {
+      const target = tokens[0];
+      view.select([target]);
+
+      view.moveUpButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith("token_layer_change", [target, 1]);
+    });
+
+    test("should emit 'token_layer_change' with decremented index when move down is clicked", () => {
+      const target = tokens[1];
+      view.select([target]);
+
+      view.moveDownButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith("token_layer_change", [target, 0]);
+    });
+
+    test("should not allow index to drop below 0 when moving down", () => {
+      const target = tokens[0];
+      view.select([target]);
+
+      view.moveDownButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith("token_layer_change", [target, 0]);
     });
   });
 });
