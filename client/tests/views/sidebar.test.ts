@@ -3,6 +3,7 @@ import SidebarView from "../../src/views/sidebar";
 
 describe("SidebarView", () => {
   let view: SidebarView;
+  const tabs = ["draw", "grid", "token", "user"]; // Can't be defined dynamically due to how vitest works.
 
   beforeEach(() => {
     view = new SidebarView();
@@ -27,8 +28,6 @@ describe("SidebarView", () => {
   });
 
   describe("Input Handling", () => {
-    const tabs = ["draw", "grid", "token", "user"]; // TODO get these from the buttons.
-
     test.each(tabs)("clicking the %s-button should show its panel and hide others", (tabName) => {
       const btn = document.querySelector(`[data-tab="${tabName}"]`) as HTMLButtonElement;
       const tab = document.getElementById(`tab-${tabName}`) as HTMLElement;
