@@ -6,9 +6,9 @@ interface UserViewMap {
 }
 
 class UserView extends Listener<UserViewMap> {
-  private nameInput: HTMLInputElement;
-  private colorInput: HTMLInputElement;
-  private userList: HTMLUListElement;
+  public readonly nameInput: HTMLInputElement;
+  public readonly colorInput: HTMLInputElement;
+  public readonly userList: HTMLUListElement;
 
   constructor() {
     super();

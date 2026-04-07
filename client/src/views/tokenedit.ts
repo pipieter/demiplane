@@ -3,17 +3,17 @@ import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 
 class TokenEditView extends TokenListener {
-  private objectsLayer: SVGSVGElement;
-  private editX: HTMLInputElement;
-  private editY: HTMLInputElement;
-  private editW: HTMLInputElement;
-  private editH: HTMLInputElement;
-  private editR: HTMLInputElement;
-  private editElements: HTMLInputElement[];
-  private deleteButton: HTMLButtonElement;
-  private moveUpButton: HTMLButtonElement;
-  private moveDownButton: HTMLButtonElement;
-  private buttonElements: HTMLButtonElement[];
+  public readonly objectsLayer: SVGSVGElement;
+  public readonly editX: HTMLInputElement;
+  public readonly editY: HTMLInputElement;
+  public readonly editW: HTMLInputElement;
+  public readonly editH: HTMLInputElement;
+  public readonly editR: HTMLInputElement;
+  public readonly editElements: HTMLInputElement[];
+  public readonly deleteButton: HTMLButtonElement;
+  public readonly moveUpButton: HTMLButtonElement;
+  public readonly moveDownButton: HTMLButtonElement;
+  public readonly buttonElements: HTMLButtonElement[];
 
   private selected: Token | null;
 
