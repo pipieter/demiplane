@@ -13,9 +13,6 @@ class TransformController extends TokenController<TransformView> {
 
     this.timeSinceLastMessage = 0;
 
-    this.view.listen("token_transform", (transform) => this.ontransform(transform, false));
-    this.view.listen("token_transform_finish", (transform) => this.ontransform(transform, true));
-
     this.state.listen("token_select", ([_, selected]) => this.view.setSelected(selected));
     this.state.listen("token_create", (token) => this.view.makeDraggable(token));
     // It is possible for someone else to transform our current selection. In this case

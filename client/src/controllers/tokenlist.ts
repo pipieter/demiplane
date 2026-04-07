@@ -8,8 +8,6 @@ class TokenListController extends TokenController<TokenListView> {
   constructor(store: Store, state: State, view: TokenListView) {
     super(store, state, view);
 
-    this.view.listen("tokens_select", (selected) => this.state.selectTokens(selected));
-
     // Bit inefficient, but should be fine
     const listens = [
       "token_delete",
