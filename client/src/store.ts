@@ -78,14 +78,14 @@ class Store extends Listener<SocketListenerMap> {
     return data.href;
   }
 
-  public send(req: RequestMessage, delayBetween: number = 0) {
+  public send(req: RequestMessage, cooldown: number = 0) {
     if (this.socket.readyState !== WebSocket.OPEN) return;
 
     // Check for delay
     const type = req.type;
     const now = Date.now();
-    const timeSinceLastMessage = this.lastMessageTypeTimestamps.get(type) ?? 0;
-    if (now - timeSinceLastMessage < delayBetween) {
+    const lastMessageTime = this.lastMessageTypeTimestamps.get(type) ?? 0;
+    if (now - lastMessageTime < cooldown) {
       return;
     }
 
