@@ -73,22 +73,6 @@ public class ConcurrentBoardState
         }
     }
 
-    public bool MoveToken(string id, int x, int y)
-    {
-        lock (_lock)
-        {
-            Token? token = _tokens.Find(token => token.id == id);
-            if (token == null)
-            {
-                return false;
-            }
-
-            token.x = x;
-            token.y = y;
-            return true;
-        }
-    }
-
     public List<Token> Tokens()
     {
         lock (_lock)
