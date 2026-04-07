@@ -17,13 +17,8 @@ abstract class Controller<View> {
 }
 
 export abstract class TokenController<View extends TokenListener> extends Controller<View> {
-  private lastContinuousTransformEvent: number;
-  private readonly timeBetweenContinuousTransformEvents = 50; // in milliseconds
-
   constructor(store: Store, state: State, view: View) {
     super(store, state, view);
-
-    this.lastContinuousTransformEvent = 0;
 
     this.view.listen("tokens_select", (tokens) => this.onselect(tokens));
     this.view.listen("tokens_delete", (tokens) => this.ondelete(tokens));
@@ -43,16 +38,9 @@ export abstract class TokenController<View extends TokenListener> extends Contro
     // time the event is fired. For fluid operations, the local token is still updated
     // instantly.
 
+    const delay = 50; // in milliseconds
     this.state.transformToken(transform);
-
-    const now = Date.now();
-    const timeSinceLastEvent = now - this.lastContinuousTransformEvent;
-    if (timeSinceLastEvent < this.timeBetweenContinuousTransformEvents) {
-      return;
-    }
-
-    this.lastContinuousTransformEvent = now;
-    this.store.send({ type: "request_transform", transform });
+    this.store.send({ type: "request_transform", transform }, delay);
   }
 
   protected ondelete(tokens: Token[]) {
