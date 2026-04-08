@@ -19,6 +19,7 @@ class TokenMapView {
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
     element.setAttribute("id", token.id);
     element.setAttribute("tabindex", "-1"); // Makes object selectable
+    element.classList.add("smooth-transform");
     this.layer.appendChild(element);
     this.draw(element, token);
   }
@@ -58,11 +59,9 @@ class TokenMapView {
           element.setAttribute("stroke", "none");
         }
 
-        element.setAttribute("cx", cx.toString());
-        element.setAttribute("cy", cy.toString());
         element.setAttribute("rx", rx.toString());
         element.setAttribute("ry", ry.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `translate(${cx} ${cy}) rotate(${token.r} ${cx} ${cy})`);
         break;
       }
 
@@ -85,36 +84,35 @@ class TokenMapView {
           element.setAttribute("stroke", "none");
         }
 
-        element.setAttribute("x", x.toString());
-        element.setAttribute("y", y.toString());
         element.setAttribute("width", w.toString());
         element.setAttribute("height", h.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `translate(${x} ${y}) rotate(${token.r} ${x} ${y})`);
         break;
       }
 
       case "line": {
         const x1 = token.x;
         const y1 = token.y;
-        const x2 = token.x + token.w;
-        const y2 = token.y + token.h;
-        element.setAttribute("x1", x1.toString());
-        element.setAttribute("y1", y1.toString());
-        element.setAttribute("x2", x2.toString());
-        element.setAttribute("y2", y2.toString());
+        element.setAttribute("x1", "0");
+        element.setAttribute("y1", "0");
+        element.setAttribute("x2", token.w.toString());
+        element.setAttribute("y2", token.h.toString());
         element.setAttribute("stroke-width", `${token.stroke}px`);
         element.setAttribute("stroke", token.color);
-        // Line currently does not rotate.
+        element.setAttribute("transform", `translate(${x1} ${y1})`);
         break;
       }
 
-      case "image":
+      case "image": {
+        const x = token.x;
+        const y = token.y;
         element.setAttribute("href", server.fullURL(token.href));
         element.setAttribute("x", token.x.toString());
         element.setAttribute("y", token.y.toString());
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `translate(${x} ${y}) rotate(${token.r} ${x} ${y})`);
+      }
     }
   }
 

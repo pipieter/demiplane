@@ -13,7 +13,7 @@ class UserCursorsView {
     if (!cursor) {
       cursor = document.createElement("i");
       cursor.id = id;
-      cursor.classList.add("fa-solid", "fa-arrow-pointer", "cursor");
+      cursor.classList.add("fa-solid", "fa-arrow-pointer", "cursor", "smooth-transform");
       this.layer.appendChild(cursor);
     }
 

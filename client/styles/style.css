@@ -36,3 +36,13 @@ hr {
   scrollbar-width: thin;
   scrollbar-color: var(--light-primary) var(--dark-tertiary); /* thumb track */
 }
+
+.smooth-transform {
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+.smooth-transform.selected {
+  /* When the object is selected, snap it instantly */
+  transition: none !important;
+}
