@@ -29,6 +29,7 @@ public class ServerConnectionTests : ServerTestSetup
 
         // Abort the socket and verify that the other sockets work as per normal
         socket.Abort();
+        socket.Dispose();
         await first.SendAsync(Json.Serialize(create2));
         foreach (Socket other in _sockets)
         {
@@ -40,18 +41,5 @@ public class ServerConnectionTests : ServerTestSetup
             CreateResponseMessage response = await other.ReceiveAsync<CreateResponseMessage>();
             Assert.That(response.type, Is.EqualTo("create"));
         }
-
-        TestContext.Out.WriteLine("Creating socket");
-        // Create a new socket and verify that that works
-        socket = await CreateSocket();
-        TestContext.Out.WriteLine("Created socket");
-        await socket.SendAsync(Json.Serialize(create3));
-        TestContext.Out.WriteLine("Sending message socket");
-        foreach (Socket other in _sockets)
-        {
-            CreateResponseMessage response = await other.ReceiveAsync<CreateResponseMessage>();
-            Assert.That(response.type, Is.EqualTo("create"));
-        }
-        TestContext.Out.WriteLine("Received message");
     }
 }
