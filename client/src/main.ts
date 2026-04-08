@@ -28,6 +28,8 @@ import ServerStatusController from "./controllers/serverstatus";
 import type { ResponseMessage } from "./messages";
 import UserCursorController from "./controllers/usercursors";
 import UserCursorsView from "./views/usercursors";
+import RulerView from "./views/ruler";
+import RulerController from "./controllers/ruler";
 
 const state = new State();
 const store = new Store(server.url);
@@ -45,6 +47,7 @@ const tokenListView = new TokenListView();
 const userView = new UserView();
 const userCursorView = new UserCursorsView();
 const hoverView = new HoverView();
+const rulerView = new RulerView(state.grid);
 
 new BackgroundController(store, state, backgroundView);
 new TokenMapController(store, state, tokenView);
@@ -59,6 +62,7 @@ new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
 new UserCursorController(store, state, userCursorView);
 new HoverController(store, state, hoverView);
+new RulerController(store, state, rulerView);
 
 store.listen("message", (event) => {
   const data = JSON.parse(event.data) as ResponseMessage;

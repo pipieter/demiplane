@@ -67,3 +67,14 @@ line {
   transform-origin: center center;
   transform-box: fill-box;
 }
+
+/* Ruler layer */
+#ruler-layer {
+  pointer-events: none;
+}
+
+#ruler-line{
+  stroke: var(--user-color);
+  stroke-width: 4;
+  stroke-linecap: round;
+}

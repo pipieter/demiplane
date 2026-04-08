@@ -21,6 +21,7 @@ class BackgroundView extends Listener<BackgroundViewMap> {
       document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement,
       document.getElementById("whiteboard-resize") as unknown as SVGSVGElement,
       document.getElementById("user-cursors-container") as unknown as SVGSVGElement,
+      document.getElementById("ruler-layer") as unknown as SVGSVGElement,
     ];
 
     this.input.onchange = (evt) => {
