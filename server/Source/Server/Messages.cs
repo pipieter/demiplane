@@ -231,6 +231,24 @@ public class UserChangeRequestMessage(RequestUser user) : Message
     public RequestUser user = user;
 }
 
+public record struct RequestUserPosition(string secret, Point? position)
+{
+    [JsonProperty(Required = Required.Always)]
+    public string secret = secret;
+
+    [JsonProperty(Required = Required.AllowNull)]
+    public Point? position = position;
+}
+
+public class UserPositionRequestMessage(RequestUserPosition user) : Message
+{
+    [JsonProperty(Required = Required.Always)]
+    public string type = "request_user_position";
+
+    [JsonProperty(Required = Required.Always)]
+    public RequestUserPosition user = user;
+}
+
 public class UserChangeResponseMessage(User user) : Message
 {
     [JsonProperty(Required = Required.Always)]
@@ -272,5 +290,6 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
         ["request_background"] = typeof(BackgroundRequestMessage),
         ["request_user_change"] = typeof(UserChangeRequestMessage),
         ["request_layer_change"] = typeof(LayerRequestMessage),
+        ["request_user_position"] = typeof(UserPositionRequestMessage),
     };
 }

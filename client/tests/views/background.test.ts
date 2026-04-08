@@ -14,7 +14,7 @@ describe("BackgroundView", () => {
     test("should find all required DOM elements", () => {
       expect(view.input).toBeDefined();
       expect(view.image).toBeDefined();
-      expect(view.layers.length).toBe(4);
+      expect(view.layers.length).toBe(5);
     });
   });
 

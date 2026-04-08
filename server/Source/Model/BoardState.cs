@@ -133,8 +133,21 @@ public class ConcurrentBoardState
             user.isActive = true;
             user.name = name;
             user.color = color;
+            user.cursorPosition = null;
             return user;
         }
+    }
+
+    public User? EditUserPosition(string secret, Point? position)
+    {
+        User? user = GetUser(secret);
+        if (user == null)
+        {
+            return null;
+        }
+
+        user.cursorPosition = position;
+        return user;
     }
 
     public List<User> Users()

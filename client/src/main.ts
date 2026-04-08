@@ -26,6 +26,8 @@ import HoverController from "./controllers/hover";
 import ServerStatusView from "./views/serverstatus";
 import ServerStatusController from "./controllers/serverstatus";
 import type { ResponseMessage } from "./messages";
+import UserCursorController from "./controllers/usercursors";
+import UserCursorsView from "./views/usercursors";
 
 const state = new State();
 const store = new Store(server.url);
@@ -41,6 +43,7 @@ const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
 const tokenListView = new TokenListView();
 const userView = new UserView();
+const userCursorView = new UserCursorsView();
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
@@ -54,6 +57,7 @@ new SidebarController(store, state, headerView);
 new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
+new UserCursorController(store, state, userCursorView);
 new HoverController(store, state, hoverView);
 
 store.listen("message", (event) => {

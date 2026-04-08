@@ -11,7 +11,7 @@ public class UserService
         string username = "Wanderer " + (users.Count + 1);
         string secret = GenerateSecretToken();
         string color = GenerateUserColor(guid);
-        return new(guid.ToString(), secret, username, color);
+        return new(guid.ToString(), secret, username, color, null);
     }
 
     private static string GenerateSecretToken()

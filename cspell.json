@@ -31,6 +31,7 @@
         "tokenedit",
         "tokenlist",
         "tokenmap",
+        "usercursors",
         "vitest",
         "wwwroot",
         "xmark"
