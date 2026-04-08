@@ -288,6 +288,14 @@ public partial class Server
                     break;
                 }
 
+            case UserPositionRequestMessage user:
+                {
+                    User userData = _state.EditUserPosition(user.user.secret, user.user.position) ?? throw new KeyNotFoundException("Could not find user.");
+                    UserChangeResponseMessage response = new(userData);
+                    await BroadcastMessage(response, socket); // Cursor position is only broadcasted to all other users.
+                    break;
+                }
+
             case LayerRequestMessage layer:
                 {
                     string id = layer.tokenId;

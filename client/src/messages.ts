@@ -130,6 +130,15 @@ export interface UserChangeRequestMessage {
   };
 }
 
+/** Request update the user's cursor position */
+export interface UserPositionRequestMessage {
+  type: "request_user_position";
+  user: {
+    secret: string;
+    position: Point | null;
+  };
+}
+
 /** Set a user's new data, either by change or by joining. */
 export interface UserChangeResponseMessage {
   type: "user_change";
@@ -151,7 +160,8 @@ export type RequestMessage =
   | LayerRequestMessage
   | GridRequestMessage
   | BackgroundRequestMessage
-  | UserChangeRequestMessage;
+  | UserChangeRequestMessage
+  | UserPositionRequestMessage;
 
 export type ResponseMessage =
   | ErrorResponseMessage
