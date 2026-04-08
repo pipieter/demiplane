@@ -57,7 +57,7 @@ class RulerView {
     this.lineRuler.setAttribute("y2", y.toString());
 
     const offsetX = x > this.start.x ? 6 : -6;
-    const textAnchor = x < this.start.x ? "end" : "start";
+    const textAnchor = x > this.start.x ? "start" : "end";
     this.rulerLengthText.setAttribute("x", (x + offsetX).toString());
     this.rulerLengthText.setAttribute("y", (y + 6).toString());
     this.rulerLengthText.setAttribute("text-anchor", textAnchor);
