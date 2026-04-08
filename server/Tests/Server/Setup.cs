@@ -23,7 +23,7 @@ public class ServerTestSetup
         _server.Dispose();
     }
 
-    private static async Task<Socket> CreateSocket()
+    protected static async Task<Socket> CreateSocket()
     {
         ClientWebSocket socket = new();
         await socket.ConnectAsync(new Uri(Program.WebsocketURL), CancellationToken.None);
