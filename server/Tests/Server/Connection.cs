@@ -17,7 +17,6 @@ public class ServerConnectionTests : ServerTestSetup
 
         CreateRequestMessage create1 = new(new TokenCircle("token-1", "token-1", "#FF00FF", null, 10, 10, 10, 10, 10));
         CreateRequestMessage create2 = new(new TokenCircle("token-2", "token-2", "#FF00FF", null, 10, 10, 10, 10, 10));
-        CreateRequestMessage create3 = new(new TokenCircle("token-3", "token-3", "#FF00FF", null, 10, 10, 10, 10, 10));
 
         // Verify that the new socket can send messages
         await socket.SendAsync(Json.Serialize(create1));
