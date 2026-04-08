@@ -13,15 +13,10 @@ namespace Demiplane.Server;
 
 public class Socket(WebSocket socket)
 {
-    private WebSocket _socket = socket;
+    private readonly WebSocket _socket = socket;
     private readonly byte[] _buffer = new byte[1024 * 1024 * 100];
     public bool WantsToClose { get; private set; }
     public WebSocketState State => _socket.State;
-
-    public void Reconnect(WebSocket socket)
-    {
-        _socket = socket;
-    }
 
     public async Task CloseAsync()
     {
