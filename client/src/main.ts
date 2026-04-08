@@ -43,7 +43,7 @@ const headerView = new SidebarView();
 const tokenEditView = new TokenEditView();
 const tokenListView = new TokenListView();
 const userView = new UserView();
-const userCursorView = new UserCursorsView();
+const userCursorView = new UserCursorsView(state.grid);
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
