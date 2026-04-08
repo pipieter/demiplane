@@ -15,16 +15,29 @@ public class Socket(WebSocket socket)
 {
     private readonly WebSocket _socket = socket;
     private readonly byte[] _buffer = new byte[1024 * 1024 * 100];
-    public bool IsOpen => _socket.State == WebSocketState.Open;
     public bool WantsToClose { get; private set; }
+    public WebSocketState State => _socket.State;
 
     public async Task CloseAsync()
     {
+        if (_socket.State == WebSocketState.Aborted)
+        {
+            return;
+        }
         await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+    }
+
+    public void Abort()
+    {
+        _socket.Abort();
     }
 
     public async Task<string> ReceiveAsync()
     {
+        if (_socket.State != WebSocketState.Open)
+        {
+            throw new WebSocketException("Socket is not open!");
+        }
         WebSocketReceiveResult response = await _socket.ReceiveAsync(_buffer, CancellationToken.None);
         if (response.MessageType == WebSocketMessageType.Close)
         {
@@ -39,7 +52,8 @@ public class Socket(WebSocket socket)
     {
         string message = await ReceiveAsync();
         T body =
-            Json.Deserialize<T>(message) ?? throw new SerializationException($"Could not parse {typeof(T).Name} from '{message}'");
+            Json.Deserialize<T>(message)
+            ?? throw new SerializationException($"Could not parse {typeof(T).Name} from '{message}'");
         return body;
     }
 
@@ -77,10 +91,22 @@ public partial class Server
         Socket socket = new(webSocket);
         _ = _clients.TryAdd(socket, "");
 
-        while (socket.IsOpen)
+        while (socket.State == WebSocketState.Open)
         {
-            string message = await socket.ReceiveAsync();
-            if (socket.WantsToClose)
+            string message = "";
+            bool wantsToClose;
+            try
+            {
+                message = await socket.ReceiveAsync();
+                wantsToClose = socket.WantsToClose;
+            }
+            catch
+            {
+                // Close the socket on an exception
+                wantsToClose = true;
+            }
+
+            if (wantsToClose)
             {
                 string userId = _clients[socket];
                 UserDisconnectResponseMessage response = new(userId);
@@ -195,7 +221,9 @@ public partial class Server
                 {
                     foreach (Duplicate copy in duplicate.duplicate)
                     {
-                        Token? clone = _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset) ?? throw new InvalidOperationException($"Could not duplicate token: '{copy.parentId}'");
+                        Token? clone =
+                            _state.DuplicateToken(copy.parentId, copy.childId, duplicate.offset)
+                            ?? throw new InvalidOperationException($"Could not duplicate token: '{copy.parentId}'");
                         CreateResponseMessage response = new(clone);
                         await BroadcastMessage(response, socket);
 
