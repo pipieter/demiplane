@@ -55,22 +55,27 @@
         <section id="tab-grid" class="tab-panel" hidden>
           <h2>Grid settings</h2>
           <hr />
-          <input type="checkbox" id="grid-global-checkbox" />
-          <label for="grid-global-checkbox">Enable grid-locking by default</label>
+          <label>
+            <input type="checkbox" id="grid-global-checkbox" />
+            <span>Default grid-lock</span>
+            </label>
           <hr />
-          <div class="tab-panel-row">
-            <label for="grid-size">Grid-size</label>
-            <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
-          </div>
-          <div class="tab-panel-row">
-            <label for="grid-offset-X">X-offset</label>
-            <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
-          </div>
-          <div class="tab-panel-row">
-            <label for="grid-offset-Y">Y-offset</label>
-            <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
-          </div>
+<label for="grid-size">
+  <span>Grid-size</span>
+  <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
+              </label>
+              
+              <label for="grid-offset-X">
+                <span>X-offset</span>
+                <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
+              </label>
+              <label for="grid-offset-Y">
+                <span>Y-offset</span>
+                <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
+              </label>
+
           <hr />
+
           <label for="upload-background-button" class="label-button">
             <i class="fa-regular fa-image"></i> Upload background
             <input id="upload-background-button" type="file" accept="image/*" style="display: none" />

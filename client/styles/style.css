@@ -134,4 +134,14 @@ label {
       color: var(--dark-secondary);
     }
   }
+
+  &:has(input[type="file"]){
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+
+    & i {
+      font-size: 20px;
+    }
+  }
 }
