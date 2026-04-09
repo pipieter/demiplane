@@ -31,21 +31,24 @@
               <i class="fa-solid fa-pencil"></i>
             </button>
           </div>
-            <label>
-              <span>Select Color</span>
-              <input type="color" id="draw-color-input" />
-              </label>
-              
-              <label>
-                <span>Border only</span>
-                <input type="checkbox" id="draw-border-checkbox" />
-            </label>
-            
-            <label>
-              <span>Width</span>
-              <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
-            </label>
+
+          <label>
+            <span>Select Color</span>
+            <input type="color" id="draw-color-input" />
+          </label>
+          
+          <label>
+            <span>Border only</span>
+            <input type="checkbox" id="draw-border-checkbox" />
+          </label>
+          
+          <label>
+            <span>Width</span>
+            <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+          </label>
+
           <hr />
+
           <label for="upload-token-button">
             <i class="fa-solid fa-image"></i> Upload a token
             <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
@@ -55,24 +58,28 @@
         <section id="tab-grid" class="tab-panel" hidden>
           <h2>Grid settings</h2>
           <hr />
+
           <label>
             <input type="checkbox" id="grid-global-checkbox" />
             <span>Default grid-lock</span>
-            </label>
+          </label>
+          
           <hr />
-<label for="grid-size">
-  <span>Grid-size</span>
-  <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
-              </label>
+
+          <label for="grid-size">
+            <span>Grid-size</span>
+            <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
+          </label>
               
-              <label for="grid-offset-X">
-                <span>X-offset</span>
-                <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
-              </label>
-              <label for="grid-offset-Y">
-                <span>Y-offset</span>
-                <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
-              </label>
+          <label for="grid-offset-X">
+            <span>X-offset</span>
+            <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
+          </label>
+
+          <label for="grid-offset-Y">
+            <span>Y-offset</span>
+            <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
+          </label>
 
           <hr />
 
@@ -85,35 +92,38 @@
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
           <hr />
-<label for="token-edit-x">
-  <span>X</span>
-  <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
-            </label>
+
+          <label for="token-edit-x">
+            <span>X</span>
+            <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
+          </label>
             
-            <label for="token-edit-y">
-              <span>Y</span>
-              <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
-            </label>
-            
-            <label for="token-edit-w">
-              <span>Width</span>
-              <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
-            </label>
-            
-            <label for="token-edit-h">
-              <span>Height</span>
-              <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
-            </label>
-            
-            <label for="token-edit-r">
-              <span>Rotate</span>
-              <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
-            </label>
+          <label for="token-edit-y">
+            <span>Y</span>
+            <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
+          </label>
+          
+          <label for="token-edit-w">
+            <span>Width</span>
+            <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
+          </label>
+          
+          <label for="token-edit-h">
+            <span>Height</span>
+            <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
+          </label>
+          
+          <label for="token-edit-r">
+            <span>Rotate</span>
+            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+          </label>
 
           <button id="token-edit-delete" disabled>Delete</button>
           <button id="token-edit-move-up">Move up</button>
           <button id="token-edit-move-down">Move down</button>
+
           <hr />
+
           <div id="token-list-container">
             <label for="token-list-checkbox">
               <span>Display token list</span>
@@ -126,13 +136,17 @@
         <section id="tab-user" class="tab-panel" hidden>
           <h2>User Settings</h2>
           <hr />
-          <label for="user-input-name">Name</label>
-          <input id="user-input-name" type="text" name="user-input-name" />
-          <div class="color-picker-wrapper">
-              <label for="user-input-color">Color</label>
-              <input id="user-input-color" type="color" name="user-input-color" />
-</div>
-                <hr />
+          <label for="user-input-name">
+            <span>Name</span>
+            <input id="user-input-name" type="text" name="user-input-name" />
+          </label>
+          <label for="user-input-color">
+            <span>Color</span>
+            <input id="user-input-color" type="color" name="user-input-color" />
+          </label>
+          
+          <hr />
+
           <ul id="user-list" class="side-menu-list"></ul>
         </section>
       </aside>
