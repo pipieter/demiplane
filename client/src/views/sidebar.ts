@@ -14,8 +14,22 @@ class SidebarView {
     this.hideButton = document.getElementById("sidebar-hide-button") as HTMLButtonElement;
     this.tabButtons = [...document.querySelectorAll(".tab-button")] as HTMLButtonElement[];
 
-    this.tabButtons.forEach((button) => {
+    this.tabButtons.forEach((button, index) => {
       button.addEventListener("click", () => {
+        this.select(button, button.getAttribute("data-tab"));
+      });
+
+      const shortcut = index + 1;
+      if (shortcut > 9) return;
+
+      document.addEventListener("keydown", (evt: KeyboardEvent) => {
+        if (evt.key !== shortcut.toString()) return;
+
+        const target = evt.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+          return;
+        }
+
         this.select(button, button.getAttribute("data-tab"));
       });
     });
