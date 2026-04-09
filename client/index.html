@@ -13,32 +13,43 @@
         <section id="tab-draw" class="tab-panel">
           <h2>Drawing</h2>
           <hr />
+
           <div class="square-button-container tab-panel-row">
-            <button id="begin-circle-button" class="draw-button"><i class="fa-solid fa-circle"></i></button>
-            <button id="begin-rect-button" class="draw-button"><i class="fa-solid fa-square"></i></button>
-            <button id="begin-line-button" class="draw-button"><i class="fa-solid fa-minus"></i></button>
+            <button id="begin-circle-button" class="draw-button">
+              <i class="fa-solid fa-circle"></i>
+            </button>
+            <button id="begin-rect-button" class="draw-button">
+              <i class="fa-solid fa-square"></i>
+            </button>
+            <button id="begin-line-button" class="draw-button">
+              <i class="fa-solid fa-minus"></i>
+            </button>
             <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed">
               <i class="fa-solid fa-t"></i>
             </button>
-            <button id="begin-drawing-button" class="draw-button"><i class="fa-solid fa-pencil"></i></button>
+            <button id="begin-drawing-button" class="draw-button">
+              <i class="fa-solid fa-pencil"></i>
+            </button>
           </div>
-          <div class="tab-panel-row color-picker-wrapper">
-            <input type="color" id="draw-color-input" />
-            <label for="draw-color-input">Select Color</label>
-          </div>
-          <div class="tab-panel-row">
-            <input type="checkbox" id="draw-border-checkbox" />
-            <label for="draw-border-checkbox">Border</label>
-            <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
-            <label for="draw-border-number">Width</label>
-          </div>
-          <hr />
-          <div class="tab-panel-row">
-            <label for="upload-token-button" class="label-button">
-              <i class="fa-solid fa-image"></i> Upload a token
-              <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
+            <label>
+              <span>Select Color</span>
+              <input type="color" id="draw-color-input" />
+              </label>
+              
+              <label>
+                <span>Border only</span>
+                <input type="checkbox" id="draw-border-checkbox" />
             </label>
-          </div>
+            
+            <label>
+              <span>Width</span>
+              <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+            </label>
+          <hr />
+          <label for="upload-token-button">
+            <i class="fa-solid fa-image"></i> Upload a token
+            <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
+          </label>
         </section>
 
         <section id="tab-grid" class="tab-panel" hidden>
