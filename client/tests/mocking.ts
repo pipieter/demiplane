@@ -101,5 +101,10 @@ function getUser(overrides: Partial<User> = {}): User {
 
 export const user = { getUser };
 
-const mocking = { user, token };
+const getFile = (name: string, type: string) => {
+  const blob = new Blob(["mock-content"], { type });
+  return new File([blob], name, { type });
+};
+
+const mocking = { user, token, getFile };
 export default mocking;
