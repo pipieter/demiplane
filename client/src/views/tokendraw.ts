@@ -15,6 +15,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
   private grid: Grid;
 
   public readonly layer: SVGSVGElement;
+  public readonly whiteboard: SVGSVGElement;
   public readonly circle: SVGCircleElement;
   public readonly rectangle: SVGRectElement;
   public readonly line: SVGLineElement;
@@ -44,6 +45,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     this.grid = grid;
 
     this.layer = document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement;
+    this.whiteboard = document.getElementById("whiteboard") as unknown as SVGSVGElement;
     this.cursor = document.getElementById("whiteboard-drawing-cursor") as unknown as SVGCircleElement;
     this.circle = document.getElementById("whiteboard-drawing-circle") as unknown as SVGCircleElement;
     this.rectangle = document.getElementById("whiteboard-drawing-rectangle") as unknown as SVGRectElement;
@@ -73,6 +75,12 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     this.current = { x: 0, y: 0 };
     this.freedrawPoints = [];
 
+    this.whiteboard.addEventListener("drop", (evt) => this.onDrop(evt));
+    this.whiteboard.addEventListener("dragover", (evt) => {
+      evt.preventDefault(); // Necessary to allow a drop
+      evt.dataTransfer!.dropEffect = "copy";
+    });
+
     this.circleButton.addEventListener("click", () => this.begin("circle"));
     this.rectangleButton.addEventListener("click", () => this.begin("rectangle"));
     this.lineButton.addEventListener("click", () => this.begin("line"));
@@ -86,6 +94,20 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
 
     this.colorInput.addEventListener("input", () => this.updateColors());
     this.updateColors();
+  }
+
+  private onDrop(evt: DragEvent) {
+    evt.preventDefault();
+    if (!evt.dataTransfer) return;
+
+    const { x, y } = this.grid.getCoordinates(evt);
+    const files = [...evt.dataTransfer.files];
+    if (!files) return;
+
+    files.forEach((file) => {
+      if (!file.type.startsWith("image/")) return;
+      this.uploadToken(file, x, y);
+    });
   }
 
   private begin(type: TokenDrawType | null) {
@@ -357,12 +379,10 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     document.documentElement.style.setProperty("--draw-color", color);
   }
 
-  private async uploadToken(file: File) {
+  private async uploadToken(file: File, x = 0, y = 0) {
     const base64 = await util.readBase64(file);
     if (!base64) throw "Could not read file.";
 
-    const x = 0; // Top left corner
-    const y = 0;
     const w = this.grid.size;
     const h = this.grid.size;
 

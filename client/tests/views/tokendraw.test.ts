@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenDrawView from "../../src/views/tokendraw";
 import Grid from "../../src/models/grid";
 import Viewport from "../../src/models/viewport";
+import mocking from "../mocking";
+import { util } from "../../src/util";
 
 const mockCtx = {
   translate: vi.fn(),
@@ -43,6 +45,7 @@ describe("TokenDrawView", () => {
   describe("Initialization", () => {
     test("should find all required DOM elements", () => {
       expect(view.layer).toBeDefined();
+      expect(view.whiteboard).toBeDefined();
       expect(view.circle).toBeDefined();
       expect(view.rectangle).toBeDefined();
       expect(view.line).toBeDefined();
@@ -253,6 +256,96 @@ describe("TokenDrawView", () => {
             border: null,
           }),
         );
+      });
+    });
+
+    describe("Image Uploads", () => {
+      const mockImage = mocking.getFile("test.png", "image/png");
+      const mockBase64 = "data:image/png;base64,mock-canvas-data";
+
+      beforeEach(() => {
+        vi.spyOn(util, "readBase64").mockResolvedValue(mockBase64);
+        grid.size = 50;
+      });
+
+      test("should handle file upload via input change", async () => {
+        Object.defineProperty(view.tokenUploadInput, "files", {
+          value: {
+            item: (index: number) => (index === 0 ? mockImage : null),
+            length: 1,
+            0: mockImage,
+          },
+          configurable: true,
+        });
+
+        view.tokenUploadInput.dispatchEvent(new Event("change"));
+
+        await vi.waitFor(() => {
+          expect(emitSpy).toHaveBeenCalledWith("image_create", {
+            base64: mockBase64,
+            x: 0,
+            y: 0,
+            w: 50,
+            h: 50,
+          });
+        });
+
+        expect(view.circleButton.classList).not.toContain("selected");
+      });
+
+      test("should handle image drop on whiteboard", async () => {
+        const dropX = 100;
+        const dropY = 150;
+
+        vi.mocked(grid.getCoordinates).mockReturnValue({ x: dropX, y: dropY });
+        const dropEvent = new CustomEvent("drop", {
+          bubbles: true,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }) as any;
+
+        dropEvent.dataTransfer = {
+          files: [mockImage],
+          preventDefault: vi.fn(),
+        };
+
+        view.whiteboard.dispatchEvent(dropEvent);
+
+        await vi.waitFor(() => {
+          expect(emitSpy).toHaveBeenCalledWith("image_create", {
+            base64: mockBase64,
+            x: dropX,
+            y: dropY,
+            w: 50,
+            h: 50,
+          });
+        });
+      });
+
+      test("should ignore non-image drops", async () => {
+        const textFile = mocking.getFile("test.txt", "text/plain");
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dropEvent = new CustomEvent("drop") as any;
+        dropEvent.dataTransfer = {
+          files: [textFile],
+          preventDefault: vi.fn(),
+        };
+
+        view.whiteboard.dispatchEvent(dropEvent);
+
+        expect(emitSpy).not.toHaveBeenCalledWith("image_create", expect.anything());
+      });
+
+      test("should set dropEffect to copy on dragover", () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dragOverEvent = new CustomEvent("dragover") as any;
+        dragOverEvent.dataTransfer = { dropEffect: "" };
+        dragOverEvent.preventDefault = vi.fn();
+
+        view.whiteboard.dispatchEvent(dragOverEvent);
+
+        expect(dragOverEvent.preventDefault).toHaveBeenCalled();
+        expect(dragOverEvent.dataTransfer.dropEffect).toBe("copy");
       });
     });
   });
