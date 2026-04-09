@@ -93,7 +93,7 @@
     & > li {
       border: solid 1px var(--light-secondary);
       background-color: var(--dark-primary);
-      margin: 8px;
+      margin-bottom: 8px;
       display: flex;
       overflow: hidden;
       cursor: pointer;
@@ -101,17 +101,13 @@
 
       &.selected {
         background-color: var(--dark-secondary);
+        box-shadow: 0px -1px 1px var(--light-secondary) inset;
       }
 
       & > i {
         font-size: 32px;
         margin: 0;
         padding: 4px;
-      }
-
-      & > p {
-        margin: 0;
-        padding: 0;
       }
     }
   }
