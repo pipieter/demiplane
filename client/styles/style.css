@@ -21,10 +21,9 @@ body {
   --light-primary: #a0a0a0;
   --light-secondary: #808080;
 
-  --primary: #fff000;
-
-  --danger: #ce212f;
-  --info: #2867c5;
+  --danger: #ef2727;
+  --info: #0b7b97;
+  --success: #1fd13d;
 }
 
 * {
@@ -127,11 +126,25 @@ label {
     & span {
       text-align: center;
       width: 100%;
+      transform: translateY(-1px);
+
+      &::after {
+        content: "✕";
+        padding-left: 8px;
+        color: var(--danger);
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+      }
     }
 
     &:has(input:checked) {
-      background-color: var(--primary);
-      color: var(--dark-secondary);
+      background-color: var(--dark-tertiary);
+      color: white;
+
+      & span::after {
+        content: "✓";
+        color: var(--success);
+      }
     }
   }
 
