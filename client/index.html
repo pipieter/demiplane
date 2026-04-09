@@ -167,6 +167,7 @@
             <rect class="resize-handle" id="handle-br" data-dir="br" width="8" height="8" fill="white" stroke="black" />
             <circle id="rotate-handle" r="6" fill="white" stroke="black" />
           </svg>
+
           <!-- Line resize -->
           <svg class="whiteboard-resize" id="whiteboard-resize-line" style="display: none">
             <line class="resize-marking" id="resize-line" pointer-events="none" />
@@ -209,12 +210,12 @@
               stroke-width="1"
             />
           </svg>
-        <foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
-          <div id="user-cursors" width="100%" height="100%"></div>
-          </div>
-        </foreignObject>
+
+          <foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
+            <div id="user-cursors" width="100%" height="100%"></div>
+          </foreignObject>
         </g>
-        </svg>
+      </svg>
     </div>
 
     <!-- Server Status -->
@@ -222,6 +223,7 @@
       <i id="server-status-icon" class="fa-solid fa-xmark"></i>
       <p id="server-status-text">Offline</p>
     </div>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
