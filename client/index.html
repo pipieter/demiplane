@@ -85,44 +85,40 @@
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
           <hr />
-          <div class="tab-panel-row">
-            <label for="token-edit-x">x</label>
-            <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-y">y</label>
-            <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-w">width</label>
-            <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-h">height</label>
-            <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-r">angle</label>
-            <input
-              id="token-edit-r"
-              type="number"
-              name="token-edit-r"
-              min="-180"
-              max="180"
-              step="1"
-              value="0"
-              disabled
-            />
-          </div>
+<label for="token-edit-x">
+  <span>X</span>
+  <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
+            </label>
+            
+            <label for="token-edit-y">
+              <span>Y</span>
+              <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
+            </label>
+            
+            <label for="token-edit-w">
+              <span>Width</span>
+              <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
+            </label>
+            
+            <label for="token-edit-h">
+              <span>Height</span>
+              <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
+            </label>
+            
+            <label for="token-edit-r">
+              <span>Rotate</span>
+              <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+            </label>
+
           <button id="token-edit-delete" disabled>Delete</button>
-          <br />
           <button id="token-edit-move-up">Move up</button>
-          <br />
           <button id="token-edit-move-down">Move down</button>
           <hr />
           <div id="token-list-container">
-            <input type="checkbox" id="token-list-checkbox" />
-            <label for="token-list-checkbox">Display token list</label>
+            <label for="token-list-checkbox">
+              <span>Display token list</span>
+              <input type="checkbox" id="token-list-checkbox" />
+            </label>
             <ul id="token-list" class="side-menu-list" style="display: none"></ul>
           </div>
         </section>
