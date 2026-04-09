@@ -24,7 +24,7 @@
           </div>
           <div class="tab-panel-row color-picker-wrapper">
             <input type="color" id="draw-color-input" />
-            <label for="draw-color-input" class="color-label">Select Color</label>
+            <label for="draw-color-input">Select Color</label>
           </div>
           <div class="tab-panel-row">
             <input type="checkbox" id="draw-border-checkbox" />
@@ -116,9 +116,11 @@
           <hr />
           <label for="user-input-name">Name</label>
           <input id="user-input-name" type="text" name="user-input-name" />
-          <label for="user-input-color">Color</label>
-          <input id="user-input-color" type="color" name="user-input-color" />
-          <hr />
+          <div class="color-picker-wrapper">
+              <label for="user-input-color">Color</label>
+              <input id="user-input-color" type="color" name="user-input-color" />
+</div>
+                <hr />
           <ul id="user-list" class="side-menu-list"></ul>
         </section>
       </aside>
@@ -207,11 +209,11 @@
               stroke-width="1"
             />
           </svg>
-<foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
-  <div id="user-cursors" width="100%" height="100%"></div>
-  </div>
-</foreignObject>
-</g>
+        <foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
+          <div id="user-cursors" width="100%" height="100%"></div>
+          </div>
+        </foreignObject>
+        </g>
         </svg>
     </div>
 
