@@ -30,6 +30,10 @@ hr {
   border-color: var(--light-primary);
 }
 
+line {
+    stroke-linecap: round;
+}
+
 /* Scrollbar */
 
 * {

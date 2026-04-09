@@ -11,26 +11,36 @@
   gap: 2px;
 
   mix-blend-mode: lighten;
-}
 
-#server-status > * {
-  margin: 0;
-}
+  & > * {
+    margin: 0;
+  }
 
-.server-offline {
-  opacity: 0.6;
-  color: var(--danger);
-  cursor: pointer;
-}
+  &.server-offline {
+    opacity: 0.6;
+    color: var(--danger);
+    cursor: pointer;
+  }
 
-.server-syncing {
-  opacity: 0.6;
-  color: var(--info);
-  cursor: wait;
-}
+  &.server-syncing {
+    opacity: 0.6;
+    color: var(--info);
+    cursor: wait;
 
-.server-syncing > #server-status-icon {
-  animation: rotate 3s ease infinite;
+    & > #server-status-icon {
+      animation: rotate 3s ease infinite;
+    }
+  }
+
+  &.server-online {
+    color: var(--dark-tertiary);
+    opacity: 0.3;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 }
 
 @keyframes rotate {
@@ -40,14 +50,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.server-online {
-  color: var(--dark-tertiary);
-  opacity: 0.3;
-  cursor: pointer;
-}
-
-.server-online:hover {
-  opacity: 0.7;
 }
