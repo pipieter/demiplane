@@ -13,13 +13,7 @@ class UserCursorController extends Controller<UserCursorsView> {
       this.view.renderUserCursor(user);
     });
 
-    document.body.addEventListener("pointermove", (evt) => {
-      this.updatePosition(evt);
-    });
-
-    document.body.addEventListener("pointerout", (evt) => {
-      this.hidePosition(evt);
-    });
+    this.view.listen("cursor_change", (position) => this.emitPosition(position));
   }
 
   private emitPosition(position: Point | null) {
@@ -33,15 +27,6 @@ class UserCursorController extends Controller<UserCursorsView> {
       },
       50,
     );
-  }
-
-  updatePosition(evt: MouseEvent) {
-    const position = this.state.grid.getCoordinates(evt);
-    this.emitPosition(position);
-  }
-
-  hidePosition(_evt: MouseEvent) {
-    this.emitPosition(null);
   }
 }
 
