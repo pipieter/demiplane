@@ -18,6 +18,7 @@ class Viewport {
       .scaleExtent([0.1, 10])
       .filter((event) => {
         if (event.type === "wheel") return true;
+        if (event.button !== 2) return false; // Right-mouse only for movement
 
         const target = event.target as HTMLElement | SVGElement;
         if (!target) return true;
@@ -27,6 +28,10 @@ class Viewport {
           target.closest("#whiteboard-background-layer") !== null
         );
       });
+
+    this.whiteboard.on("contextmenu", (event) => {
+      event.preventDefault(); // Prevent default browser context-menu
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.whiteboard.call(this.zoom as any);

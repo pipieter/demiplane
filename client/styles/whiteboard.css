@@ -63,3 +63,23 @@
     }
   }
 }
+
+
+/* Ruler layer */
+#ruler-layer {
+  pointer-events: none;
+}
+
+#ruler-line{
+  stroke: var(--user-color);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+#ruler-length-text {
+  fill: var(--user-color);
+  font-weight: bold;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 3px;
+}

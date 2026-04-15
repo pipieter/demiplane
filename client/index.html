@@ -200,6 +200,12 @@
             <rect class="resize-handle" id="handle-p2" data-dir="p2" width="8" height="8" fill="white" stroke="black" />
           </svg>
 
+          <!-- Ruler view -->
+          <svg id="ruler-layer">
+            <line id="ruler-line" stroke="red" stroke-width="4" />
+            <text id="ruler-length-text"></text>
+          </svg>
+
           <svg id="whiteboard-drawing-layer" width="1024px" height="1024px" style="display: none">
             <!-- Note: this rectangle is required to ensure the layer has something to draw on. -->
             <!-- It also adds a small color effect to when the user is drawing, so they know they are in drawing mode. -->
