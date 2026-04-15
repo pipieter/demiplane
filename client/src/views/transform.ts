@@ -1,3 +1,4 @@
+import Moveable from "moveable";
 import { TokenListener } from "../listeners";
 import type Grid from "../models/grid";
 import type { Token } from "../models/token";
@@ -6,19 +7,10 @@ import { util } from "../util";
 
 class TransformView extends TokenListener {
   private grid: Grid;
-
   public readonly container: HTMLDivElement;
+  public readonly objectsLayer: SVGElement;
   private dragOffset: Point | null = null;
-
-  public readonly layer: SVGSVGElement;
-  public readonly box: SVGRectElement;
-  public readonly handles: SVGRectElement[];
-  public readonly rotateHandle: SVGCircleElement;
-  public readonly rotateLine: SVGLineElement;
-
-  public readonly lineLayer: SVGSVGElement;
-  public readonly line: SVGLineElement;
-
+  private moveable: Moveable;
   private direction: string | null;
   private selected: Token[];
 
@@ -26,22 +18,80 @@ class TransformView extends TokenListener {
     super();
 
     this.grid = grid;
-
     this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
-    this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
-    this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
-    this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
-    this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
-    this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
-
-    this.lineLayer = document.getElementById("whiteboard-resize-line") as unknown as SVGSVGElement;
-    this.line = document.getElementById("resize-line") as unknown as SVGLineElement;
-
-    this.direction = null;
+    this.objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGElement;
     this.selected = [];
+    this.direction = null;
 
-    this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.startResize(evt)));
-    this.rotateHandle.addEventListener("mousedown", (evt) => this.startRotate(evt));
+    this.moveable = new Moveable(this.container, {
+      target: null,
+      container: this.objectsLayer,
+      draggable: true,
+      resizable: true,
+      scalable: false,
+      rotatable: true,
+      warpable: false,
+      pinchable: false, // TODO
+      origin: true,
+      keepRatio: true,
+      edge: false,
+      throttleDrag: 0,
+      throttleResize: 0,
+      throttleScale: 0,
+      throttleRotate: 0,
+    });
+
+    this.initMoveableListeners();
+  }
+
+  private initMoveableListeners() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.moveable.on("drag", ({ target, transform, left, top, right, bottom, delta, dist, clientX, clientY }) => {
+      if (this.selected.length === 0) return;
+      const token = this.selected[0];
+
+      this.emit("token_continuous_transform", {
+        ...token,
+        x: left,
+        y: top,
+      });
+      this.moveable.updateRect();
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.moveable.on("resize", ({ target, width, height, drag }) => {
+      if (this.selected.length === 0) return;
+      const token = this.selected[0];
+
+      this.emit("token_continuous_transform", {
+        ...token,
+        x: drag.beforeTranslate[0],
+        y: drag.beforeTranslate[1],
+        w: width,
+        h: height,
+      });
+      this.moveable.updateRect();
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.moveable.on("rotate", ({ target, beforeRotate }) => {
+      if (this.selected.length === 0) return;
+      const token = this.selected[0];
+
+      this.emit("token_continuous_transform", {
+        ...token,
+        r: beforeRotate, // Moveable handles the Atan2 math for you
+      });
+      this.moveable.updateRect();
+    });
+
+    this.moveable.on("renderEnd", () => {
+      const token = this.selected[0];
+      if (token) {
+        this.emit("token_transform", { ...token });
+      }
+      this.moveable.updateRect();
+    });
   }
 
   public makeDraggable(token: Token) {
@@ -84,83 +134,8 @@ class TransformView extends TokenListener {
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
-    this.updateBox();
-  }
-
-  private updateBox() {
-    // Hide if nothing is selected
-    if (this.selected.length === 0) {
-      this.layer.style.display = "none";
-      this.lineLayer.style.display = "none";
-      return;
-    }
-
-    // TODO for now only use the first id
-    const token = this.selected[0];
-    const angle = token.r;
-    const handleSize = 8;
-    const centerX = token.x + token.w / 2;
-    const centerY = token.y + token.h / 2;
-
-    if (!this.isLineTransform()) {
-      const offset = 0;
-      const x = token.x - offset;
-      const y = token.y - offset;
-      const w = token.w + offset * 2;
-      const h = token.h + offset * 2;
-
-      this.layer.style.display = "block";
-      this.lineLayer.style.display = "none";
-      this.box.setAttribute("x", x.toString());
-      this.box.setAttribute("y", y.toString());
-      this.box.setAttribute("width", w.toString());
-      this.box.setAttribute("height", h.toString());
-      this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
-
-      // Position the handles
-      this.setHandle("handle-tr", x, y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-tl", x + w, y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-bl", x, y + h, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-br", x + w, y + h, handleSize, angle, centerX, centerY);
-      this.setRotateHandle(token, centerX, centerY, angle);
-    } else {
-      // Line markings
-      const x2 = token.x + token.w;
-      const y2 = token.y + token.h;
-      this.layer.style.display = "none";
-      this.lineLayer.style.display = "block";
-      this.line.setAttribute("x1", token.x.toString());
-      this.line.setAttribute("y1", token.y.toString());
-      this.line.setAttribute("x2", x2.toString());
-      this.line.setAttribute("y2", y2.toString());
-      this.setHandle("handle-p1", token.x, token.y, handleSize, 0, centerX, centerY);
-      this.setHandle("handle-p2", x2, y2, handleSize, 0, centerX, centerY);
-    }
-  }
-
-  private setHandle(
-    id: string,
-    x: number,
-    y: number,
-    size: number,
-    angle: number = 0,
-    centerX?: number,
-    centerY?: number,
-  ) {
-    const h = document.getElementById(id);
-    if (!h) return;
-    x -= size / 2;
-    y -= size / 2;
-    h.setAttribute("x", x.toString());
-    h.setAttribute("y", y.toString());
-    h.setAttribute("width", size.toString());
-    h.setAttribute("height", size.toString());
-
-    if (centerX !== undefined && centerY !== undefined) {
-      h.setAttribute("transform", `rotate(${angle} ${centerX - x - size / 2} ${centerY - y - size / 2})`);
-    } else {
-      h.removeAttribute("transform");
-    }
+    this.moveable.target = document.getElementById(tokens[0].id);
+    this.moveable.updateRect();
   }
 
   private rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
@@ -175,24 +150,6 @@ class TransformView extends TokenListener {
     const y = cy + dx * sin + dy * cos;
 
     return { x, y };
-  }
-
-  setRotateHandle(token: Token, centerX: number, centerY: number, angle: number) {
-    if (!this.rotateHandle) return;
-
-    const topCenterX = token.x + token.w + 20;
-    const topCenterY = token.y + token.h / 2;
-
-    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
-    this.rotateHandle.setAttribute("cx", rotated.x.toString());
-    this.rotateHandle.setAttribute("cy", rotated.y.toString());
-
-    if (this.rotateLine) {
-      this.rotateLine.setAttribute("x1", centerX.toString());
-      this.rotateLine.setAttribute("y1", centerY.toString());
-      this.rotateLine.setAttribute("x2", rotated.x.toString());
-      this.rotateLine.setAttribute("y2", rotated.y.toString());
-    }
   }
 
   private startResize(e: MouseEvent) {
@@ -269,8 +226,6 @@ class TransformView extends TokenListener {
       h,
       r: token.r,
     });
-
-    this.updateBox();
   }
 
   private startRotate(e: MouseEvent) {
@@ -297,7 +252,6 @@ class TransformView extends TokenListener {
       r = Math.floor(r); // Makes behavior "snappier"
     }
 
-    this.updateBox();
     this.emit("token_continuous_transform", {
       id: token.id,
       name: token.name,
