@@ -31,8 +31,16 @@
     }
 
     .tab-panel {
-      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       text-align: center;
+      margin: 0px 8px;
+      gap: 8px;
+
+      &[hidden] {
+        display: none !important;
+      }
 
       &-row {
         display: flex;
@@ -41,13 +49,18 @@
         gap: 4px;
         margin: 8px 8px 0px 8px;
       }
+
+      & h2 {
+        margin-top: 16px;
+        margin-bottom: 0px;
+        text-align: center;
+      }
     }
   }
 
   .square-button-container {
     display: flex;
-    justify-content: space-evenly;
-    margin-bottom: 8px;
+    justify-content: space-between;
 
     & > * {
       aspect-ratio: 1 / 1;
@@ -72,68 +85,6 @@
     }
   }
 
-  .color-picker-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-left: 0px;
-    margin-bottom: 8px;
-    width: 100%;
-    height: 32px;
-
-    & input {
-      width: 90%;
-      height: 100%;
-      cursor: pointer;
-
-      color: var(--light-primary);
-      background-color: var(--light-primary);
-
-      border: 1px solid var(--light-primary);
-      border-radius: 4px;
-      font-size: 1rem;
-      padding: 0;
-
-      box-shadow: 0px -1px 1px var(--light-secondary) inset;
-    }
-
-    & label {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 2px black;
-    }
-  }
-
-  .label-button,
-  button {
-    color: var(--light-primary);
-    background-color: var(--dark-primary);
-    font-weight: bold;
-    transition: all 0.1s ease;
-    cursor: pointer;
-
-    border: 1px solid var(--light-secondary);
-    border-radius: 8px;
-    font-size: 1rem;
-    padding: 0.6rem;
-
-    box-shadow: 0px -1px 1px var(--light-secondary) inset;
-
-    &:hover {
-      background-color: var(--dark-secondary);
-    }
-
-    &:disabled {
-      background-color: var(--light-primary);
-      color: var(--light-secondary);
-    }
-  }
-
   .side-menu-list {
     list-style-type: none;
     padding: 0px;
@@ -142,7 +93,7 @@
     & > li {
       border: solid 1px var(--light-secondary);
       background-color: var(--dark-primary);
-      margin: 8px;
+      margin-bottom: 8px;
       display: flex;
       overflow: hidden;
       cursor: pointer;
@@ -150,17 +101,13 @@
 
       &.selected {
         background-color: var(--dark-secondary);
+        box-shadow: 0px -1px 1px var(--light-secondary) inset;
       }
 
       & > i {
         font-size: 32px;
         margin: 0;
         padding: 4px;
-      }
-
-      & > p {
-        margin: 0;
-        padding: 0;
       }
     }
   }

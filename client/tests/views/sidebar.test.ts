@@ -61,5 +61,34 @@ describe("SidebarView", () => {
         expect(btn.classList.contains("selected")).toBe(false);
       });
     });
+
+    test("pressing '1' should activate the first tab", () => {
+      const firstBtn = view.tabButtons[0];
+      const tabName = firstBtn.getAttribute("data-tab");
+      const panel = document.getElementById(`tab-${tabName}`) as HTMLElement;
+
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "1" }));
+
+      expect(view.content.classList.contains("visible")).toBe(true);
+      expect(panel.hidden).toBe(false);
+      expect(firstBtn.classList.contains("selected")).toBe(true);
+    });
+
+    test("should ignore hotkeys when typing in an input field", () => {
+      const input = document.createElement("input");
+      document.body.appendChild(input);
+      input.focus();
+
+      input.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "1",
+          bubbles: true,
+        }),
+      );
+
+      expect(view.content.classList.contains("visible")).toBe(false);
+
+      document.body.removeChild(input);
+    });
   });
 });

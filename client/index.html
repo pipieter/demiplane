@@ -13,53 +13,76 @@
         <section id="tab-draw" class="tab-panel">
           <h2>Drawing</h2>
           <hr />
+
           <div class="square-button-container tab-panel-row">
-            <button id="begin-circle-button" class="draw-button"><i class="fa-solid fa-circle"></i></button>
-            <button id="begin-rect-button" class="draw-button"><i class="fa-solid fa-square"></i></button>
-            <button id="begin-line-button" class="draw-button"><i class="fa-solid fa-minus"></i></button>
+            <button id="begin-circle-button" class="draw-button">
+              <i class="fa-solid fa-circle"></i>
+            </button>
+            <button id="begin-rect-button" class="draw-button">
+              <i class="fa-solid fa-square"></i>
+            </button>
+            <button id="begin-line-button" class="draw-button">
+              <i class="fa-solid fa-minus"></i>
+            </button>
             <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed">
               <i class="fa-solid fa-t"></i>
             </button>
-            <button id="begin-drawing-button" class="draw-button"><i class="fa-solid fa-pencil"></i></button>
+            <button id="begin-drawing-button" class="draw-button">
+              <i class="fa-solid fa-pencil"></i>
+            </button>
           </div>
-          <div class="tab-panel-row color-picker-wrapper">
+
+          <label>
+            <span>Select Color</span>
             <input type="color" id="draw-color-input" />
-            <label for="draw-color-input">Select Color</label>
-          </div>
-          <div class="tab-panel-row">
+          </label>
+          
+          <label>
+            <span>Border only</span>
             <input type="checkbox" id="draw-border-checkbox" />
-            <label for="draw-border-checkbox">Border</label>
+          </label>
+          
+          <label>
+            <span>Width</span>
             <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
-            <label for="draw-border-number">Width</label>
-          </div>
+          </label>
+
           <hr />
-          <div class="tab-panel-row">
-            <label for="upload-token-button" class="label-button">
-              <i class="fa-solid fa-image"></i> Upload a token
-              <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
-            </label>
-          </div>
+
+          <label for="upload-token-button">
+            <i class="fa-solid fa-image"></i> Upload a token
+            <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
+          </label>
         </section>
 
         <section id="tab-grid" class="tab-panel" hidden>
-          <h2>Grid settings</h2>
+          <h2>Grid Settings</h2>
           <hr />
-          <input type="checkbox" id="grid-global-checkbox" />
-          <label for="grid-global-checkbox">Enable grid-locking by default</label>
+
+          <label>
+            <input type="checkbox" id="grid-global-checkbox" />
+            <span>Default grid-lock</span>
+          </label>
+          
           <hr />
-          <div class="tab-panel-row">
-            <label for="grid-size">Grid-size</label>
+
+          <label for="grid-size">
+            <span>Grid-size</span>
             <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
-          </div>
-          <div class="tab-panel-row">
-            <label for="grid-offset-X">X-offset</label>
+          </label>
+              
+          <label for="grid-offset-X">
+            <span>X-offset</span>
             <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
-          </div>
-          <div class="tab-panel-row">
-            <label for="grid-offset-Y">Y-offset</label>
+          </label>
+
+          <label for="grid-offset-Y">
+            <span>Y-offset</span>
             <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
-          </div>
+          </label>
+
           <hr />
+
           <label for="upload-background-button" class="label-button">
             <i class="fa-regular fa-image"></i> Upload background
             <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
@@ -69,58 +92,60 @@
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
           <hr />
-          <div class="tab-panel-row">
-            <label for="token-edit-x">x</label>
+
+          <label for="token-edit-x">
+            <span>X</span>
             <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-y">y</label>
+          </label>
+            
+          <label for="token-edit-y">
+            <span>Y</span>
             <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-w">width</label>
+          </label>
+          
+          <label for="token-edit-w">
+            <span>Width</span>
             <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-h">height</label>
+          </label>
+          
+          <label for="token-edit-h">
+            <span>Height</span>
             <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
-          </div>
-          <div class="tab-panel-row">
-            <label for="token-edit-r">angle</label>
-            <input
-              id="token-edit-r"
-              type="number"
-              name="token-edit-r"
-              min="-180"
-              max="180"
-              step="1"
-              value="0"
-              disabled
-            />
-          </div>
+          </label>
+          
+          <label for="token-edit-r">
+            <span>Rotate</span>
+            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+          </label>
+
           <button id="token-edit-delete" disabled>Delete</button>
-          <br />
           <button id="token-edit-move-up">Move up</button>
-          <br />
           <button id="token-edit-move-down">Move down</button>
+
           <hr />
-          <div id="token-list-container">
+
+          <label for="token-list-checkbox">
+            <span>Display token list</span>
             <input type="checkbox" id="token-list-checkbox" />
-            <label for="token-list-checkbox">Display token list</label>
-            <ul id="token-list" class="side-menu-list" style="display: none"></ul>
-          </div>
+          </label>
+
+          <ul id="token-list" class="side-menu-list" style="display: none"></ul>
         </section>
 
         <section id="tab-user" class="tab-panel" hidden>
           <h2>User Settings</h2>
           <hr />
-          <label for="user-input-name">Name</label>
-          <input id="user-input-name" type="text" name="user-input-name" />
-          <div class="color-picker-wrapper">
-              <label for="user-input-color">Color</label>
-              <input id="user-input-color" type="color" name="user-input-color" />
-</div>
-                <hr />
+          <label for="user-input-name">
+            <span>Name</span>
+            <input id="user-input-name" type="text" name="user-input-name" />
+          </label>
+          <label for="user-input-color">
+            <span>Color</span>
+            <input id="user-input-color" type="color" name="user-input-color" />
+          </label>
+          
+          <hr />
+
           <ul id="user-list" class="side-menu-list"></ul>
         </section>
       </aside>
