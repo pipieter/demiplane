@@ -95,6 +95,11 @@ store.listen("message", (event) => {
       break;
     }
 
+    case "background_rename_layer": {
+      state.renameBackgroundLayer(data.id, data.name);
+      break;
+    }
+
     case "transform":
       state.transformToken(data.transform);
       break;
