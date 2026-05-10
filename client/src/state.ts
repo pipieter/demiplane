@@ -67,6 +67,10 @@ class State extends Listener<StateListenerMap> {
     }
   }
 
+  public getCurrentBackgroundLayer() {
+    return this.background.selected;
+  }
+
   public createToken(token: Token) {
     this.tokens.push(token);
     this.emit("token_create", token);

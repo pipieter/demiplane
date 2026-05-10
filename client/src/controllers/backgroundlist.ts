@@ -41,6 +41,12 @@ class BackgroundListController extends Controller<BackgroundListView> {
   public deleteLayer(id: string) {
     this.state.deleteBackgroundLayer(id);
     this.store.send({ type: "request_background_delete_layer", id });
+
+    // If deleting the current background layer, set the background to null
+    if (id === this.state.getCurrentBackgroundLayer()) {
+      this.state.selectBackgroundLayer(null);
+      this.store.send({ type: "request_background_select_layer", id: null });
+    }
   }
 
   public renameLayer(id: string, name: string) {
