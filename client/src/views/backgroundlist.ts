@@ -58,7 +58,10 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
 
       const deleteIcon = document.createElement("i");
       deleteIcon.classList.add("fa-solid", "fa-trash");
-      deleteIcon.onclick = () => this.emit("background_layer_delete", layer.id);
+      deleteIcon.onclick = (e) => {
+        e.stopPropagation(); // Prevent clicking through the icon onto the li
+        this.emit("background_layer_delete", layer.id);
+      };
 
       li.onclick = () => this.emit("background_layer_select", layer.id);
 
