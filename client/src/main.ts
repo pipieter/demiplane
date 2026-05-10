@@ -28,12 +28,15 @@ import ServerStatusController from "./controllers/serverstatus";
 import type { ResponseMessage } from "./messages";
 import UserCursorController from "./controllers/usercursors";
 import UserCursorsView from "./views/usercursors";
+import BackgroundListView from "./views/backgroundlist";
+import BackgroundListController from "./controllers/backgroundlist";
 
 const state = new State();
 const store = new Store(server.url);
 
 const tokenView = new TokenMapView();
 const backgroundView = new BackgroundView();
+const backgroundListView = new BackgroundListView();
 const transformView = new TransformView(state.grid);
 const selectionView = new SelectionView();
 const serverStatusView = new ServerStatusView();
@@ -47,6 +50,7 @@ const userCursorView = new UserCursorsView(state.grid);
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
+new BackgroundListController(store, state, backgroundListView);
 new TokenMapController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
@@ -76,8 +80,18 @@ store.listen("message", (event) => {
       state.setGrid(data.grid);
       break;
 
-    case "background": {
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+    case "background_add_layer": {
+      state.addBackgroundLayer(data.layer);
+      break;
+    }
+
+    case "background_delete_layer": {
+      state.deleteBackgroundLayer(data.id);
+      break;
+    }
+
+    case "background_select_layer": {
+      state.selectBackgroundLayer(data.id);
       break;
     }
 
@@ -97,7 +111,7 @@ store.listen("message", (event) => {
       state.clearTokens();
       state.clearSelected();
       state.setGrid(data.grid);
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.layers, data.background.selected);
       state.createTokens(data.tokens);
       state.setUsers(data.users);
       store.setSecretToken(data.secret);

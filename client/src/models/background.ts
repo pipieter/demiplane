@@ -1,18 +1,43 @@
+export interface BackgroundLayer {
+  id: string;
+  name: string;
+  href: string | null;
+  width: number;
+  height: number;
+}
+
 class Background {
-  public href: string | null;
-  public width: number;
-  public height: number;
+  public layers: BackgroundLayer[];
+  public selected: string | null;
 
   constructor() {
-    this.href = null;
-    this.width = 1024;
-    this.height = 1024;
+    this.layers = [];
+    this.selected = null;
   }
 
-  public set(href: string | null, width: number, height: number) {
-    this.href = href;
-    this.width = width;
-    this.height = height;
+  public get layer(): BackgroundLayer | null {
+    return this.layers.find((layer) => layer.id === this.selected) ?? null;
+  }
+
+  public get width() {
+    return this.layer?.width ?? 1024;
+  }
+
+  public get height() {
+    return this.layer?.height ?? 1024;
+  }
+
+  public get href() {
+    return this.layer?.href ?? null;
+  }
+
+  public set(layers: BackgroundLayer[], selected: string | null) {
+    this.layers = layers;
+    this.selected = selected;
+  }
+
+  public select(selected: string) {
+    this.selected = selected;
   }
 }
 
