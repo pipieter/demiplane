@@ -33,7 +33,7 @@ export interface BackgroundRenameLayerRequestMessage {
 
 /** Rename a background layer */
 export interface BackgroundRenameLayerResponseMessage {
-  type: "background_select_layer";
+  type: "background_rename_layer";
   id: string;
   name: string;
 }
