@@ -253,22 +253,34 @@ public partial class Server
                     break;
                 }
 
-            case BackgroundRequestMessage background:
+            case BackgroundAddLayerRequestMessage add:
                 {
-                    Asset asset =
-                        AssetService.Find(background.href)
-                        ?? throw new FileNotFoundException($"Could not find {background.href}");
+                    _state.AddBackgroundLayer(add.layer);
+                    BackgroundAddLayerResponseMessage response = new(add.layer);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
-                    if (!Image.IsImage(asset.Path))
-                    {
-                        throw new FormatException($"File at {background.href} is not an image!");
-                    }
+            case BackgroundSelectLayerRequestMessage selection:
+                {
+                    _state.SetBackgroundLayer(selection.id);
+                    BackgroundSelectLayerResponseMessage response = new(selection.id);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
-                    (int width, int height) = Image.GetSize(asset.Path);
-                    Background found = new(background.href, width, height);
+            case BackgroundRenameLayerRequestMessage rename:
+                {
+                    _state.RenameBackgroundLayer(rename.id, rename.name);
+                    BackgroundRenameLayerResponseMessage response = new(rename.id, rename.name);
+                    await BroadcastMessage(response, socket);
+                    break;
+                }
 
-                    _state.SetBackground(found);
-                    BackgroundResponseMessage response = new(_state.GetBackground());
+            case BackgroundDeleteLayerRequestMessage deletion:
+                {
+                    _state.DeleteBackgroundLayer(deletion.id);
+                    BackgroundDeleteLayerResponseMessage response = new(deletion.id);
                     await BroadcastMessage(response, socket);
                     break;
                 }

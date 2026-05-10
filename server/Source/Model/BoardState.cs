@@ -11,7 +11,7 @@ public class ConcurrentBoardState
     private const int MaxDeletedTokens = 256;
     private readonly List<User> _users = [];
     private readonly Grid _grid = new(64, 0, 0);
-    private readonly Background _background = new(null, 1024, 1024);
+    private readonly Background _background = new([], null);
 
     public bool AddToken(Token token)
     {
@@ -185,13 +185,35 @@ public class ConcurrentBoardState
         }
     }
 
-    public void SetBackground(Background background)
+    public void AddBackgroundLayer(BackgroundLayer layer)
     {
         lock (_lock)
         {
-            _background.href = background.href;
-            _background.width = background.width;
-            _background.height = background.height;
+            _background.AddLayer(layer);
+        }
+    }
+
+    public void SetBackgroundLayer(string? selected)
+    {
+        lock (_lock)
+        {
+            _background.selected = selected;
+        }
+    }
+
+    public void RenameBackgroundLayer(string id, string name)
+    {
+        lock (_lock)
+        {
+            _background.RenameLayer(id, name);
+        }
+    }
+
+    public void DeleteBackgroundLayer(string id)
+    {
+        lock (_lock)
+        {
+            _background.DeleteLayer(id);
         }
     }
 
