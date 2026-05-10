@@ -15,13 +15,13 @@ export interface BackgroundAddLayerResponseMessage {
 /** Request to select a background layer */
 export interface BackgroundSelectLayerRequestMessage {
   type: "request_background_select_layer";
-  id: string;
+  id: string | null;
 }
 
 /** Select a background layer */
 export interface BackgroundSelectLayerResponseMessage {
   type: "background_select_layer";
-  id: string;
+  id: string | null;
 }
 
 /** Request to rename a background layer */

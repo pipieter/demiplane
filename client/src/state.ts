@@ -49,7 +49,7 @@ class State extends Listener<StateListenerMap> {
     this.emit("background_change", this.background);
   }
 
-  public selectBackgroundLayer(id: string) {
+  public selectBackgroundLayer(id: string | null) {
     this.background.select(id);
     this.emit("background_change", this.background);
   }

@@ -36,7 +36,7 @@ class Background {
     this.selected = selected;
   }
 
-  public select(selected: string) {
+  public select(selected: string | null) {
     this.selected = selected;
   }
 }
