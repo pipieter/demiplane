@@ -59,5 +59,10 @@ public class Background(BackgroundLayer[] layers, string? selected)
     public void DeleteLayer(string id)
     {
         layers = [.. layers.Where(layer => layer.id != id)];
+
+        if (id == selected)
+        {
+            selected = null;
+        }
     }
 }

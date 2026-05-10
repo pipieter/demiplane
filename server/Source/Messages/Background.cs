@@ -21,23 +21,23 @@ public class BackgroundAddLayerResponseMessage(BackgroundLayer layer) : Message
     public BackgroundLayer layer = layer;
 }
 
-public class BackgroundSelectLayerRequestMessage(string id) : Message
+public class BackgroundSelectLayerRequestMessage(string? id) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "request_background_select_layer";
 
-    [JsonProperty(Required = Required.Always)]
-    public string id = id;
+    [JsonProperty(Required = Required.AllowNull)]
+    public string? id = id;
 
 }
 
-public class BackgroundSelectLayerResponseMessage(string id) : Message
+public class BackgroundSelectLayerResponseMessage(string? id) : Message
 {
     [JsonProperty(Required = Required.Always)]
     public string type = "background_select_layer";
 
-    [JsonProperty(Required = Required.Always)]
-    public string id = id;
+    [JsonProperty(Required = Required.AllowNull)]
+    public string? id = id;
 }
 
 public class BackgroundRenameLayerRequestMessage(string id, string name) : Message
