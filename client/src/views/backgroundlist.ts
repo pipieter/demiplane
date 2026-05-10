@@ -64,7 +64,7 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
       deleteIcon.classList.add("fa-solid", "fa-trash");
       deleteIcon.onclick = (e) => {
         e.stopPropagation(); // Prevent clicking through the icon onto the li
-        this.emit("background_layer_delete", layer.id);
+        this.onDelete(layer);
       };
 
       li.appendChild(nameInput);
@@ -82,6 +82,12 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
     }
 
     this.emit("background_layer_rename", [layer.id, name]);
+  }
+
+  private onDelete(layer: BackgroundLayer) {
+    if (confirm(`Delete background ${layer.name}?`)) {
+      this.emit("background_layer_delete", layer.id);
+    }
   }
 
   private toggleList(enabled: boolean) {
