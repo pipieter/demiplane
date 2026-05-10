@@ -13,12 +13,14 @@ interface BackgroundListViewMap {
 class BackgroundListView extends Listener<BackgroundListViewMap> {
   public readonly input: HTMLInputElement;
   public readonly layersDiv: HTMLDivElement;
+  public readonly toggleButton: HTMLInputElement;
 
   constructor() {
     super();
 
     this.input = document.getElementById("upload-background-button") as HTMLInputElement;
     this.layersDiv = document.getElementById("background-layers-list") as HTMLDivElement;
+    this.toggleButton = document.getElementById("background-list-checkbox") as HTMLInputElement;
 
     this.input.onchange = (evt) => {
       const file = (evt.target as HTMLInputElement).files?.item(0);
@@ -26,6 +28,8 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
         this.emit("background_upload", file);
       }
     };
+
+    this.toggleButton.addEventListener("change", () => this.toggleList(this.toggleButton.checked));
   }
 
   public update(background: Background) {
@@ -63,8 +67,6 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
         this.emit("background_layer_delete", layer.id);
       };
 
-      li.onclick = () => this.emit("background_layer_select", layer.id);
-
       li.appendChild(nameInput);
       li.appendChild(deleteIcon);
       this.layersDiv.appendChild(li);
@@ -80,6 +82,14 @@ class BackgroundListView extends Listener<BackgroundListViewMap> {
     }
 
     this.emit("background_layer_rename", [layer.id, name]);
+  }
+
+  private toggleList(enabled: boolean) {
+    if (enabled) {
+      this.layersDiv.style.display = "";
+    } else {
+      this.layersDiv.style.display = "none";
+    }
   }
 }
 
