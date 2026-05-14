@@ -36,12 +36,12 @@
             <span>Select Color</span>
             <input type="color" id="draw-color-input" />
           </label>
-          
+
           <label>
             <span>Border only</span>
             <input type="checkbox" id="draw-border-checkbox" />
           </label>
-          
+
           <label>
             <span>Width</span>
             <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
@@ -63,14 +63,14 @@
             <input type="checkbox" id="grid-global-checkbox" />
             <span>Default grid-lock</span>
           </label>
-          
+
           <hr />
 
           <label for="grid-size">
             <span>Grid-size</span>
             <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
           </label>
-              
+
           <label for="grid-offset-X">
             <span>X-offset</span>
             <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
@@ -80,13 +80,24 @@
             <span>Y-offset</span>
             <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
           </label>
+        </section>
 
+        <section id="tab-background" class="tab-panel" hidden>
+          <h2>Background</h2>
           <hr />
-
           <label for="upload-background-button" class="label-button">
             <i class="fa-regular fa-image"></i> Upload background
             <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
           </label>
+
+          <hr />
+
+          <label for="background-list-checkbox">
+            <span>Display background list</span>
+            <input type="checkbox" id="background-list-checkbox" />
+          </label>
+
+          <ul id="background-layers-list" class="side-menu-list" style="display: none;"></ul>
         </section>
 
         <section id="tab-token" class="tab-panel" hidden>
@@ -97,25 +108,34 @@
             <span>X</span>
             <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
           </label>
-            
+
           <label for="token-edit-y">
             <span>Y</span>
             <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-w">
             <span>Width</span>
             <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-h">
             <span>Height</span>
             <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-r">
             <span>Rotate</span>
-            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+            <input
+              id="token-edit-r"
+              type="number"
+              name="token-edit-r"
+              min="-180"
+              max="180"
+              step="1"
+              value="0"
+              disabled
+            />
           </label>
 
           <button id="token-edit-delete" disabled>Delete</button>
@@ -143,7 +163,7 @@
             <span>Color</span>
             <input id="user-input-color" type="color" name="user-input-color" />
           </label>
-          
+
           <hr />
 
           <ul id="user-list" class="side-menu-list"></ul>
@@ -154,6 +174,7 @@
         <button class="tab-close-button" id="sidebar-hide-button"><i class="fa-solid fa-xmark"></i></button>
         <button class="tab-button" data-tab="draw">Draw</button>
         <button class="tab-button" data-tab="grid">Grid</button>
+        <button class="tab-button" data-tab="background">Background</button>
         <button class="tab-button" data-tab="token">Token</button>
         <button class="tab-button" data-tab="user">User</button>
       </nav>

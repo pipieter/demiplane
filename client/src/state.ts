@@ -1,5 +1,5 @@
 import { Listener } from "./listener";
-import Background from "./models/background";
+import Background, { type BackgroundLayer } from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
@@ -39,9 +39,36 @@ class State extends Listener<StateListenerMap> {
     this.background = new Background();
   }
 
-  public setBackground(href: string | null, width: number, height: number) {
-    this.background.set(href, width, height);
+  public setBackground(layers: BackgroundLayer[], selected: string | null) {
+    this.background.set(layers, selected);
     this.emit("background_change", this.background);
+  }
+
+  public addBackgroundLayer(layer: BackgroundLayer) {
+    this.background.layers.push(layer);
+    this.emit("background_change", this.background);
+  }
+
+  public selectBackgroundLayer(id: string | null) {
+    this.background.select(id);
+    this.emit("background_change", this.background);
+  }
+
+  public deleteBackgroundLayer(id: string) {
+    this.background.layers = this.background.layers.filter((layer) => layer.id !== id);
+    this.emit("background_change", this.background);
+  }
+
+  public renameBackgroundLayer(id: string, name: string) {
+    const layer = this.background.layers.find((layer) => layer.id === id);
+    if (layer) {
+      layer.name = name;
+      this.emit("background_change", this.background);
+    }
+  }
+
+  public getCurrentBackgroundLayer() {
+    return this.background.selected;
   }
 
   public createToken(token: Token) {
