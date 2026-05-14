@@ -83,7 +83,10 @@ public partial class Server
     /// In order to catch these errors, the most recent messages that did not succeed related
     /// to each token are remembered, such that when the token does finish creating these
     /// changes can be made immediately.
+    /// Similar behavior is also possible for other requests, such as renaming a background
+    /// that doesn't (yet) exist.
     private readonly TimedTokenMessageHistory _latestTokenMessages = new(5000);
+    private readonly TimedBag<string, Message> _latestBackgroundMessages = new(5000);
 
     private async Task HandleWebSocket(HttpContext context)
     {
@@ -141,6 +144,14 @@ public partial class Server
             }
 
             await client.SendAsync(JsonConvert.SerializeObject(message));
+        }
+    }
+
+    private async Task BroadcastMessages(Message[] messages, Socket? ignoreSocket = null)
+    {
+        foreach (Message message in messages)
+        {
+            await BroadcastMessage(message, ignoreSocket);
         }
     }
 
@@ -258,6 +269,9 @@ public partial class Server
                     _state.AddBackgroundLayer(add.layer);
                     BackgroundAddLayerResponseMessage response = new(add.layer);
                     await BroadcastMessage(response, socket);
+
+                    Message[] backgroundMessages = _latestBackgroundMessages.Pop(add.layer.id);
+                    await BroadcastMessages(backgroundMessages, socket);
                     break;
                 }
 
@@ -271,6 +285,11 @@ public partial class Server
 
             case BackgroundRenameLayerRequestMessage rename:
                 {
+                    if (!_state.BackgroundLayerExists(rename.id))
+                    {
+                        _latestBackgroundMessages.Add(rename.id, rename);
+                        break;
+                    }
                     _state.RenameBackgroundLayer(rename.id, rename.name);
                     BackgroundRenameLayerResponseMessage response = new(rename.id, rename.name);
                     await BroadcastMessage(response, socket);
@@ -279,6 +298,11 @@ public partial class Server
 
             case BackgroundDeleteLayerRequestMessage deletion:
                 {
+                    if (!_state.BackgroundLayerExists(deletion.id))
+                    {
+                        _latestBackgroundMessages.Add(deletion.id, deletion);
+                        break;
+                    }
                     _state.DeleteBackgroundLayer(deletion.id);
                     BackgroundDeleteLayerResponseMessage response = new(deletion.id);
                     await BroadcastMessage(response, socket);

@@ -225,6 +225,14 @@ public class ConcurrentBoardState
         }
     }
 
+    public bool BackgroundLayerExists(string id)
+    {
+        lock (_lock)
+        {
+            return _background.layers.FirstOrDefault(layer => layer.id == id) != null;
+        }
+    }
+
     public bool TransformToken(string id, string name, int x, int y, int w, int h, int r)
     {
         lock (_lock)
