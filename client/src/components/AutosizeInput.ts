@@ -7,13 +7,14 @@
 export default function AutosizeInput(value: string = "", minWidth: number = 4) {
   const input = document.createElement("input");
   input.value = value;
+  input.style.fontFamily = "'Courier New', monospace";
 
   const width = Math.max(value.length, minWidth);
-  input.style.width = `${width}ch`;
+  input.size = width;
 
   input.addEventListener("input", () => {
     const width = Math.max(input.value.length, minWidth);
-    input.style.width = `${width}ch`;
+    input.size = width;
   });
   return input;
 }
