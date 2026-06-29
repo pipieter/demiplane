@@ -7,8 +7,8 @@ export const moveable = new Moveable(container, {
   target: null,
   container: objectsLayer,
   draggable: true,
-  resizable: true,
-  scalable: false,
+  resizable: false, // Resize is not supported with SVG.
+  scalable: false, // TODO
   rotatable: true,
   warpable: false,
   pinchable: false, // TODO
