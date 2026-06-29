@@ -1,6 +1,6 @@
-import Moveable from "moveable";
 import { TokenListener } from "../listeners";
 import type Grid from "../models/grid";
+import { moveable } from "../models/moveable";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
 import { util } from "../util";
@@ -10,7 +10,6 @@ class TransformView extends TokenListener {
   public readonly container: HTMLDivElement;
   public readonly objectsLayer: SVGElement;
   private dragOffset: Point | null = null;
-  private moveable: Moveable;
   private direction: string | null;
   private selected: Token[];
 
@@ -23,30 +22,12 @@ class TransformView extends TokenListener {
     this.selected = [];
     this.direction = null;
 
-    this.moveable = new Moveable(this.container, {
-      target: null,
-      container: this.objectsLayer,
-      draggable: true,
-      resizable: true,
-      scalable: false,
-      rotatable: true,
-      warpable: false,
-      pinchable: false, // TODO
-      origin: true,
-      keepRatio: true,
-      edge: false,
-      throttleDrag: 0,
-      throttleResize: 0,
-      throttleScale: 0,
-      throttleRotate: 0,
-    });
-
     this.initMoveableListeners();
   }
 
   private initMoveableListeners() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.moveable.on("drag", ({ target, transform, left, top, right, bottom, delta, dist, clientX, clientY }) => {
+    moveable.on("drag", ({ target, transform, left, top, right, bottom, delta, dist, clientX, clientY }) => {
       if (this.selected.length === 0) return;
       const token = this.selected[0];
 
@@ -55,11 +36,11 @@ class TransformView extends TokenListener {
         x: left,
         y: top,
       });
-      this.moveable.updateRect();
+      moveable.updateRect();
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.moveable.on("resize", ({ target, width, height, drag }) => {
+    moveable.on("resize", ({ target, width, height, drag }) => {
       if (this.selected.length === 0) return;
       const token = this.selected[0];
 
@@ -70,11 +51,11 @@ class TransformView extends TokenListener {
         w: width,
         h: height,
       });
-      this.moveable.updateRect();
+      moveable.updateRect();
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.moveable.on("rotate", ({ target, beforeRotate }) => {
+    moveable.on("rotate", ({ target, beforeRotate }) => {
       if (this.selected.length === 0) return;
       const token = this.selected[0];
 
@@ -82,15 +63,15 @@ class TransformView extends TokenListener {
         ...token,
         r: beforeRotate, // Moveable handles the Atan2 math for you
       });
-      this.moveable.updateRect();
+      moveable.updateRect();
     });
 
-    this.moveable.on("renderEnd", () => {
+    moveable.on("renderEnd", () => {
       const token = this.selected[0];
       if (token) {
         this.emit("token_transform", { ...token });
       }
-      this.moveable.updateRect();
+      moveable.updateRect();
     });
   }
 
@@ -134,8 +115,8 @@ class TransformView extends TokenListener {
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
-    this.moveable.target = document.getElementById(tokens[0].id);
-    this.moveable.updateRect();
+    moveable.target = document.getElementById(tokens[0].id);
+    moveable.updateRect();
   }
 
   private rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
