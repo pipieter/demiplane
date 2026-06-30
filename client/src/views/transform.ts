@@ -1,5 +1,7 @@
+import type { MoveableRefType } from "moveable/declaration/types";
 import { TokenListener } from "../listeners";
 import type Grid from "../models/grid";
+import { moveable } from "../models/moveable";
 import type { Token } from "../models/token";
 import type { Point } from "../models/transform";
 import { util } from "../util";
@@ -42,6 +44,48 @@ class TransformView extends TokenListener {
 
     this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.startResize(evt)));
     this.rotateHandle.addEventListener("mousedown", (evt) => this.startRotate(evt));
+
+    this.initMoveableListeners();
+  }
+
+  private getSelectedById(id: string): (Token | null) {
+    return this.selected.find(token => token.id === id) ?? null;
+  }
+
+  private initMoveableListeners() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    moveable.on("drag", ({ target, beforeTranslate }) => {
+      const token = this.getSelectedById(target.id);
+      if (!token) return;
+
+      const [translateX, translateY] = beforeTranslate;
+
+      this.emit("token_continuous_transform", {
+        ...token,
+        x: translateX,
+        y: translateY,
+      });
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    moveable.on("rotate", ({ target, beforeRotate }) => {
+      const token = this.getSelectedById(target.id);
+      if (!token) return;
+
+      this.emit("token_continuous_transform", {
+        ...token,
+        r: beforeRotate, // Moveable handles the Atan2 math for you
+      });
+      // moveable.updateRect();
+    });
+
+    moveable.on("renderEnd", () => {
+      const token = this.selected[0];
+      if (token) {
+        this.emit("token_transform", { ...token });
+      }
+      // moveable.updateRect();
+    });
   }
 
   public makeDraggable(token: Token) {
@@ -84,6 +128,12 @@ class TransformView extends TokenListener {
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
+    if (this.selected.length !== 0) {
+      moveable.target = document.getElementById(tokens[0].id) as MoveableRefType;
+      moveable.updateRect();
+    } else {
+      moveable.target = null;
+    }
     this.updateBox();
   }
 

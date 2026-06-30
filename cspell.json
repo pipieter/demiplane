@@ -24,6 +24,7 @@
         "onmovedown",
         "onmoveup",
         "ontransform",
+        "pinchable",
         "resizebox",
         "serverstatus",
         "setlayer",
@@ -33,6 +34,7 @@
         "tokenmap",
         "usercursors",
         "vitest",
+        "warpable",
         "wwwroot",
         "xmark"
     ],
