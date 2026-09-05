@@ -17,7 +17,7 @@ export function getMoveable() {
     rotatable: true,
     warpable: false,
     pinchable: false,
-    origin: true,
+    origin: false,
     keepRatio: false,
     edge: false,
     throttleDrag: 0,

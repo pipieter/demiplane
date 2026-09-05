@@ -52,41 +52,39 @@ class TransformView extends TokenListener {
       if (token) this.moveableStart = { ...token };
     });
 
-    this.moveable.on("resize", ({ target, width, height, drag, direction, clientX, clientY, inputEvent }) => {
+    this.moveable.on("resize", ({ target, width, height, direction, clientX, clientY, inputEvent }) => {
       const token = this.getSelectedById(target.id);
       const start = this.moveableStart;
       if (!token || !start) return;
 
-      const [translateX, translateY] = drag.beforeTranslate;
-      let x = start.x + translateX;
-      let y = start.y + translateY;
       let w = width;
       let h = height;
 
       if (this.grid.shouldGridlock(inputEvent)) {
-        const right = start.x + start.w;
-        const bottom = start.y + start.h;
         const snapped = this.grid.getResizeSnappedClientCoordinates(clientX, clientY);
+        const localCursor = this.rotatePoint(
+          snapped.x,
+          snapped.y,
+          start.x + start.w / 2,
+          start.y + start.h / 2,
+          -start.r,
+        );
 
-        if (direction[0] > 0) w = snapped.x - start.x;
-        else if (direction[0] < 0) {
-          x = snapped.x;
-          w = right - x;
-        }
-        if (direction[1] > 0) h = snapped.y - start.y;
-        else if (direction[1] < 0) {
-          y = snapped.y;
-          h = bottom - y;
-        }
+        if (direction[0] > 0) w = localCursor.x - start.x;
+        else if (direction[0] < 0) w = start.x + start.w - localCursor.x;
+        if (direction[1] > 0) h = localCursor.y - start.y;
+        else if (direction[1] < 0) h = start.y + start.h - localCursor.y;
       }
+
+      const position = this.getResizedPosition(start, w, h, direction);
 
       this.emit(
         "token_continuous_transform",
         this.toTransform(token, {
-          x: Math.round(x),
-          y: Math.round(y),
-          w: Math.max(1, Math.round(w)),
-          h: Math.max(1, Math.round(h)),
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+          w: Math.max(1, Math.round(position.w)),
+          h: Math.max(1, Math.round(position.h)),
         }),
       );
     });
@@ -173,6 +171,44 @@ class TransformView extends TokenListener {
   private snapPosition(x: number, y: number, inputEvent: MouseEvent) {
     if (!this.grid.shouldGridlock(inputEvent)) return { x, y };
     return this.grid.getSnappedCoordinates(x, y);
+  }
+
+  private rotatePoint(px: number, py: number, cx: number, cy: number, angle: number) {
+    const radians = (angle * Math.PI) / 180;
+    const dx = px - cx;
+    const dy = py - cy;
+    return {
+      x: cx + dx * Math.cos(radians) - dy * Math.sin(radians),
+      y: cy + dx * Math.sin(radians) + dy * Math.cos(radians),
+    };
+  }
+
+  private getResizedPosition(start: Transform, width: number, height: number, direction: number[]) {
+    const startCenter = {
+      x: start.x + start.w / 2,
+      y: start.y + start.h / 2,
+    };
+    const fixedLocal = {
+      x: direction[0] < 0 ? start.x + start.w : start.x,
+      y: direction[1] < 0 ? start.y + start.h : start.y,
+    };
+    const fixedWorld = this.rotatePoint(fixedLocal.x, fixedLocal.y, startCenter.x, startCenter.y, start.r);
+    const nextFixedLocal = {
+      x: direction[0] < 0 ? width : 0,
+      y: direction[1] < 0 ? height : 0,
+    };
+    const rotatedOffset = this.rotatePoint(nextFixedLocal.x, nextFixedLocal.y, width / 2, height / 2, start.r);
+    const nextCenter = {
+      x: fixedWorld.x - (rotatedOffset.x - width / 2),
+      y: fixedWorld.y - (rotatedOffset.y - height / 2),
+    };
+
+    return {
+      x: nextCenter.x - width / 2,
+      y: nextCenter.y - height / 2,
+      w: width,
+      h: height,
+    };
   }
 
   private toTransform(token: Token, overrides: Partial<Transform> = {}): Transform {
