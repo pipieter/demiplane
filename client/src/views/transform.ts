@@ -1,335 +1,238 @@
+import type { MoveableRefType } from "moveable/declaration/types";
 import { TokenListener } from "../listeners";
-import type Grid from "../models/grid";
+import { getMoveable } from "../models/moveable";
 import type { Token } from "../models/token";
-import type { Point } from "../models/transform";
-import { util } from "../util";
+import type { Transform } from "../models/transform";
+import type Grid from "../models/grid";
 
 class TransformView extends TokenListener {
-  private grid: Grid;
-
-  public readonly container: HTMLDivElement;
-  private dragOffset: Point | null = null;
-
-  public readonly layer: SVGSVGElement;
-  public readonly box: SVGRectElement;
-  public readonly handles: SVGRectElement[];
-  public readonly rotateHandle: SVGCircleElement;
-  public readonly rotateLine: SVGLineElement;
-
-  public readonly lineLayer: SVGSVGElement;
-  public readonly line: SVGLineElement;
-
-  private direction: string | null;
+  private readonly moveable = getMoveable();
+  private readonly grid: Grid;
   private selected: Token[];
+  private moveableStart: Transform | null = null;
 
   constructor(grid: Grid) {
     super();
 
     this.grid = grid;
-
-    this.container = document.getElementById("whiteboard-container") as HTMLDivElement;
-    this.layer = document.getElementById("whiteboard-resize") as unknown as SVGSVGElement;
-    this.box = document.getElementById("resize-box") as unknown as SVGRectElement;
-    this.handles = [...document.querySelectorAll<SVGRectElement>(".resize-handle")];
-    this.rotateHandle = document.getElementById("rotate-handle") as unknown as SVGCircleElement;
-    this.rotateLine = document.getElementById("rotate-line") as unknown as SVGLineElement;
-
-    this.lineLayer = document.getElementById("whiteboard-resize-line") as unknown as SVGSVGElement;
-    this.line = document.getElementById("resize-line") as unknown as SVGLineElement;
-
-    this.direction = null;
     this.selected = [];
 
-    this.handles.forEach((handle) => handle.addEventListener("mousedown", (evt) => this.startResize(evt)));
-    this.rotateHandle.addEventListener("mousedown", (evt) => this.startRotate(evt));
+    this.initMoveableListeners();
+  }
+
+  private getSelectedById(id: string): Token | null {
+    return this.selected.find((token) => token.id === id) ?? null;
+  }
+
+  private initMoveableListeners() {
+    this.moveable.on("dragStart", ({ target }) => {
+      const token = this.getSelectedById(target.id);
+      if (token) this.moveableStart = { ...token };
+    });
+
+    this.moveable.on("drag", ({ target, beforeTranslate, inputEvent }) => {
+      const token = this.getSelectedById(target.id);
+      const start = this.moveableStart;
+      if (!token || !start) return;
+
+      const [translateX, translateY] = beforeTranslate;
+      const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
+
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+        }),
+      );
+    });
+
+    this.moveable.on("resizeStart", ({ target }) => {
+      const token = this.getSelectedById(target.id);
+      if (token) this.moveableStart = { ...token };
+    });
+
+    this.moveable.on("resize", ({ target, width, height, direction, clientX, clientY, inputEvent }) => {
+      const token = this.getSelectedById(target.id);
+      const start = this.moveableStart;
+      if (!token || !start) return;
+
+      let w = width;
+      let h = height;
+
+      if (this.grid.shouldGridlock(inputEvent)) {
+        const snapped = this.grid.getResizeSnappedClientCoordinates(clientX, clientY);
+        const localCursor = this.rotatePoint(
+          snapped.x,
+          snapped.y,
+          start.x + start.w / 2,
+          start.y + start.h / 2,
+          -start.r,
+        );
+
+        if (direction[0] > 0) w = localCursor.x - start.x;
+        else if (direction[0] < 0) w = start.x + start.w - localCursor.x;
+        if (direction[1] > 0) h = localCursor.y - start.y;
+        else if (direction[1] < 0) h = start.y + start.h - localCursor.y;
+      }
+
+      const position = this.getResizedPosition(start, w, h, direction);
+
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+          w: Math.max(1, Math.round(position.w)),
+          h: Math.max(1, Math.round(position.h)),
+        }),
+      );
+    });
+
+    this.moveable.on("scaleStart", ({ target }) => {
+      const token = this.getSelectedById(target.id);
+      if (token) this.moveableStart = { ...token };
+    });
+
+    this.moveable.on("scale", ({ target, scale, drag, inputEvent }) => {
+      const token = this.getSelectedById(target.id);
+      const start = this.moveableStart;
+      if (!token || !start) return;
+
+      const [translateX, translateY] = drag.beforeTranslate;
+      const [scaleX, scaleY] = scale;
+      const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
+
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+          w: Math.max(1, Math.round(start.w * scaleX)),
+          h: Math.max(1, Math.round(start.h * scaleY)),
+        }),
+      );
+    });
+
+    this.moveable.on("rotateStart", ({ target }) => {
+      const token = this.getSelectedById(target.id);
+      if (token) this.moveableStart = { ...token };
+    });
+
+    this.moveable.on("rotate", ({ target, beforeRotate, inputEvent }) => {
+      const token = this.getSelectedById(target.id);
+      const start = this.moveableStart;
+      if (!token || !start) return;
+
+      const rotation = start.r + beforeRotate;
+      const r = this.grid.shouldGridlock(inputEvent) ? Math.round(rotation / 15) * 15 : Math.round(rotation);
+
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: token.x,
+          y: token.y,
+          w: token.w,
+          h: token.h,
+          r,
+        }),
+      );
+    });
+
+    this.moveable.on("render", ({ target }) => {
+      // The token is redrawn from state; do not stack Moveable's CSS transform on it.
+      target.style.transform = "";
+    });
+
+    this.moveable.on("renderEnd", () => {
+      const token = this.selected[0];
+      if (token) {
+        this.emit("token_transform", this.toTransform(token));
+      }
+      this.moveableStart = null;
+    });
   }
 
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
-    element.onmousedown = () => {
+    element.onmousedown = (event) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey) {
+        this.emit("tokens_select", [token]);
+        return;
+      }
+
+      this.selected = [token];
+      this.moveable.target = element as MoveableRefType;
+      this.moveable.updateRect();
+      this.moveable.dragStart(event, element);
       this.emit("tokens_select", [token]);
-      document.onmousemove = (evt) => this.move(evt);
-      document.onmouseup = () => this.finishTransform();
     };
-  }
-
-  private move(event: MouseEvent) {
-    if (this.selected.length === 0) return;
-
-    // TODO only use the first selected for now
-    const token = this.selected[0];
-    const cursor = this.grid.getCoordinates(event);
-
-    if (!this.dragOffset)
-      this.dragOffset = {
-        x: cursor.x - token.x,
-        y: cursor.y - token.y,
-      };
-
-    // On grid-lock we want to snap to center, this feel better to use.
-    if (event.shiftKey) {
-      this.dragOffset.x = token.w / 2;
-      this.dragOffset.y = token.h / 2;
-    }
-
-    const x = cursor.x - this.dragOffset.x;
-    const y = cursor.y - this.dragOffset.y;
-    const w = token.w;
-    const h = token.h;
-
-    if (!util.mouseOnElement(event, this.container)) return;
-
-    this.emit("token_continuous_transform", { id: token.id, name: token.name, x, y, w, h, r: token.r });
   }
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
-    this.updateBox();
-  }
-
-  private updateBox() {
-    // Hide if nothing is selected
-    if (this.selected.length === 0) {
-      this.layer.style.display = "none";
-      this.lineLayer.style.display = "none";
-      return;
-    }
-
-    // TODO for now only use the first id
-    const token = this.selected[0];
-    const angle = token.r;
-    const handleSize = 8;
-    const centerX = token.x + token.w / 2;
-    const centerY = token.y + token.h / 2;
-
-    if (!this.isLineTransform()) {
-      const offset = 0;
-      const x = token.x - offset;
-      const y = token.y - offset;
-      const w = token.w + offset * 2;
-      const h = token.h + offset * 2;
-
-      this.layer.style.display = "block";
-      this.lineLayer.style.display = "none";
-      this.box.setAttribute("x", x.toString());
-      this.box.setAttribute("y", y.toString());
-      this.box.setAttribute("width", w.toString());
-      this.box.setAttribute("height", h.toString());
-      this.box.setAttribute("transform", `rotate(${angle} 0 0)`);
-
-      // Position the handles
-      this.setHandle("handle-tr", x, y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-tl", x + w, y, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-bl", x, y + h, handleSize, angle, centerX, centerY);
-      this.setHandle("handle-br", x + w, y + h, handleSize, angle, centerX, centerY);
-      this.setRotateHandle(token, centerX, centerY, angle);
+    if (this.selected.length !== 0) {
+      this.moveable.target = document.getElementById(tokens[0].id) as MoveableRefType;
+      this.moveable.updateRect();
     } else {
-      // Line markings
-      const x2 = token.x + token.w;
-      const y2 = token.y + token.h;
-      this.layer.style.display = "none";
-      this.lineLayer.style.display = "block";
-      this.line.setAttribute("x1", token.x.toString());
-      this.line.setAttribute("y1", token.y.toString());
-      this.line.setAttribute("x2", x2.toString());
-      this.line.setAttribute("y2", y2.toString());
-      this.setHandle("handle-p1", token.x, token.y, handleSize, 0, centerX, centerY);
-      this.setHandle("handle-p2", x2, y2, handleSize, 0, centerX, centerY);
+      this.moveable.target = null;
     }
   }
 
-  private setHandle(
-    id: string,
-    x: number,
-    y: number,
-    size: number,
-    angle: number = 0,
-    centerX?: number,
-    centerY?: number,
-  ) {
-    const h = document.getElementById(id);
-    if (!h) return;
-    x -= size / 2;
-    y -= size / 2;
-    h.setAttribute("x", x.toString());
-    h.setAttribute("y", y.toString());
-    h.setAttribute("width", size.toString());
-    h.setAttribute("height", size.toString());
-
-    if (centerX !== undefined && centerY !== undefined) {
-      h.setAttribute("transform", `rotate(${angle} ${centerX - x - size / 2} ${centerY - y - size / 2})`);
-    } else {
-      h.removeAttribute("transform");
-    }
+  private snapPosition(x: number, y: number, inputEvent: MouseEvent) {
+    if (!this.grid.shouldGridlock(inputEvent)) return { x, y };
+    return this.grid.getSnappedCoordinates(x, y);
   }
 
-  private rotatePoint(px: number, py: number, cx: number, cy: number, angleDeg: number) {
-    const angle = (angleDeg * Math.PI) / 180;
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-
+  private rotatePoint(px: number, py: number, cx: number, cy: number, angle: number) {
+    const radians = (angle * Math.PI) / 180;
     const dx = px - cx;
     const dy = py - cy;
-
-    const x = cx + dx * cos - dy * sin;
-    const y = cy + dx * sin + dy * cos;
-
-    return { x, y };
+    return {
+      x: cx + dx * Math.cos(radians) - dy * Math.sin(radians),
+      y: cy + dx * Math.sin(radians) + dy * Math.cos(radians),
+    };
   }
 
-  setRotateHandle(token: Token, centerX: number, centerY: number, angle: number) {
-    if (!this.rotateHandle) return;
+  private getResizedPosition(start: Transform, width: number, height: number, direction: number[]) {
+    const startCenter = {
+      x: start.x + start.w / 2,
+      y: start.y + start.h / 2,
+    };
+    const fixedLocal = {
+      x: direction[0] < 0 ? start.x + start.w : start.x,
+      y: direction[1] < 0 ? start.y + start.h : start.y,
+    };
+    const fixedWorld = this.rotatePoint(fixedLocal.x, fixedLocal.y, startCenter.x, startCenter.y, start.r);
+    const nextFixedLocal = {
+      x: direction[0] < 0 ? width : 0,
+      y: direction[1] < 0 ? height : 0,
+    };
+    const rotatedOffset = this.rotatePoint(nextFixedLocal.x, nextFixedLocal.y, width / 2, height / 2, start.r);
+    const nextCenter = {
+      x: fixedWorld.x - (rotatedOffset.x - width / 2),
+      y: fixedWorld.y - (rotatedOffset.y - height / 2),
+    };
 
-    const topCenterX = token.x + token.w + 20;
-    const topCenterY = token.y + token.h / 2;
-
-    const rotated = this.rotatePoint(topCenterX, topCenterY, centerX, centerY, angle);
-    this.rotateHandle.setAttribute("cx", rotated.x.toString());
-    this.rotateHandle.setAttribute("cy", rotated.y.toString());
-
-    if (this.rotateLine) {
-      this.rotateLine.setAttribute("x1", centerX.toString());
-      this.rotateLine.setAttribute("y1", centerY.toString());
-      this.rotateLine.setAttribute("x2", rotated.x.toString());
-      this.rotateLine.setAttribute("y2", rotated.y.toString());
-    }
+    return {
+      x: nextCenter.x - width / 2,
+      y: nextCenter.y - height / 2,
+      w: width,
+      h: height,
+    };
   }
 
-  private startResize(e: MouseEvent) {
-    e.stopPropagation();
-    const target = e.target as SVGElement;
-    this.direction = target.dataset.dir ?? null;
-
-    document.onmousemove = (evt) => this.resize(evt);
-    document.onmouseup = () => this.finishTransform();
-  }
-
-  private resize(evt: MouseEvent) {
-    if (this.selected.length <= 0 || !this.direction) return;
-
-    const token = this.selected[0];
-    const target = this.grid.getCoordinates(evt);
-
-    let { x, y, w, h } = token;
-
-    if (!this.isLineTransform()) {
-      const centerX = token.x + token.w / 2;
-      const centerY = token.y + token.h / 2;
-
-      // By rotating the mouse position BACKWARDS by the object's angle (-token.r),
-      // we can treat the object as if it has 0 rotation.
-      const localMouse = this.rotatePoint(target.x, target.y, centerX, centerY, -token.r);
-
-      if (this.direction.includes("r")) {
-        w = localMouse.x - token.x;
-      }
-      if (this.direction.includes("l")) {
-        x = localMouse.x;
-        w = token.w + (token.x - localMouse.x);
-      }
-      if (this.direction.includes("b")) {
-        h = localMouse.y - token.y;
-      }
-      if (this.direction.includes("t")) {
-        y = localMouse.y;
-        h = token.h + (token.y - localMouse.y);
-      }
-
-      const newCenterX = x + w / 2;
-      const newCenterY = y + h / 2;
-
-      // CSS 'transform-origin: center' expects the object's x/y to be
-      // positioned such that the rotation happens around the NEW center.
-      // We rotate the new center back to the original orientation.
-      const rotatedCenter = this.rotatePoint(newCenterX, newCenterY, centerX, centerY, token.r);
-
-      x = rotatedCenter.x - w / 2;
-      y = rotatedCenter.y - h / 2;
-    } else {
-      if (this.direction === "p1") {
-        const x2 = token.x + token.w;
-        const y2 = token.y + token.h;
-
-        x = target.x;
-        y = target.y;
-        w = x2 - x;
-        h = y2 - y;
-      } else if (this.direction === "p2") {
-        w = target.x - token.x;
-        h = target.y - token.y;
-      }
-    }
-
-    this.emit("token_continuous_transform", {
-      id: token.id,
-      name: token.name,
-      x,
-      y,
-      w,
-      h,
-      r: token.r,
-    });
-
-    this.updateBox();
-  }
-
-  private startRotate(e: MouseEvent) {
-    e.stopPropagation();
-    document.onmousemove = (evt) => this.rotate(evt);
-    document.onmouseup = () => this.finishTransform();
-  }
-
-  private rotate(evt: MouseEvent) {
-    const token = this.selected[0];
-
-    const current = this.grid.getCoordinates(evt, false);
-    const centerX = token.x + token.w / 2;
-    const centerY = token.y + token.h / 2;
-    const dx = current.x - centerX;
-    const dy = current.y - centerY;
-
-    let r = Math.atan2(dy, dx);
-    r = r * (180 / Math.PI); // Radians to degrees
-
-    if (evt.shiftKey) {
-      r = Math.round(r / 15) * 15; // Snap by 15 degrees
-    } else {
-      r = Math.floor(r); // Makes behavior "snappier"
-    }
-
-    this.updateBox();
-    this.emit("token_continuous_transform", {
+  private toTransform(token: Token, overrides: Partial<Transform> = {}): Transform {
+    return {
       id: token.id,
       name: token.name,
       x: token.x,
       y: token.y,
       w: token.w,
       h: token.h,
-      r,
-    });
-  }
-
-  private finishTransform() {
-    const token = this.selected[0];
-    if (token)
-      this.emit("token_transform", {
-        id: token.id,
-        name: token.name,
-        x: token.x,
-        y: token.y,
-        w: token.w,
-        h: token.h,
-        r: token.r,
-      });
-
-    document.onmousemove = null;
-    document.onmouseup = null;
-    this.direction = null;
-    this.dragOffset = null;
-  }
-
-  private isLineTransform(): boolean {
-    return this.selected.length == 1 && this.selected[0].type == "line";
+      r: token.r,
+      ...overrides,
+    };
   }
 }
 

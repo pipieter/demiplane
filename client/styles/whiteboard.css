@@ -36,29 +36,12 @@
       cursor: none; /* A custom marker is used when drawing */
     }
 
-    .whiteboard-resize {
+    #moveable {
       pointer-events: none;
 
-      & > * {
-        transform-origin: center center;
-        transform-box: fill-box;
-      }
-
-      .resize-marking {
-        filter: drop-shadow(0px 0px 1px #4da3ff);
-        stroke-width: 1px;
-        stroke: #4da3ff;
-        pointer-events: none;
-      }
-
-      .resize-handle,
-      #rotate-handle {
-        pointer-events: all;
-        cursor: grab;
-
-        &:active {
-          cursor: grabbing;
-        }
+      .moveable-control-box {
+        z-index: 1000 !important;
+        pointer-events: auto !important;
       }
     }
   }
