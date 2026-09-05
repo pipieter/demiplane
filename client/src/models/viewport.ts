@@ -57,7 +57,6 @@ class Viewport {
       y: (y - transform.y) / transform.k,
     };
   }
-
 }
 
 export default Viewport;

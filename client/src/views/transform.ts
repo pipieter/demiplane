@@ -38,10 +38,13 @@ class TransformView extends TokenListener {
       const [translateX, translateY] = beforeTranslate;
       const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
 
-      this.emit("token_continuous_transform", this.toTransform(token, {
-        x: Math.round(position.x),
-        y: Math.round(position.y),
-      }));
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+        }),
+      );
     });
 
     this.moveable.on("resizeStart", ({ target }) => {
@@ -77,12 +80,15 @@ class TransformView extends TokenListener {
         }
       }
 
-      this.emit("token_continuous_transform", this.toTransform(token, {
-        x: Math.round(x),
-        y: Math.round(y),
-        w: Math.max(1, Math.round(w)),
-        h: Math.max(1, Math.round(h)),
-      }));
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(x),
+          y: Math.round(y),
+          w: Math.max(1, Math.round(w)),
+          h: Math.max(1, Math.round(h)),
+        }),
+      );
     });
 
     this.moveable.on("scaleStart", ({ target }) => {
@@ -99,12 +105,15 @@ class TransformView extends TokenListener {
       const [scaleX, scaleY] = scale;
       const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
 
-      this.emit("token_continuous_transform", this.toTransform(token, {
-        x: Math.round(position.x),
-        y: Math.round(position.y),
-        w: Math.max(1, Math.round(start.w * scaleX)),
-        h: Math.max(1, Math.round(start.h * scaleY)),
-      }));
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(position.x),
+          y: Math.round(position.y),
+          w: Math.max(1, Math.round(start.w * scaleX)),
+          h: Math.max(1, Math.round(start.h * scaleY)),
+        }),
+      );
     });
 
     this.moveable.on("rotateStart", ({ target }) => {
@@ -120,13 +129,16 @@ class TransformView extends TokenListener {
       const rotation = start.r + beforeRotate;
       const r = this.grid.shouldGridlock(inputEvent) ? Math.round(rotation / 15) * 15 : Math.round(rotation);
 
-      this.emit("token_continuous_transform", this.toTransform(token, {
-        x: token.x,
-        y: token.y,
-        w: token.w,
-        h: token.h,
-        r,
-      }));
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: token.x,
+          y: token.y,
+          w: token.w,
+          h: token.h,
+          r,
+        }),
+      );
     });
 
     this.moveable.on("render", ({ target }) => {
