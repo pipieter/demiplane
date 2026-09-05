@@ -16,6 +16,7 @@ class Viewport {
     this.zoom = d3Zoom
       .zoom()
       .scaleExtent([0.1, 10])
+      .translateExtent(this.getTranslateExtent())
       .filter((event) => {
         if (event.type === "wheel") return true;
 
@@ -35,10 +36,17 @@ class Viewport {
     // Slightly move the default viewport so the edges are easier to follow
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.whiteboard.call(this.zoom.transform as any, d3Zoom.zoomIdentity.translate(100, 50).scale(0.8));
+
+    window.addEventListener("resize", () => {
+      this.zoom.translateExtent(this.getTranslateExtent());
+    });
   }
 
   public enable() {
-    this.zoom.on("zoom", (event) => this.viewport.attr("transform", event.transform));
+    this.zoom.on("zoom", (event) => {
+      this.viewport.attr("transform", event.transform);
+      this.zoom.translateExtent(this.getTranslateExtent());
+    });
     this.viewport.node()!.style.pointerEvents = "auto";
   }
 
@@ -47,11 +55,40 @@ class Viewport {
     this.viewport.node()!.style.pointerEvents = "none";
   }
 
-  public getTranslatedCoords(x: number, y: number): { x: number; y: number } {
-    const node = this.whiteboard.node();
-    if (!node) return { x, y };
+  private getTranslateExtent(): [[number, number], [number, number]] {
+    function getAxisExtent(size: number, viewportSize: number, padding: number = 64): [number, number] {
+      if (viewportSize > size) return [-viewportSize + size, viewportSize];
+      return [-padding, size + padding];
+    }
 
-    const transform = d3Zoom.zoomTransform(node);
+    const viewportNode = this.viewport.node();
+    if (!viewportNode) throw new Error("Viewport element #viewport not found.");
+
+    const rect = viewportNode.getBoundingClientRect();
+    const transform = this.getZoomTransform();
+
+    const width = rect.width / transform.k;
+    const height = rect.height / transform.k;
+    const windowWidth = window.innerWidth / transform.k;
+    const windowHeight = window.innerHeight / transform.k;
+    const [x0, x1] = getAxisExtent(width, windowWidth);
+    const [y0, y1] = getAxisExtent(height, windowHeight);
+
+    return [
+      [x0, y0],
+      [x1, y1],
+    ];
+  }
+
+  public getZoomTransform() {
+    const node = this.whiteboard.node();
+    if (!node) throw new Error("Viewport element #whiteboard not found.");
+    return d3Zoom.zoomTransform(node);
+  }
+
+  public getTranslatedCoords(x: number, y: number): { x: number; y: number } {
+    const transform = this.getZoomTransform();
+
     return {
       x: (x - transform.x) / transform.k,
       y: (y - transform.y) / transform.k,
