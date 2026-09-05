@@ -19,7 +19,6 @@ class BackgroundView extends Listener<BackgroundViewMap> {
       "whiteboard-background-layer",
       "whiteboard-objects-layer",
       "whiteboard-drawing-layer",
-      "whiteboard-resize",
       "user-cursors-container",
       "moveable",
     ];

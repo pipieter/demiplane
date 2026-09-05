@@ -1,22 +1,30 @@
 import Moveable from "moveable";
 
-const container = document.getElementById("moveable") as unknown as HTMLElement;
-const objectsLayer = document.getElementById("whiteboard-object") as unknown as SVGElement;
+let instance: Moveable | null = null;
 
-export const moveable = new Moveable(container, {
-  target: null,
-  container: objectsLayer,
-  draggable: true,
-  resizable: false, // Resize is not supported with SVG.
-  scalable: false, // TODO
-  rotatable: true,
-  warpable: false,
-  pinchable: false, // TODO
-  origin: true,
-  keepRatio: true,
-  edge: false,
-  throttleDrag: 0,
-  throttleResize: 0,
-  throttleScale: 0,
-  throttleRotate: 0,
-});
+export function getMoveable() {
+  if (instance) return instance;
+
+  const container = document.getElementById("moveable") as unknown as HTMLElement;
+  const objectsLayer = document.getElementById("whiteboard-objects-layer") as unknown as SVGElement;
+
+  instance = new Moveable(container, {
+    target: null,
+    container: objectsLayer,
+    draggable: true,
+    resizable: true,
+    scalable: true,
+    rotatable: true,
+    warpable: false,
+    pinchable: false,
+    origin: true,
+    keepRatio: false,
+    edge: false,
+    throttleDrag: 0,
+    throttleResize: 0,
+    throttleScale: 0,
+    throttleRotate: 0,
+  });
+
+  return instance;
+}
