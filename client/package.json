@@ -25,6 +25,7 @@
     "vitest": "^4.1.2"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1",
     "@types/d3-zoom": "^3.0.8",
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",
