@@ -156,11 +156,6 @@ class TransformView extends TokenListener {
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
     element.onmousedown = (event) => {
-      if (event.ctrlKey || event.metaKey || event.shiftKey) {
-        this.emit("tokens_select", [token]);
-        return;
-      }
-
       this.selected = [token];
       this.moveable.target = element as MoveableRefType;
       this.moveable.updateRect();
