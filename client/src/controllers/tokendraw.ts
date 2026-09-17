@@ -1,4 +1,4 @@
-import type { Duplicate } from "../messages";
+import type { Duplicate, RequestMessage } from "../messages";
 import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
 import type { Point } from "../models/transform";
 import type State from "../state";
@@ -59,7 +59,9 @@ class TokenDrawController extends Controller<TokenDrawView> {
     };
 
     this.state.createToken(circle);
-    this.store.send({ type: "request_create", create: circle });
+    const message: RequestMessage = { type: "request_create", create: circle };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   private createRectangle(
@@ -85,7 +87,9 @@ class TokenDrawController extends Controller<TokenDrawView> {
     };
 
     this.state.createToken(rectangle);
-    this.store.send({ type: "request_create", create: rectangle });
+    const message: RequestMessage = { type: "request_create", create: rectangle };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   private createLine(x1: number, y1: number, x2: number, y2: number, stroke: number, color: string) {
@@ -103,7 +107,9 @@ class TokenDrawController extends Controller<TokenDrawView> {
     };
 
     this.state.createToken(line);
-    this.store.send({ type: "request_create", create: line });
+    const message: RequestMessage = { type: "request_create", create: line };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   private async createFreedraw(base64: string, x: number, y: number, w: number, h: number) {
@@ -126,7 +132,7 @@ class TokenDrawController extends Controller<TokenDrawView> {
 
     // Upload the token to the server
     const href = await this.store.uploadImage(base64);
-    this.store.send({
+    const message: RequestMessage = {
       type: "request_create",
       create: {
         type: "image",
@@ -139,7 +145,9 @@ class TokenDrawController extends Controller<TokenDrawView> {
         h,
         r: 0,
       },
-    });
+    };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   private resetPasteOffset() {
