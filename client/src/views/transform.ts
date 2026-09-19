@@ -1,4 +1,3 @@
-import type { MoveableRefType } from "moveable/declaration/types";
 import { TokenListener } from "../listeners";
 import { getMoveable } from "../models/moveable";
 import type { Token } from "../models/token";
@@ -9,7 +8,7 @@ class TransformView extends TokenListener {
   private readonly moveable = getMoveable();
   private readonly grid: Grid;
   private selected: Token[];
-  private moveableStart: Transform | null = null;
+  private moveableStarts = new Map<string, Transform>();
 
   constructor(grid: Grid) {
     super();
@@ -25,153 +24,188 @@ class TransformView extends TokenListener {
   }
 
   private initMoveableListeners() {
-    this.moveable.on("dragStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
+    this.moveable.on("dragGroupStart", ({ events }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        if (token) this.moveableStarts.set(token.id, { ...token });
+      });
     });
 
-    this.moveable.on("drag", ({ target, beforeTranslate, inputEvent }) => {
-      const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
-      if (!token || !start) return;
+    this.moveable.on("dragGroup", ({ events, inputEvent }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        const start = token ? this.moveableStarts.get(token.id) : null;
+        if (!token || !start) return;
 
-      const [translateX, translateY] = beforeTranslate;
-      const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
+        const [translateX, translateY] = ev.beforeTranslate;
+        const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
 
-      this.emit(
-        "token_continuous_transform",
-        this.toTransform(token, {
-          x: Math.round(position.x),
-          y: Math.round(position.y),
-        }),
-      );
-    });
-
-    this.moveable.on("resizeStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
-    });
-
-    this.moveable.on("resize", ({ target, width, height, direction, clientX, clientY, inputEvent }) => {
-      const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
-      if (!token || !start) return;
-
-      let w = width;
-      let h = height;
-
-      if (this.grid.shouldGridlock(inputEvent)) {
-        const snapped = this.grid.getResizeSnappedClientCoordinates(clientX, clientY);
-        const localCursor = this.rotatePoint(
-          snapped.x,
-          snapped.y,
-          start.x + start.w / 2,
-          start.y + start.h / 2,
-          -start.r,
+        this.emit(
+          "token_continuous_transform",
+          this.toTransform(token, {
+            x: Math.round(position.x),
+            y: Math.round(position.y),
+          }),
         );
-
-        if (direction[0] > 0) w = localCursor.x - start.x;
-        else if (direction[0] < 0) w = start.x + start.w - localCursor.x;
-        if (direction[1] > 0) h = localCursor.y - start.y;
-        else if (direction[1] < 0) h = start.y + start.h - localCursor.y;
-      }
-
-      const position = this.getResizedPosition(start, w, h, direction);
-
-      this.emit(
-        "token_continuous_transform",
-        this.toTransform(token, {
-          x: Math.round(position.x),
-          y: Math.round(position.y),
-          w: Math.max(1, Math.round(position.w)),
-          h: Math.max(1, Math.round(position.h)),
-        }),
-      );
+      });
     });
 
-    this.moveable.on("scaleStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
+    this.moveable.on("resizeGroupStart", ({ events }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        if (token) this.moveableStarts.set(token.id, { ...token });
+      });
     });
 
-    this.moveable.on("scale", ({ target, scale, drag, inputEvent }) => {
-      const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
-      if (!token || !start) return;
+    this.moveable.on("resizeGroup", ({ events, clientX, clientY, inputEvent }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        const start = token ? this.moveableStarts.get(token.id) : null;
+        if (!token || !start) return;
 
-      const [translateX, translateY] = drag.beforeTranslate;
-      const [scaleX, scaleY] = scale;
-      const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
+        let w = ev.width;
+        let h = ev.height;
+        const direction = ev.direction;
 
-      this.emit(
-        "token_continuous_transform",
-        this.toTransform(token, {
-          x: Math.round(position.x),
-          y: Math.round(position.y),
-          w: Math.max(1, Math.round(start.w * scaleX)),
-          h: Math.max(1, Math.round(start.h * scaleY)),
-        }),
-      );
+        if (this.grid.shouldGridlock(inputEvent)) {
+          const snapped = this.grid.getResizeSnappedClientCoordinates(clientX, clientY);
+          const localCursor = this.rotatePoint(
+            snapped.x,
+            snapped.y,
+            start.x + start.w / 2,
+            start.y + start.h / 2,
+            -start.r,
+          );
+
+          if (direction[0] > 0) w = localCursor.x - start.x;
+          else if (direction[0] < 0) w = start.x + start.w - localCursor.x;
+          if (direction[1] > 0) h = localCursor.y - start.y;
+          else if (direction[1] < 0) h = start.y + start.h - localCursor.y;
+        }
+
+        const position = this.getResizedPosition(start, w, h, direction);
+
+        this.emit(
+          "token_continuous_transform",
+          this.toTransform(token, {
+            x: Math.round(position.x),
+            y: Math.round(position.y),
+            w: Math.max(1, Math.round(position.w)),
+            h: Math.max(1, Math.round(position.h)),
+          }),
+        );
+      });
     });
 
-    this.moveable.on("rotateStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
+    this.moveable.on("scaleGroupStart", ({ events }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        if (token) this.moveableStarts.set(token.id, { ...token });
+      });
     });
 
-    this.moveable.on("rotate", ({ target, beforeRotate, inputEvent }) => {
-      const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
-      if (!token || !start) return;
+    this.moveable.on("scaleGroup", ({ events, inputEvent }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        const start = token ? this.moveableStarts.get(token.id) : null;
+        if (!token || !start) return;
 
-      const rotation = start.r + beforeRotate;
-      const r = this.grid.shouldGridlock(inputEvent) ? Math.round(rotation / 15) * 15 : Math.round(rotation);
+        const [translateX, translateY] = ev.drag.beforeTranslate;
+        const [scaleX, scaleY] = ev.scale;
+        const position = this.snapPosition(start.x + translateX, start.y + translateY, inputEvent);
 
-      this.emit(
-        "token_continuous_transform",
-        this.toTransform(token, {
-          x: token.x,
-          y: token.y,
-          w: token.w,
-          h: token.h,
-          r,
-        }),
-      );
+        this.emit(
+          "token_continuous_transform",
+          this.toTransform(token, {
+            x: Math.round(position.x),
+            y: Math.round(position.y),
+            w: Math.max(1, Math.round(start.w * scaleX)),
+            h: Math.max(1, Math.round(start.h * scaleY)),
+          }),
+        );
+      });
     });
 
-    this.moveable.on("render", ({ target }) => {
-      // The token is redrawn from state; do not stack Moveable's CSS transform on it.
-      target.style.transform = "";
+    this.moveable.on("rotateGroupStart", ({ events }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        if (token) this.moveableStarts.set(token.id, { ...token });
+      });
     });
 
-    this.moveable.on("renderEnd", () => {
-      const token = this.selected[0];
-      if (token) {
+    this.moveable.on("rotateGroup", ({ events, inputEvent }) => {
+      events.forEach((ev) => {
+        const token = this.getSelectedById(ev.target.id);
+        const start = token ? this.moveableStarts.get(token.id) : null;
+        if (!token || !start) return;
+
+        const rotation = start.r + ev.beforeRotate;
+        const r = this.grid.shouldGridlock(inputEvent) ? Math.round(rotation / 15) * 15 : Math.round(rotation);
+
+        this.emit(
+          "token_continuous_transform",
+          this.toTransform(token, {
+            x: token.x,
+            y: token.y,
+            w: token.w,
+            h: token.h,
+            r,
+          }),
+        );
+      });
+    });
+
+    this.moveable.on("renderGroup", ({ events }) => {
+      events.forEach((ev) => {
+        ev.target.style.transform = "";
+      });
+    });
+
+    this.moveable.on("renderGroupEnd", () => {
+      this.selected.forEach((token) => {
         this.emit("token_transform", this.toTransform(token));
-      }
-      this.moveableStart = null;
+      });
+      this.moveableStarts.clear();
     });
   }
 
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
+
     element.onmousedown = (event) => {
-      this.selected = [token];
-      this.moveable.target = element as MoveableRefType;
-      this.moveable.updateRect();
-      this.moveable.dragStart(event, element);
-      this.emit("tokens_select", [token]);
+      const isModifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
+      const isAlreadySelected = this.selected.some((t) => t.id === token.id);
+      let newSelected: Token[];
+
+      if (isModifierPressed) {
+        newSelected = isAlreadySelected ? this.selected.filter((t) => t.id !== token.id) : [...this.selected, token];
+      } else {
+        newSelected = isAlreadySelected ? this.selected : [token];
+      }
+
+      this.setSelected(newSelected);
+
+      if (this.selected.length > 0) {
+        // Pass the event AND the specific element clicked so Moveable 
+        // can look up the correct child matrix in group mode
+        this.moveable.dragStart(event, element);
+      }
+
+      this.emit("tokens_select", newSelected);
     };
   }
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
-    if (this.selected.length !== 0) {
-      this.moveable.target = document.getElementById(tokens[0].id) as MoveableRefType;
-      this.moveable.updateRect();
-    } else {
+    if (this.selected.length === 0) {
       this.moveable.target = null;
+      return;
     }
+
+    this.moveable.target = this.selected
+      .map((token) => document.getElementById(token.id))
+      .filter((el): el is HTMLElement => el !== null);
+    this.moveable.updateRect();
   }
 
   private snapPosition(x: number, y: number, inputEvent: MouseEvent) {
