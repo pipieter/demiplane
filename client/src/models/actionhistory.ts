@@ -19,7 +19,7 @@ class ActionHistory {
     const lastAction = this.lastActions.at(-1);
     if (JSON.stringify(lastAction) === JSON.stringify(message)) return;
 
-    this.lastActions.push(message);    
+    this.lastActions.push(message);
   }
 }
 
