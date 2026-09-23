@@ -16,7 +16,7 @@ function getActionTokenID(message: RequestMessage): string[] | null {
 
     case "request_transform":
       return [message.transform.id];
-  
+
     default:
       return null;
   }
@@ -46,7 +46,6 @@ class ActionHistory {
     if (this.lastActions.length > this.bufferSize) {
       this.lastActions.shift();
     }
-    console.log(this.lastActions);
   }
 }
 

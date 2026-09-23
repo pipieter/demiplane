@@ -7,7 +7,9 @@ class TransformController extends TokenController<TransformView> {
   constructor(store: Store, state: State, view: TransformView) {
     super(store, state, view);
 
-    this.state.listen("token_select", ([_, selected]) => {this.view.setSelected(selected)});
+    this.state.listen("token_select", ([_, selected]) => {
+      this.view.setSelected(selected);
+    });
     this.state.listen("token_create", (token) => this.view.makeDraggable(token));
     // It is possible for someone else to transform our current selection. In this case
     // we need to update our selection box, just to make sure.
