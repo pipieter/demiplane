@@ -28,7 +28,7 @@ class State extends Listener<StateListenerMap> {
   private viewport: Viewport;
 
   public readonly grid: Grid;
-  public actionHistory: ActionHistory;
+  public readonly actionHistory: ActionHistory;
 
   constructor() {
     super();
