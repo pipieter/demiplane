@@ -1,4 +1,5 @@
 import { Listener } from "./listener";
+import ActionHistory from "./models/actionhistory";
 import Background from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
@@ -24,8 +25,10 @@ class State extends Listener<StateListenerMap> {
   private users: Record<string, User>;
   private myId: string;
   private background: Background;
-  public readonly grid: Grid;
   private viewport: Viewport;
+
+  public readonly grid: Grid;
+  public readonly actionHistory: ActionHistory;
 
   constructor() {
     super();
@@ -35,8 +38,9 @@ class State extends Listener<StateListenerMap> {
     this.users = {};
     this.myId = "";
     this.viewport = new Viewport();
-    this.grid = new Grid(this.viewport);
     this.background = new Background();
+    this.grid = new Grid(this.viewport);
+    this.actionHistory = new ActionHistory();
   }
 
   public setBackground(href: string | null, width: number, height: number) {
