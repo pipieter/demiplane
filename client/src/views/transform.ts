@@ -8,6 +8,8 @@ import type { MoveableRefType } from "moveable/declaration/types";
 class TransformView extends TokenListener {
   private readonly moveable = getMoveable();
   private readonly grid: Grid;
+  private readonly text: SVGTextElement;
+  private readonly textRectangle: SVGRectElement;
   private selected: Token[];
   private moveableStart: Transform | null = null;
 
@@ -15,6 +17,8 @@ class TransformView extends TokenListener {
     super();
 
     this.grid = grid;
+    this.text = document.getElementById("transform-size-text") as unknown as SVGTextElement;
+    this.textRectangle = document.getElementById("transform-size-background") as unknown as SVGRectElement;
     this.selected = [];
 
     this.initMoveableListeners();
@@ -157,21 +161,16 @@ class TransformView extends TokenListener {
     const element = document.getElementById(token.id) as unknown as SVGElement;
     element.onmousedown = (event) => {
       this.selected = [token];
-      this.moveable.target = element as MoveableRefType;
-      this.moveable.updateRect();
-      this.moveable.dragStart(event, element);
-      this.emit("tokens_select", [token]);
+      if (this.update(this.selected)) {
+        this.moveable.dragStart(event, element);
+        this.emit("tokens_select", [token]);
+      }
     };
   }
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
-    if (this.selected.length !== 0) {
-      this.moveable.target = document.getElementById(tokens[0].id) as MoveableRefType;
-      this.moveable.updateRect();
-    } else {
-      this.moveable.target = null;
-    }
+    this.update(this.selected);
   }
 
   private snapPosition(x: number, y: number, inputEvent: MouseEvent) {
@@ -228,6 +227,64 @@ class TransformView extends TokenListener {
       r: token.r,
       ...overrides,
     };
+  }
+
+  private update(tokens: Token[]): boolean {
+    // Only handle one token for now
+    const token = tokens[0];
+    if (!token) {
+      this.moveable.target = null;
+      this.text.style.display = "none";
+      this.textRectangle.style.display = "none";
+      return false;
+    }
+
+    const nonRotatableTokenTypes = ["line"];
+    const target = document.getElementById(tokens[0].id) as unknown as SVGElement;
+    this.moveable.target = target;
+    this.moveable.rotatable = !nonRotatableTokenTypes.includes(token.type);
+
+    this.moveable.updateRect();
+    this.updateTransformSizeText(token);
+
+    return true;
+  }
+
+  private updateTransformSizeText(token: Token) {
+    if (!this.moveable.target) {
+      return;
+    }
+
+    // Update the small text under the moveable grid
+    this.text.style.display = "";
+    this.textRectangle.style.display = "";
+
+    const width = (token.w / this.grid.size).toFixed(1).replace(".0", "");
+    const height = (token.h / this.grid.size).toFixed(1).replace(".0", "");
+    this.text.textContent = `${width} x ${height}`;
+
+    const textWidth = this.text.getBBox().width;
+    const textHeight = this.text.getBBox().height;
+    const rectWidth = textWidth + 16;
+    const rectHeight = textHeight + 4;
+
+    const px = token.x + token.w - rectWidth;
+    const py = token.y + token.h + 1; // Small bump so it's fully below the transform rectangle
+
+    const cx = token.x + token.w / 2;
+    const cy = token.y + token.h / 2;
+    const angle = token.r;
+
+    // Manually style the text and its background
+    this.textRectangle.setAttribute("x", px.toString());
+    this.textRectangle.setAttribute("y", py.toString());
+    this.textRectangle.setAttribute("width", rectWidth.toString());
+    this.textRectangle.setAttribute("height", rectHeight.toString());
+    this.textRectangle.setAttribute("transform", `rotate(${angle} ${cx} ${cy})`);
+
+    this.text.setAttribute("x", (px + 8).toString());
+    this.text.setAttribute("y", (py + 20).toString());
+    this.text.setAttribute("transform", `rotate(${angle} ${cx} ${cy})`);
   }
 }
 
