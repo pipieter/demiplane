@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
-import TokenDrawView from "../../src/views/tokendraw";
 import Grid from "../../src/models/grid";
 import Viewport from "../../src/models/viewport";
-import mocking from "../mocking";
 import { util } from "../../src/util";
+import TokenDrawView from "../../src/views/tokendraw";
+import mocking from "../mocking";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockCtx = {
   translate: vi.fn(),

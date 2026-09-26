@@ -1,9 +1,9 @@
-import type { MoveableRefType } from "moveable/declaration/types";
 import { TokenListener } from "../listeners";
+import type Grid from "../models/grid";
 import { getMoveable } from "../models/moveable";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
-import type Grid from "../models/grid";
+import type { MoveableRefType } from "moveable/declaration/types";
 
 class TransformView extends TokenListener {
   private readonly moveable = getMoveable();

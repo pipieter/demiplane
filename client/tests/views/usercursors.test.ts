@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, test } from "vitest";
+import { User } from "../../src/models/user";
 import UserCursorsView from "../../src/views/usercursors";
 import mocking from "../mocking";
-import { User } from "../../src/models/user";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe("UserCursorView", () => {
   let view: UserCursorsView;
