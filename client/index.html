@@ -35,12 +35,12 @@
             <span>Select Color</span>
             <input type="color" id="draw-color-input" />
           </label>
-          
+
           <label>
             <span>Border only</span>
             <input type="checkbox" id="draw-border-checkbox" />
           </label>
-          
+
           <label>
             <span>Width</span>
             <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
@@ -62,14 +62,14 @@
             <input type="checkbox" id="grid-global-checkbox" />
             <span>Default grid-lock</span>
           </label>
-          
+
           <hr />
 
           <label for="grid-size">
             <span>Grid-size</span>
             <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
           </label>
-              
+
           <label for="grid-offset-X">
             <span>X-offset</span>
             <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
@@ -96,25 +96,34 @@
             <span>X</span>
             <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
           </label>
-            
+
           <label for="token-edit-y">
             <span>Y</span>
             <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-w">
             <span>Width</span>
             <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-h">
             <span>Height</span>
             <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
           </label>
-          
+
           <label for="token-edit-r">
             <span>Rotate</span>
-            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
+            <input
+              id="token-edit-r"
+              type="number"
+              name="token-edit-r"
+              min="-180"
+              max="180"
+              step="1"
+              value="0"
+              disabled
+            />
           </label>
 
           <button id="token-edit-delete" disabled>Delete</button>
@@ -142,7 +151,7 @@
             <span>Color</span>
             <input id="user-input-color" type="color" name="user-input-color" />
           </label>
-          
+
           <hr />
 
           <ul id="user-list" class="side-menu-list"></ul>
@@ -174,6 +183,12 @@
           </svg>
 
           <svg id="whiteboard-objects-layer"></svg>
+
+          <!-- Small text that appears under transform box -->
+          <svg style="overflow: visible; margin: 4px">
+            <rect id="transform-size-background" fill="white" stroke-width="2" stroke="var(--moveable-blue)" />
+            <text id="transform-size-text" fill="var(--moveable-blue)" font-size="18"></text>
+          </svg>
 
           <!-- Rectangular hover box -->
           <svg class="whiteboard-resize" id="whiteboard-hover" style="display: none">
