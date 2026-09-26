@@ -2,15 +2,14 @@ import server from "../server";
 
 class BackgroundView {
   public readonly image: SVGImageElement;
-  public readonly whiteboardLayers: SVGSVGElement[];
+  public readonly layers: SVGSVGElement[];
 
   constructor() {
     this.image = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
-    this.whiteboardLayers = [
+    this.layers = [
       document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement,
       document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement,
       document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement,
-      document.getElementById("whiteboard-resize") as unknown as SVGSVGElement,
       document.getElementById("user-cursors-container") as unknown as SVGSVGElement,
     ];
   }
@@ -24,7 +23,7 @@ class BackgroundView {
 
     this.image.setAttribute("width", `${width}px`);
     this.image.setAttribute("height", `${height}px`);
-    for (const layer of this.whiteboardLayers) {
+    for (const layer of this.layers) {
       layer.setAttribute("width", `${width}px`);
       layer.setAttribute("height", `${height}px`);
     }

@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import ServerStatusView from "../../src/views/serverstatus";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("ServerStatusView", () => {
   let view: ServerStatusView;

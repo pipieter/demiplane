@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test } from "vitest";
 import SidebarView from "../../src/views/sidebar";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe("SidebarView", () => {
   let view: SidebarView;

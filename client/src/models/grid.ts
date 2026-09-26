@@ -30,7 +30,7 @@ class Grid {
     this.offset.y = offsetY;
   }
 
-  private getLockedCoordinates(x: number, y: number) {
+  public getSnappedCoordinates(x: number, y: number) {
     const snap = (value: number, offset: number) => {
       const local = value - offset;
       const start = Math.floor(local / this.size) * this.size + offset;
@@ -52,6 +52,22 @@ class Grid {
     };
   }
 
+  public getResizeSnappedCoordinates(x: number, y: number) {
+    return {
+      x: Math.round((x - this.offset.x) / this.size) * this.size + this.offset.x,
+      y: Math.round((y - this.offset.y) / this.size) * this.size + this.offset.y,
+    };
+  }
+
+  public getResizeSnappedClientCoordinates(clientX: number, clientY: number) {
+    const whiteboard = document.getElementById("whiteboard");
+    if (!whiteboard) return { x: clientX, y: clientY };
+
+    const bounds = whiteboard.getBoundingClientRect();
+    const coordinates = this.viewport.getTranslatedCoords(clientX - bounds.left, clientY - bounds.top);
+    return this.getResizeSnappedCoordinates(coordinates.x, coordinates.y);
+  }
+
   public shouldGridlock(evt: MouseEvent) {
     return evt.shiftKey ? !this.defaultLocked : this.defaultLocked;
   }
@@ -64,7 +80,7 @@ class Grid {
     }
 
     if (this.shouldGridlock(evt)) {
-      return this.getLockedCoordinates(x, y);
+      return this.getSnappedCoordinates(x, y);
     }
 
     return { x, y };

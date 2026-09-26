@@ -1,8 +1,7 @@
-import { beforeEach, describe, expect, test } from "vitest";
+import { Token } from "../../src/models/token";
 import TokenMapView from "../../src/views/tokenmap";
 import mocking from "../mocking";
-
-import { Token } from "../../src/models/token";
+import { beforeEach, describe, expect, test } from "vitest";
 
 function assertDOMToken(token: Token) {
   const drawn = document.getElementById(token.id);

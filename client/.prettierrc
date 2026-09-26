@@ -1,3 +1,7 @@
 {
-  "printWidth": 120
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "printWidth": 120,
+  "endOfLine": "lf",
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

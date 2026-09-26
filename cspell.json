@@ -12,11 +12,13 @@
         "css"
     ],
     "words": [
+        "actionhistory",
         "backgroundlist",
         "cloudflared",
         "cooldown",
         "Demiplane",
         "discordsays",
+        "fortawesome",
         "freedraw",
         "hoverable",
         "Newtonsoft",
@@ -25,6 +27,7 @@
         "onmovedown",
         "onmoveup",
         "ontransform",
+        "pinchable",
         "resizebox",
         "serverstatus",
         "setlayer",
@@ -34,6 +37,7 @@
         "tokenmap",
         "usercursors",
         "vitest",
+        "warpable",
         "wwwroot",
         "xmark"
     ],
