@@ -3,11 +3,9 @@ import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("BackgroundView", () => {
   let view: BackgroundView;
-  let setSpy: Mock;
 
   beforeEach(() => {
     view = new BackgroundView();
-    setSpy = vi.spyOn(view, "set");
   });
 
   describe("Initialization", () => {
