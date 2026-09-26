@@ -1,3 +1,5 @@
+import type { BackgroundRequestMessage, BackgroundResponseMessage } from "./messages/background";
+import type { BackgroundLayer } from "./models/background";
 import type { GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Point, Transform } from "./models/transform";
@@ -19,9 +21,8 @@ export interface SyncRequestMessage {
 export interface SyncResponseMessage {
   type: "sync";
   background: {
-    href: string | null;
-    width: number;
-    height: number;
+    selected: string | null;
+    layers: BackgroundLayer[];
   };
   grid: GridData;
   tokens: Token[];
@@ -102,22 +103,6 @@ export interface GridRequestMessage {
 export interface GridResponseMessage {
   type: "grid";
   grid: GridData;
-}
-
-/** Request to change the background image */
-export interface BackgroundRequestMessage {
-  type: "request_background";
-  href: string;
-}
-
-/** Set the background image */
-export interface BackgroundResponseMessage {
-  type: "background";
-  background: {
-    href: string | null;
-    width: number;
-    height: number;
-  };
 }
 
 /** Request to update your user */

@@ -1,35 +1,17 @@
-import { Listener } from "../listener";
 import server from "../server";
 
-interface BackgroundViewMap {
-  background_upload: File;
-}
-
-class BackgroundView extends Listener<BackgroundViewMap> {
-  public readonly input: HTMLInputElement;
+class BackgroundView {
   public readonly image: SVGImageElement;
   public readonly layers: SVGSVGElement[];
 
   constructor() {
-    super();
-
-    this.input = document.getElementById("upload-background-button") as HTMLInputElement;
     this.image = document.getElementById("whiteboard-background-image") as unknown as SVGImageElement;
-    const layerIds = [
-      "whiteboard-background-layer",
-      "whiteboard-objects-layer",
-      "whiteboard-drawing-layer",
-      "user-cursors-container",
-      "moveable",
+    this.layers = [
+      document.getElementById("whiteboard-background-layer") as unknown as SVGSVGElement,
+      document.getElementById("whiteboard-objects-layer") as unknown as SVGSVGElement,
+      document.getElementById("whiteboard-drawing-layer") as unknown as SVGSVGElement,
+      document.getElementById("user-cursors-container") as unknown as SVGSVGElement,
     ];
-    this.layers = layerIds.map((id) => document.getElementById(id) as unknown as SVGSVGElement);
-
-    this.input.onchange = (evt) => {
-      const file = (evt.target as HTMLInputElement).files?.item(0);
-      if (file) {
-        this.emit("background_upload", file);
-      }
-    };
   }
 
   public set(href: string | null, width: number, height: number) {
