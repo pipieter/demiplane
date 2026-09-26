@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/d3-zoom": "^3.0.8",
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",

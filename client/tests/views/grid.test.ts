@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import GridView from "../../src/views/grid";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("GridView", () => {
   let view: GridView;

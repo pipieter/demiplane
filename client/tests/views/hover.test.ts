@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 import HoverView from "../../src/views/hover";
 import TokenMapView from "../../src/views/tokenmap";
-import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 import mocking from "../mocking";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("HoverView", () => {
   let view: HoverView;

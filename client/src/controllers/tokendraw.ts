@@ -1,5 +1,5 @@
 import type { Duplicate, RequestMessage } from "../messages";
-import { isToken, type Token, type TokenCircle, type TokenLine, type TokenRectangle } from "../models/token";
+import { type Token, type TokenCircle, type TokenLine, type TokenRectangle, isToken } from "../models/token";
 import type { Point } from "../models/transform";
 import type State from "../state";
 import type Store from "../store";

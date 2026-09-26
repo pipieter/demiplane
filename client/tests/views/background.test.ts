@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import BackgroundView from "../../src/views/background";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("BackgroundView", () => {
   let view: BackgroundView;
