@@ -237,7 +237,7 @@ class TransformView extends TokenListener {
       this.textRectangle.style.display = "none";
       return false;
     }
-    
+
     const nonRotatableTokenTypes = ["line"];
     const target = document.getElementById(tokens[0].id) as unknown as SVGElement;
     this.moveable.target = target;
