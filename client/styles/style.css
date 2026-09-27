@@ -161,7 +161,6 @@ label {
   /* Color picker inside a circular wrapper */
   &:has(input[type="color"]) {
     padding: 0;
-    overflow: hidden;
 
     & input[type="color"] {
       width: 0;
@@ -171,10 +170,6 @@ label {
       border: none;
       background: transparent;
       padding: 0;
-    }
-
-    & span {
-      display: none; /* Hide heavy text overlays on circular color buttons for cleanliness */
     }
   }
 
