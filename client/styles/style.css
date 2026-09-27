@@ -3,6 +3,7 @@
 @import url('whiteboard.css');
 @import url('serverstatus.css');
 @import url('usercursors.css');
+@import url('toolbar.css');
 
 :root {
   /* Overridden in code. */
@@ -13,14 +14,17 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  background-color: var(--dark-primary);
+
+  --media-sm: 600px;
 
   --sidebar-width: 250px;
 
-  --dark-primary: #252525;
-  --dark-secondary: #353535;
-  --dark-tertiary: #454545;
-  --light-primary: #a0a0a0;
-  --light-secondary: #808080;
+  --dark-primary: #252530;
+  --dark-secondary: #353540;
+  --dark-tertiary: #454550;
+  --light-primary: #b5b5ec;
+  --light-secondary: #8080cc;
 
   --danger: #ef2727;
   --info: #0b7b97;
@@ -60,7 +64,7 @@ button {
   box-shadow: 0px -1px 1px var(--light-secondary) inset;
 
   &:hover {
-    background-color: var(--dark-secondary);
+    background-color: var(--light-secondary);
     color: white;
   }
 

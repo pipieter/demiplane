@@ -30,116 +30,107 @@
               <i class="fa-solid fa-pencil"></i>
             </button>
           </div>
-
+    
           <label>
             <span>Select Color</span>
             <input type="color" id="draw-color-input" />
           </label>
-
+    
           <label>
             <span>Border only</span>
             <input type="checkbox" id="draw-border-checkbox" />
           </label>
-
+    
           <label>
             <span>Width</span>
             <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
           </label>
-
+    
           <hr />
-
+    
           <label for="upload-token-button">
             <i class="fa-solid fa-image"></i> Upload a token
             <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
           </label>
         </section>
-
+    
         <section id="tab-grid" class="tab-panel" hidden>
           <h2>Grid Settings</h2>
           <hr />
-
+    
           <label>
             <input type="checkbox" id="grid-global-checkbox" />
             <span>Default grid-lock</span>
           </label>
-
+    
           <hr />
-
+    
           <label for="grid-size">
             <span>Grid-size</span>
             <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
           </label>
-
+    
           <label for="grid-offset-X">
             <span>X-offset</span>
             <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
           </label>
-
+    
           <label for="grid-offset-Y">
             <span>Y-offset</span>
             <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
           </label>
-
+    
           <hr />
-
+    
           <label for="upload-background-button" class="label-button">
             <i class="fa-regular fa-image"></i> Upload background
             <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
           </label>
         </section>
-
+    
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
           <hr />
-
+    
           <label for="token-edit-x">
             <span>X</span>
             <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
           </label>
-
+    
           <label for="token-edit-y">
             <span>Y</span>
             <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
           </label>
-
+    
           <label for="token-edit-w">
             <span>Width</span>
             <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
           </label>
-
+    
           <label for="token-edit-h">
             <span>Height</span>
             <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
           </label>
-
+    
           <label for="token-edit-r">
             <span>Rotate</span>
-            <input
-              id="token-edit-r"
-              type="number"
-              name="token-edit-r"
-              min="-180"
-              max="180"
-              step="1"
-              value="0"
-              disabled
-            />
+            <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
           </label>
-
+    
           <button id="token-edit-delete" disabled>Delete</button>
           <button id="token-edit-move-up">Move up</button>
           <button id="token-edit-move-down">Move down</button>
-
+    
           <hr />
-
+    
           <label for="token-list-checkbox">
             <span>Display token list</span>
             <input type="checkbox" id="token-list-checkbox" />
           </label>
-
+    
           <ul id="token-list" class="side-menu-list" style="display: none"></ul>
         </section>
-
+    
         <section id="tab-user" class="tab-panel" hidden>
           <h2>User Settings</h2>
           <hr />
@@ -151,13 +142,13 @@
             <span>Color</span>
             <input id="user-input-color" type="color" name="user-input-color" />
           </label>
-
+    
           <hr />
-
+    
           <ul id="user-list" class="side-menu-list"></ul>
         </section>
       </aside>
-
+    
       <nav class="sidebar-navigation">
         <button class="tab-close-button" id="sidebar-hide-button"><i class="fa-solid fa-xmark"></i></button>
         <button class="tab-button" data-tab="draw">Draw</button>
@@ -167,11 +158,96 @@
       </nav>
     </div>
 
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div id="toolbar-settings" class="toolbar-section">
+        <button>
+          <i class="fa-solid fa-circle-question"></i>
+          <span class="tooltip-text">Help</span>
+        </button>
+        <button>
+          <i class="fa-solid fa-signal"></i>
+          <span class="tooltip-text">Online (100ms)</span>
+        </button>
+        <button>
+          <i class="fa-solid fa-user"></i>
+          <span class="tooltip-text">User Settings</span>
+        </button>
+      </div>
+
+      <div id="toolbar-draw" class="toolbar-section">
+        <div id="toolbar-draw-menu" class="toolbar-menu">
+          <h2>Drawing</h2>
+          <div>
+            <i class="fa-solid fa-circle" style="color: rgb(194, 41, 41);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(207, 145, 30);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(223, 223, 21);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(42, 199, 42);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(81, 216, 216);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(21, 21, 252);"></i>
+            <i class="fa-solid fa-circle" style="color: rgb(124, 26, 163);"></i>
+            <i class="fa-solid fa-palette" style="color: var(--draw-color);"></i>
+          </div>
+          
+          <label>
+            <span>Select Color</span>
+            <input type="color" id="draw-color-input" />
+          </label>
+          
+          <label>
+            <span>Border only</span>
+            <input type="checkbox" id="draw-border-checkbox" />
+          </label>
+          
+          <label>
+            <span>Width</span>
+            <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+          </label>
+        </div>
+
+        <button id="begin-circle-button" class="draw-button">
+          <i class="fa-solid fa-circle"></i>
+          <span class="tooltip-text">Draw Circle</span>
+        </button>
+        <button id="begin-rect-button" class="draw-button">
+          <i class="fa-solid fa-square"></i>
+          <span class="tooltip-text">Draw Square</span>
+        </button>
+        <button id="begin-line-button" class="draw-button">
+          <i class="fa-solid fa-minus"></i>
+          <span class="tooltip-text">Draw Line</span>
+        </button>
+        <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed;">
+          <i class="fa-solid fa-t"></i>
+          <span class="tooltip-text">Textbox</span>
+        </button>
+        <button id="begin-drawing-button" class="draw-button">
+          <i class="fa-solid fa-pencil"></i>
+          <span class="tooltip-text">Freedraw</span>
+        </button>
+      </div>
+
+      <div id="toolbar-board" class="toolbar-section">
+        <button>
+          <i class="fa-solid fa-images"></i>
+          <span class="tooltip-text">Token Settings</span>
+        </button>
+        <button>
+          <i class="fa-solid fa-table-cells-large"></i>
+          <span class="tooltip-text">Grid Settings</span>
+        </button>
+        <button>
+          <i class="fa-solid fa-panorama"></i>
+          <span class="tooltip-text">Background Settings</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Whiteboard -->
     <div id="whiteboard-container">
       <svg id="whiteboard" width="100vw" height="100vh">
         <g id="viewport">
-          <svg id="whiteboard-background-layer" stroke="black" stroke-width="4">
+          <svg id="whiteboard-background-layer" stroke="#444" stroke-width="4">
             <defs>
               <!-- Grid-size is declared through code -->
               <pattern id="grid-pattern" width="50px" height="50px" patternUnits="userSpaceOnUse">
