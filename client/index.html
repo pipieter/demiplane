@@ -9,45 +9,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <aside class="sidebar-content" id="sidebar-content">
-          <label for="upload-token-button">
-            <i class="fa-solid fa-image"></i> Upload a token
-            <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
-          </label>
-        </section>
-    
-        <section id="tab-grid" class="tab-panel" hidden>
-          <h2>Grid Settings</h2>
-          <hr />
-    
-          <label>
-            <input type="checkbox" id="grid-global-checkbox" />
-            <span>Default grid-lock</span>
-          </label>
-    
-          <hr />
-    
-          <label for="grid-size">
-            <span>Grid-size</span>
-            <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
-          </label>
-    
-          <label for="grid-offset-X">
-            <span>X-offset</span>
-            <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
-          </label>
-    
-          <label for="grid-offset-Y">
-            <span>Y-offset</span>
-            <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
-          </label>
-    
-          <hr />
-    
-          <label for="upload-background-button" class="label-button">
-            <i class="fa-regular fa-image"></i> Upload background
-            <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
-          </label>
-        </section>
+
     
         <section id="tab-token" class="tab-panel" hidden>
           <h2>Token Settings</h2>
@@ -200,6 +162,40 @@
           <span class="tooltip-text">Border Only </span>
         </label>
       </div>
+    </div>
+
+    <div class="toolbar-menu" id="tab-grid"  style="display: none;">
+      <section class="toolbar-menu-content">
+        <label>
+          <i class="fa-solid fa-lock"></i>
+          <input type="checkbox" id="grid-global-checkbox" />
+          <span class="tooltip-text">Default grid-lock</span>
+        </label>
+            
+        <label for="grid-size">
+          <i class="fa-solid fa-ruler-combined"></i>
+          <span class="tooltip-text">Grid-size</span>
+          <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
+        </label>
+      
+        <label for="grid-offset-X">
+          <i class="fa-solid fa-x"></i>
+          <span class="tooltip-text">X-offset</span>
+          <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
+        </label>
+      
+        <label for="grid-offset-Y">
+          <i class="fa-solid fa-y"></i>
+          <span class="tooltip-text">Y-offset</span>
+          <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
+        </label>
+            
+        <label for="upload-background-button" class="label-button">
+          <i class="fa-solid fa-panorama"></i>
+          <span class="tooltip-text">Upload Background</span>
+          <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
+        </label>
+      </section>
     </div>
 
     <!-- Whiteboard -->

@@ -39,6 +39,13 @@
     justify-content: center;
     align-items: center;
 
+    &#tab-grid {
+        display: flex;
+        justify-content: end;
+        margin-right: var(--toolbar-padding);
+        align-items: center;
+    }
+
     padding: var(--toolbar-padding) 0;
     border-radius: 4px;
     z-index: 500;

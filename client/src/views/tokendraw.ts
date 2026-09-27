@@ -119,7 +119,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     if (type === this.type) {
       type = null; // unselect
     }
-  
+
     if (type === null) {
       this.type = null;
       this.mouseDown = false;

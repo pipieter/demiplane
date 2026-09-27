@@ -6,7 +6,7 @@ class ToolbarView {
   public readonly settingsSection: HTMLElement;
   public readonly drawSection: HTMLElement;
   public readonly boardSection: HTMLElement;
-  // public readonly menus: HTMLElement[];
+  public readonly menus: HTMLElement[];
 
   constructor() {
     this.selected = null;
@@ -18,12 +18,21 @@ class ToolbarView {
       const collection = section.getElementsByClassName("toolbar-button");
       return Array.from(collection) as HTMLButtonElement[];
     });
+    this.menus = Array.from(document.getElementsByClassName("toolbar-menu")) as HTMLElement[];
 
     this.buttons.forEach((button, _) => {
       button.addEventListener("click", () => {
         this.select(button);
       });
     });
+
+    this.hideAll();
+  }
+
+  private hideAll() {
+    for (const tab of this.menus) {
+      tab.style.display = "none";
+    }
   }
 
   private select(button: HTMLButtonElement) {
@@ -32,23 +41,17 @@ class ToolbarView {
       button.classList.remove("selected");
     }
 
-    // TODO hide menus
-    // for (const tab of this.tabs) {
-    //     tab.hidden = true;
-    // }
+    this.hideAll();
 
     this.selected = tab;
     const active = document.querySelector("#tab-" + tab) as HTMLElement;
-    console.log(active);
 
-    // TODO Show menu
-    // if (this.selected === null || active === null) {
-    //     this.content.classList.remove("visible");
-    //     return;
-    // }
+    if (this.selected === null || active === null) {
+      return;
+    }
 
     active.hidden = false;
-    // this.content.classList.add("visible");
+    active.style.display = "";
     button?.classList.add("selected");
   }
 }
