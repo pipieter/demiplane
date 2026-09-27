@@ -6,7 +6,7 @@ class ToolbarView {
   public readonly settingsSection: HTMLElement;
   public readonly drawSection: HTMLElement;
   public readonly boardSection: HTMLElement;
-  public readonly menus: HTMLElement[];
+  // public readonly menus: HTMLElement[];
 
   constructor() {
     this.selected = null;

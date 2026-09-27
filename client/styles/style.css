@@ -91,6 +91,13 @@ button {
         cursor: not-allowed;
         scale: none !important;
     }
+    
+    &.selected {
+      border-color: white;
+      background-color: var(--light-primary);
+      color: white;
+      box-shadow: 0 0 2px var(--light-primary);
+    }
 
     /* TOOLTIP */
     & > .tooltip-text {
@@ -115,6 +122,7 @@ button {
         display: block;
         opacity: 1;
     }
+
 }
 
 label {
