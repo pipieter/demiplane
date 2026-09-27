@@ -1,8 +1,6 @@
 .toolbar {
-    --toolbar-btn-size: 4rem;
-
-    width: 100vw;
-    height: 10rem;
+    background-color: color-mix(in srgb, black 20%, transparent);
+    height: var(--toolbar-btn-size);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -14,7 +12,7 @@
     justify-content: center;
     flex-wrap: nowrap;
     gap: calc(var(--toolbar-btn-size) * 2);
-    padding-bottom: calc((var(--toolbar-btn-size) / 2));
+    padding: var(--toolbar-padding) 0;
 
     @media screen and (max-width: var(--media-sm)) {
         justify-content: space-between;
@@ -27,100 +25,46 @@
         justify-content: space-between;
         align-items: center;
         gap: 0.5rem;
-
-        /* BUTTONS */
-        & > button {
-            border-radius: 50%;
-            padding: 0.5rem;
-            background-color: white;
-            color:  var(--light-secondary);
-            border-color: var(--light-secondary);
-            border-width: 3px;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: var(--toolbar-btn-size);
-            height: var(--toolbar-btn-size);
-            font-size: calc(var(--toolbar-btn-size) / 2);
-
-            box-shadow: 0px 0px 2px var(--dark-primary);
-            position: relative;
-            transition: transform 0.2s ease, scale 0.2s ease, box-shadow 0.2s ease;
-
-            /* TOOLTIP */
-            & > .tooltip-text {
-                display: none;
-                opacity: 0;
-                position: absolute;
-                top: -50%;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1500;
-                white-space: nowrap;
-                
-                font-size: 0.8rem;
-                background: color-mix(in srgb, var(--dark-primary) 50%, transparent);
-                color: white;
-                padding: 0.25rem 0.5rem;
-                border-radius: 1rem;
-                transition: opacity 0.2s ease;
-            }
-
-            &:hover > .tooltip-text {
-                display: block;
-                opacity: 1;
-            }
-        }
-
-        & > button:hover {
-            scale: 1.1;
-            box-shadow: 0px 4px 8px var(--dark-primary);
-        }
-
-        & > button.draw-button:hover {
-            background-color: var(--draw-color);
-            & > i {
-                /* Small shadow around button's icon, in case draw-color is close to the icon color. */
-                filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 1));
-            }
-        }
-    }
-
-
-    /* Adjustments to make outer buttons feel circular */
-    --translate-outer: calc(-1 * var(--toolbar-btn-size) / 3);
-    --translate-inner: calc(var(--toolbar-btn-size) / 6);
-    .toolbar-section:nth-child(1) {
-        transform: translateY(-1.5rem); 
-        & > button:nth-child(1) { transform: translateY(var(--translate-outer)); }
-        & > button:nth-child(3) { transform: translateY(var(--translate-inner)); }
-    }
-
-    .toolbar-section:nth-child(3) {
-        transform: translateY(-1.5rem);
-        & > button:nth-child(1) { transform: translateY(var(--translate-inner)); }
-        & > button:nth-child(3) { transform: translateY(var(--translate-outer)); }
     }
 }
 
 .toolbar-menu {
-    padding: 2rem 4rem;
-    border-radius: 2rem;
-    z-index: 500;
-
-    background-color: var(--dark-secondary);
-    color: white;
-    border: 3px solid var(--light-secondary);
-    font-size: 1rem;
-    
     position: absolute;
-    bottom: 65%;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: calc(var(--toolbar-btn-size) + (var(--toolbar-padding)) *2);
+    left: 0;
+    right: 0;
     white-space: nowrap;
 
-    & > h2 {
-        margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: var(--toolbar-padding) 0;
+    border-radius: 4px;
+    z-index: 500;
+
+    /* background-color: color-mix(in srgb, var(--dark-primary) 20%, transparent); */
+    color: white;
+    font-size: 1rem;
+
+    & > .toolbar-menu-content {
+        background-color: color-mix(in srgb, var(--dark-primary) 90%, transparent);
+        padding: var(--toolbar-padding) calc(var(--toolbar-btn-size) * 1.5);
+        border-radius: var(--toolbar-btn-size);
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: calc(var(--toolbar-btn-size) / 4);
+
+        & > .button-row  {
+            display: flex;
+            gap: 0.5rem;
+        }
     }
+
+    & > * > h2 {
+        margin: 0;
+    }
+
+
 }

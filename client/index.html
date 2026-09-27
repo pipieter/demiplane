@@ -161,85 +161,75 @@
     <!-- Toolbar -->
     <div class="toolbar">
       <div id="toolbar-settings" class="toolbar-section">
-        <button>
+        <button class="toolbar-button" data-tab="help">
           <i class="fa-solid fa-circle-question"></i>
           <span class="tooltip-text">Help</span>
         </button>
-        <button>
+        <button class="toolbar-button">
           <i class="fa-solid fa-signal"></i>
           <span class="tooltip-text">Online (100ms)</span>
         </button>
-        <button>
+        <button class="toolbar-button" data-tab="user">
           <i class="fa-solid fa-user"></i>
           <span class="tooltip-text">User Settings</span>
         </button>
       </div>
 
       <div id="toolbar-draw" class="toolbar-section">
-        <div id="toolbar-draw-menu" class="toolbar-menu">
-          <h2>Drawing</h2>
-          <div>
-            <i class="fa-solid fa-circle" style="color: rgb(194, 41, 41);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(207, 145, 30);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(223, 223, 21);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(42, 199, 42);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(81, 216, 216);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(21, 21, 252);"></i>
-            <i class="fa-solid fa-circle" style="color: rgb(124, 26, 163);"></i>
-            <i class="fa-solid fa-palette" style="color: var(--draw-color);"></i>
-          </div>
-          
-          <label>
-            <span>Select Color</span>
-            <input type="color" id="draw-color-input" />
-          </label>
-          
-          <label>
-            <span>Border only</span>
-            <input type="checkbox" id="draw-border-checkbox" />
-          </label>
-          
-          <label>
-            <span>Width</span>
-            <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
-          </label>
-        </div>
-
-        <button id="begin-circle-button" class="draw-button">
+        <button class="toolbar-button" id="begin-circle-button" class="draw-button" data-tab="draw">
           <i class="fa-solid fa-circle"></i>
           <span class="tooltip-text">Draw Circle</span>
         </button>
-        <button id="begin-rect-button" class="draw-button">
+        <button class="toolbar-button" id="begin-rect-button" class="draw-button" data-tab="draw">
           <i class="fa-solid fa-square"></i>
           <span class="tooltip-text">Draw Square</span>
         </button>
-        <button id="begin-line-button" class="draw-button">
+        <button class="toolbar-button" id="begin-line-button" class="draw-button" data-tab="draw">
           <i class="fa-solid fa-minus"></i>
           <span class="tooltip-text">Draw Line</span>
         </button>
-        <button id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed;">
+        <button class="toolbar-button" id="begin-text-button" class="draw-button" disabled style="cursor: not-allowed;" data-tab="draw">
           <i class="fa-solid fa-t"></i>
           <span class="tooltip-text">Textbox</span>
         </button>
-        <button id="begin-drawing-button" class="draw-button">
+        <button class="toolbar-button" id="begin-drawing-button" class="draw-button" data-tab="draw">
           <i class="fa-solid fa-pencil"></i>
           <span class="tooltip-text">Freedraw</span>
         </button>
       </div>
 
       <div id="toolbar-board" class="toolbar-section">
-        <button>
+        <button class="toolbar-button" data-tab="token">
           <i class="fa-solid fa-images"></i>
           <span class="tooltip-text">Token Settings</span>
         </button>
-        <button>
+        <button class="toolbar-button" data-tab="grid">
           <i class="fa-solid fa-table-cells-large"></i>
           <span class="tooltip-text">Grid Settings</span>
         </button>
-        <button>
+        <button class="toolbar-button" data-tab="background">
           <i class="fa-solid fa-panorama"></i>
           <span class="tooltip-text">Background Settings</span>
         </button>
+      </div>
+    </div>
+
+    <div class="toolbar-menu" id="tab-draw">
+      <div class="toolbar-menu-content">
+        <label class="toolbar-button">
+          <i class="fa-solid fa-palette" style="color: var(--draw-color);"></i>
+          <input type="color" id="draw-color-input" />
+        </label>
+
+        <label class="toolbar-button">
+          <i class="fa-solid fa-brush"></i>
+          <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+        </label>
+
+        <label class="toolbar-button">
+          <i class="fa-solid fa-circle-half-stroke"></i>
+          <input type="checkbox" id="draw-border-checkbox" />
+        </label>
       </div>
     </div>
 
