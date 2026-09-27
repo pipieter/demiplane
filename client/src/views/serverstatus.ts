@@ -7,7 +7,7 @@ interface ServerStatusViewMap {
 class ServerStatusView extends Listener<ServerStatusViewMap> {
   public readonly container: HTMLElement;
   public readonly statusSymbol: HTMLElement;
-  public readonly statusText: HTMLParagraphElement;
+  public readonly statusText: HTMLSpanElement;
   private isSyncing: boolean;
 
   constructor() {
@@ -45,7 +45,7 @@ class ServerStatusView extends Listener<ServerStatusViewMap> {
 
   setOnline() {
     this.container.classList = "server-online";
-    this.statusSymbol.classList = "fa-solid fa-check";
+    this.statusSymbol.classList = "fa-solid fa-signal";
     this.statusText.textContent = "Online ";
     this.isSyncing = false;
     document.body.style.cursor = "default";

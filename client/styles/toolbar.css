@@ -48,8 +48,8 @@
     font-size: 1rem;
 
     & > .toolbar-menu-content {
-        background-color: color-mix(in srgb, var(--dark-primary) 90%, transparent);
-        padding: var(--toolbar-padding) calc(var(--toolbar-btn-size) * 1.5);
+        background-color: color-mix(in srgb, black 20%, transparent);
+        padding: var(--toolbar-padding);
         border-radius: var(--toolbar-btn-size);
         width: fit-content;
         display: flex;
