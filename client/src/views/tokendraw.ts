@@ -21,6 +21,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
   public readonly line: SVGLineElement;
   public readonly freedraw: SVGPathElement;
   public readonly cursor: SVGCircleElement;
+  public readonly drawMenu: HTMLElement;
 
   public readonly circleButton: HTMLButtonElement;
   public readonly rectangleButton: HTMLButtonElement;
@@ -51,6 +52,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     this.rectangle = document.getElementById("whiteboard-drawing-rectangle") as unknown as SVGRectElement;
     this.line = document.getElementById("whiteboard-drawing-line") as unknown as SVGLineElement;
     this.freedraw = document.getElementById("whiteboard-drawing-free") as unknown as SVGPathElement;
+    this.drawMenu = document.getElementById("tab-draw")!;
 
     this.circleButton = document.getElementById("begin-circle-button") as HTMLButtonElement;
     this.rectangleButton = document.getElementById("begin-rect-button") as HTMLButtonElement;
@@ -117,7 +119,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     if (type === this.type) {
       type = null; // unselect
     }
-
+  
     if (type === null) {
       this.type = null;
       this.mouseDown = false;
@@ -132,6 +134,7 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
       this.layer.onmousemove = null;
       document.onkeydown = null;
       this.grid.viewport.enable();
+      this.drawMenu.style.display = "none";
       return;
     }
 
@@ -141,7 +144,9 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
     this.cursor.style.display = "";
     this.layer.style.display = "";
     this.layer.style.pointerEvents = "";
+    this.drawMenu.style.display = "";
     this.drawButtons.get(type)?.classList.add("selected");
+    this.drawMenu.style.display = "";
 
     document.onkeydown = (evt) => this.onkeydown(evt);
     this.layer.onmouseup = () => this.onmouseup();

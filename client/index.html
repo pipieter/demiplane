@@ -157,6 +157,11 @@
           <i class="fa-solid fa-pencil"></i>
           <span class="tooltip-text">Freedraw</span>
         </button>
+        <label for="upload-token-button">
+          <i class="fa-solid fa-image"></i>
+          <input id="upload-token-button" type="file" accept="image/*" style="display: none" />
+          <span class="tooltip-text">Upload Image</span>
+        </label>
       </div>
 
       <div id="toolbar-board" class="toolbar-section">
@@ -175,21 +180,24 @@
       </div>
     </div>
 
-    <div class="toolbar-menu" id="tab-draw">
+    <div class="toolbar-menu" id="tab-draw" style="display: none;">
       <div class="toolbar-menu-content">
         <label class="toolbar-button">
           <i class="fa-solid fa-palette" style="color: var(--draw-color);"></i>
           <input type="color" id="draw-color-input" />
+          <span class="tooltip-text">Color</span>
         </label>
 
         <label class="toolbar-button">
           <i class="fa-solid fa-brush"></i>
           <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+          <span class="tooltip-text">Brush Width</span>
         </label>
 
         <label class="toolbar-button">
           <i class="fa-solid fa-circle-half-stroke"></i>
           <input type="checkbox" id="draw-border-checkbox" />
+          <span class="tooltip-text">Border Only </span>
         </label>
       </div>
     </div>
