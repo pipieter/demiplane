@@ -228,8 +228,6 @@ label {
     gap: 2px;
     padding: 0;
 
-
-
     & i {
       font-size: calc(var(--toolbar-btn-size) / 3);
       line-height: 1;
