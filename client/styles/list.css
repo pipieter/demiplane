@@ -1,0 +1,63 @@
+#token-list {
+    position: absolute;
+    bottom: 25vh;
+    right: 0;
+
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+ul {
+    background-color: color-mix(in srgb, black 20%, transparent);
+    padding: calc(var(--toolbar-padding) * 2);
+    padding-right: var(--toolbar-padding);
+    border-radius: calc(var(--toolbar-btn-size));
+    list-style: none;
+
+    max-height: calc(var(--toolbar-btn-size) * 8);
+    overflow-y: auto;
+    scrollbar-width: thin;
+
+    &:empty {
+        display: none;
+    }
+
+    & > li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--toolbar-padding);
+        margin-bottom: calc(var(--toolbar-padding) / 2);
+
+        border: 3px var(--light-secondary) solid;
+        background-color: white;
+        color: var(--light-secondary);
+        padding: var(--toolbar-padding);
+        border-radius: var(--toolbar-btn-size);
+
+        &.selected {
+            border: 3px white solid;
+            background-color: var(--light-primary);
+            color: white;
+        }
+
+        & > i {
+            font-size: calc(var(--toolbar-btn-size) / 2);
+        }
+
+        & > .token-name-input {
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: calc(var(--toolbar-btn-size) / 3);
+            outline: none;
+            padding: 0;
+            
+            &::placeholder {
+                color: currentColor;
+                opacity: 0.6;
+            }
+        }
+    }
+}

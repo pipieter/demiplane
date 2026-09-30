@@ -40,10 +40,9 @@
     align-items: center;
 
     &#tab-grid {
-        display: flex;
-        justify-content: end;
-        margin-right: var(--toolbar-padding);
-        align-items: center;
+        right: var(--toolbar-padding);
+        left: 35%;
+        /* TODO fix alignment */
     }
 
     padding: var(--toolbar-padding) 0;
@@ -72,6 +71,4 @@
     & > * > h2 {
         margin: 0;
     }
-
-
 }

@@ -4,6 +4,7 @@
 @import url('serverstatus.css');
 @import url('usercursors.css');
 @import url('toolbar.css');
+@import url('list.css');
 
 :root {
   /* Overridden in code. */
