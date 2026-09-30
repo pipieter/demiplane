@@ -143,7 +143,7 @@ label {
     background-color: white;
 
     /* Anything with class "Check" will only show if input is checked
-    Anything with class "Uncheck" will only show if unput is unchecked */
+    Anything with class "Uncheck" will only show if input is unchecked */
     & > .check {
       display: none !important;
     }
