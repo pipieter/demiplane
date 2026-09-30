@@ -14,9 +14,8 @@
     gap: calc(var(--toolbar-btn-size) * 2);
     padding: var(--toolbar-padding) 0;
 
-    @media screen and (max-width: var(--media-sm)) {
+    @media screen and (max-width: var(--media-lg)) {
         justify-content: space-between;
-        --toolbar-btn-size: 3rem;
         gap: calc(var(--toolbar-btn-size) / 2);
     }
 

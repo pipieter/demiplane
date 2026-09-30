@@ -16,8 +16,12 @@ body {
   margin: 0;
   background-color: var(--dark-primary);
 
-  --media-sm: 600px;
-  --sidebar-width: 250px;
+  --media-sm: 40rem;
+  --media-md: 48rem;
+  --media-lg: 64rem;
+  --media-xl: 80rem;
+  --media-2xl: 96rem;
+
   --toolbar-btn-size: 4rem;
   --toolbar-padding: calc((var(--toolbar-btn-size) / 4));
   --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
@@ -32,8 +36,17 @@ body {
   --info: #4646c2;
   --success: #1fd19c;
 
-  --moveable-blue: #4af
+  --moveable-blue: #4af;
+
+  /* NOTE: Can't use --media-xl here, because of technical restrictions */
+  @media screen and (max-width: 80rem) {
+    --toolbar-btn-size: 3rem;
+    --toolbar-padding: calc((var(--toolbar-btn-size) / 4));
+    --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
+  }
 }
+
+
 
 * {
   scrollbar-width: thin;

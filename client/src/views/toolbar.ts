@@ -19,17 +19,24 @@ class ToolbarView {
       return Array.from(collection) as HTMLButtonElement[];
     });
     this.menus = Array.from(document.getElementsByClassName("toolbar-menu")) as HTMLElement[];
-
     this.buttons.forEach((button, _) => {
       button.addEventListener("click", () => {
         this.select(button);
       });
     });
 
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") this.hideAll();
+    });
+
     this.hideAll();
   }
 
   private hideAll() {
+    for (const button of this.buttons) {
+      button.classList.remove("selected");
+    }
+
     for (const tab of this.menus) {
       tab.style.display = "none";
     }
@@ -37,9 +44,6 @@ class ToolbarView {
 
   private select(button: HTMLButtonElement) {
     const tab = button.getAttribute("data-tab");
-    for (const button of this.buttons) {
-      button.classList.remove("selected");
-    }
 
     this.hideAll();
 
