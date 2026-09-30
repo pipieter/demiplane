@@ -66,7 +66,10 @@ class TokenEditView extends TokenListener {
   }
 
   public disable() {
-    this.editElements.forEach((element) => (element.disabled = true));
+    this.editElements.forEach((element) => {
+      element.disabled = true;
+      element.value = "0";
+    });
     this.buttonElements.forEach((element) => (element.disabled = true));
   }
 

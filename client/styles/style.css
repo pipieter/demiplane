@@ -228,6 +228,8 @@ label {
     gap: 2px;
     padding: 0;
 
+
+
     & i {
       font-size: calc(var(--toolbar-btn-size) / 3);
       line-height: 1;
@@ -242,10 +244,22 @@ label {
       font-weight: bold;
       outline: none;
       cursor: pointer;
+      width: 6ch;
 
       &::-webkit-inner-spin-button,
       &::-webkit-outer-spin-button {
         -webkit-appearance: none;
+      }
+    }
+
+    &:has(input[type="number"]:disabled) {
+      background-color: var(--light-primary);
+      color: var(--light-secondary);
+      cursor: not-allowed;
+      scale: none !important;
+
+      & > * {
+        cursor: not-allowed !important;
       }
     }
   }
