@@ -356,8 +356,8 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
   }
 
   private updateCursor(x: number, y: number) {
-    this.cursor.setAttribute("cx", x.toString());
-    this.cursor.setAttribute("cy", y.toString());
+    this.cursor.setAttribute("x", x.toString());
+    this.cursor.setAttribute("y", y.toString());
   }
 
   private updateFreedrawLine() {

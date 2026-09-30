@@ -10,8 +10,8 @@
     <div class="toolbar">
       <div id="toolbar-settings" class="toolbar-section">
         <button class="toolbar-button" data-tab="help" disabled>
-          <i class="fa-solid fa-circle-question"></i>
-          <span class="tooltip-text">In Development</span>
+          <i class="fa-solid fa-gear"></i>
+          <span class="tooltip-text">Settings</span>
         </button>
         <button id="server-status" class="toolbar-button">
           <i id="server-status-icon" class="fa-solid fa-xmark"></i>
@@ -38,7 +38,7 @@
         </button>
         <button class="toolbar-button" id="begin-text-button" class="draw-button" disabled data-tab="draw">
           <i class="fa-solid fa-t"></i>
-          <span class="tooltip-text">In Development</span>
+          <span class="tooltip-text">Draw Textbox</span>
         </button>
         <button class="toolbar-button" id="begin-drawing-button" class="draw-button" data-tab="draw">
           <i class="fa-solid fa-pencil"></i>
@@ -252,13 +252,10 @@
               style="display: none"
               stroke-linecap="round"
             />
-            <circle
-              id="whiteboard-drawing-cursor"
-              fill="var(--draw-color)"
-              r="4px"
-              stroke="var(--draw-color)"
-              stroke-width="1"
-            />
+
+            <foreignObject id="whiteboard-drawing-cursor" width="30px" height="30px" style="overflow: visible;">
+                <i class="fa-solid fa-pencil"></i>
+            </foreignObject>
           </svg>
 
           <foreignObject id="user-cursors-container" width="1024px" height="1024px" pointer-events="none">
