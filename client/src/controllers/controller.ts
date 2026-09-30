@@ -41,7 +41,7 @@ export abstract class TokenController<View extends TokenListener> extends Contro
     // time the event is fired. For fluid operations, the local token is still updated
     // instantly.
 
-    const cooldown = 50; // in milliseconds
+    const cooldown = 33; // in milliseconds => 1000 / 33 = ~30fps
     this.state.transformToken(transform);
     this.store.send({ type: "request_transform", transform }, cooldown);
   }
