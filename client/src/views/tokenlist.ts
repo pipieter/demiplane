@@ -28,9 +28,17 @@ class TokenListView extends TokenListener {
 
     // Reverse the array, so the top-most tokens are at the top of the list
     const reversed = [...tokens].reverse();
+    let firstSelectedLi: HTMLLIElement | null = null;
+
     for (const token of reversed) {
-      this.list.appendChild(this.createListEntry(token, selected.includes(token)));
+      const isSelected = selected.includes(token);
+      const li = this.createListEntry(token, isSelected);
+      this.list.appendChild(li);
+
+      if (isSelected && !firstSelectedLi) firstSelectedLi = li;
     }
+
+    if (firstSelectedLi) firstSelectedLi.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   private createListEntry(token: Token, selected: boolean) {
