@@ -141,28 +141,25 @@ label {
   /* Checkbox state handling */
   &:has(input[type="checkbox"]) {
     background-color: white;
-    
-    & span {
-      text-align: center;
-      width: 100%;
-      pointer-events: none;
-      user-select: none;
 
-      &::after {
-        content: "✕";
-        padding-left: 4px;
-        color: var(--danger);
-        font-weight: bold;
-      }
+    /* Anything with class "Check" will only show if input is checked
+    Anything with class "Uncheck" will only show if unput is unchecked */
+    & > .check {
+      display: none !important;
+    }
+    & > .uncheck {
+      display: inline-block !important;
     }
 
     &:has(input:checked) {
       background-color: var(--light-secondary);
       color: white;
 
-      & span::after {
-        content: "✓";
-        color: var(--success);
+      & .check {
+        display: inline-block !important;
+      }
+      & .uncheck {
+        display: none !important;
       }
     }
   }
