@@ -6,6 +6,13 @@
 @import url('toolbar.css');
 @import url('list.css');
 
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/Quicksand-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
 :root {
   /* Overridden in code. */
   --user-color: #ff0000;
@@ -13,7 +20,7 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Quicksand', Arial, sans-serif;
   margin: 0;
   background-color: var(--dark-primary);
 
@@ -46,8 +53,6 @@ body {
     --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
   }
 }
-
-
 
 * {
   scrollbar-width: thin;
@@ -126,6 +131,7 @@ button {
         white-space: nowrap;
         
         font-size: 0.8rem;
+        font-family: 'Quicksand', Arial, sans-serif;
         background: color-mix(in srgb, var(--dark-primary) 50%, transparent);
         color: white;
         padding: 0.25rem 0.5rem;
