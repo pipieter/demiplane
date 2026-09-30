@@ -53,6 +53,7 @@ class TokenListView extends TokenListener {
     const iconWeight = "border" in token ? (token.border ? "fa-regular" : "fa-solid") : "fa-solid";
     const iconElement = document.createElement("i");
     iconElement.classList.add(iconSymbol, iconWeight);
+    if ("color" in token) iconElement.style.color = token.color;
 
     const nameInput = document.createElement("input");
     nameInput.type = "text";

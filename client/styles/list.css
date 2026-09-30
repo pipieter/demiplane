@@ -7,6 +7,10 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 
+    &  > * > i {
+        filter: drop-shadow(0px 0px 1px var(--light-secondary));
+    }
+
     & > * > .token-name-input {
         border: none;
         background: transparent;
@@ -33,14 +37,14 @@
     text-align: start;
 
     &  > * > i {
-        filter: drop-shadow(0px 0px 1px var(--dark-tertiary));
+        filter: drop-shadow(0px 0px 1px var(--light-secondary));
     }
 
     & > * > p {
         font-size: var(--toolbar-fontsize-l);
         font-weight: 600;
         margin: 0;
-        filter: drop-shadow(0px 0px 1px var(--dark-tertiary));
+        filter: drop-shadow(0px 0px 1px var(--light-secondary));
     }
 }
 
