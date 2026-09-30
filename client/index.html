@@ -6,36 +6,6 @@
     <link rel="stylesheet" href="./styles/style.css" />
   </head>
   <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <aside class="sidebar-content" id="sidebar-content">
-        <section id="tab-user" class="tab-panel" hidden>
-          <h2>User Settings</h2>
-          <hr />
-          <label for="user-input-name">
-            <span>Name</span>
-            <input id="user-input-name" type="text" name="user-input-name" />
-          </label>
-          <label for="user-input-color">
-            <span>Color</span>
-            <input id="user-input-color" type="color" name="user-input-color" />
-          </label>
-    
-          <hr />
-    
-          <ul id="user-list" class="side-menu-list"></ul>
-        </section>
-      </aside>
-    
-      <nav class="sidebar-navigation">
-        <button class="tab-close-button" id="sidebar-hide-button"><i class="fa-solid fa-xmark"></i></button>
-        <button class="tab-button" data-tab="draw">Draw</button>
-        <button class="tab-button" data-tab="grid">Grid</button>
-        <button class="tab-button" data-tab="token">Token</button>
-        <button class="tab-button" data-tab="user">User</button>
-      </nav>
-    </div>
-
     <!-- Toolbar -->
     <div class="toolbar">
       <div id="toolbar-settings" class="toolbar-section">
@@ -90,7 +60,7 @@
           <i class="fa-solid fa-table-cells-large"></i>
           <span class="tooltip-text">Grid Settings</span>
         </button>
-        <button class="toolbar-button" data-tab="background">
+        <button class="toolbar-button" data-tab="background" disabled>
           <i class="fa-solid fa-panorama"></i>
           <span class="tooltip-text">Background Settings</span>
         </button>
@@ -114,8 +84,7 @@
         <label class="toolbar-button">
           <i class="fa-regular fa-square check"></i>
           <i class="fa-solid fa-square uncheck"></i>
-          <input type="checkbox" id="draw-border-checkb
-          ox" />
+          <input type="checkbox" id="draw-border-checkbox" />
           <span class="tooltip-text">Border Only</span>
         </label>
       </div>
@@ -156,7 +125,7 @@
       </section>
     </div>
 
-    <div class="toolbar-menu" id="tab-token">
+    <div class="toolbar-menu" id="tab-token" style="display: none;">
       <section class="toolbar-menu-content">
         <label for="token-edit-x">
           <i class="fa-solid fa-x"></i>
@@ -209,6 +178,22 @@
         </label>
         
         <ul id="token-list" style="display: none"></ul>
+      </section>
+    </div>
+
+    <div class="toolbar-menu" id="tab-user" style="display: none;">
+      <section class="toolbar-menu-content">
+        <label for="user-input-color">
+          <i class="fa-solid fa-user" style="color: var(--user-color);"></i>
+          <input id="user-input-color" type="color" name="user-input-color" />
+          <span class="tooltip-text">User Color</span>
+        </label>
+
+        <label for="user-input-name">
+          <input id="user-input-name" type="text" name="user-input-name" />
+        </label>
+
+        <ul id="user-list"></ul>
       </section>
     </div>
 
