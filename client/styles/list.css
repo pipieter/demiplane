@@ -86,3 +86,44 @@ ul {
         }
     }
 }
+
+/* Keep lists at the top on mobile so they stay clear of the bottom toolbar. */
+@media screen and (max-width: 64rem) {
+    #token-list,
+    #user-list {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        top: env(safe-area-inset-top);
+        bottom: auto;
+        box-sizing: border-box;
+        width: max-content;
+        max-width: calc(100vw - var(--toolbar-padding) * 2);
+        padding-right: calc(var(--toolbar-padding) * 2);
+        padding-left: calc(var(--toolbar-padding) * 2);
+        border-radius: var(--toolbar-btn-size);
+        transform: translateX(-50%);
+        scrollbar-gutter: stable;
+        scrollbar-color: var(--light-primary) transparent;
+        max-height: min(
+            calc(var(--toolbar-btn-size) * 8),
+            calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - var(--toolbar-padding) * 2)
+        );
+
+        &::-webkit-scrollbar {
+            width: 0.75rem;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+            margin-block: var(--toolbar-btn-size);
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--light-primary);
+            background-clip: content-box;
+            border: 0.2rem solid transparent;
+            border-radius: 999px;
+        }
+    }
+}
