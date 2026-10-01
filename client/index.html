@@ -60,7 +60,7 @@
           <i class="fa-solid fa-table-cells-large"></i>
           <span class="tooltip-text">Grid Settings</span>
         </button>
-        <button class="toolbar-button" data-tab="background" disabled>
+        <button class="toolbar-button" data-tab="background">
           <i class="fa-solid fa-panorama"></i>
           <span class="tooltip-text">Background Settings</span>
         </button>
@@ -115,12 +115,6 @@
           <i class="fa-solid fa-y"></i>
           <span class="tooltip-text">Y-offset</span>
           <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
-        </label>
-
-        <label for="upload-background-button" class="label-button">
-          <i class="fa-solid fa-panorama"></i>
-          <span class="tooltip-text">Upload Background</span>
-          <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
         </label>
       </section>
     </div>
@@ -194,6 +188,25 @@
         </label>
 
         <ul id="user-list"></ul>
+      </section>
+    </div>
+
+    <div class="toolbar-menu" id="tab-background" style="display: none">
+      <section class="toolbar-menu-content">
+        <label for="upload-background-button" class="label-button">
+          <i class="fa-solid fa-panorama"></i>
+          <span class="tooltip-text">Upload Background</span>
+          <input id="upload-background-button" type="file" accept="image/*" style="display: none" />
+        </label>
+
+        <label for="background-list-checkbox">
+          <i class="fa-solid fa-table-list"></i>
+          <span class="tooltip-text uncheck">Show background list</span>
+          <span class="tooltip-text check">Hide background list</span>
+          <input type="checkbox" id="background-list-checkbox" />
+        </label>
+      
+        <ul id="background-layers-list"></ul>
       </section>
     </div>
 

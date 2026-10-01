@@ -1,4 +1,5 @@
-#token-list {
+#token-list,
+#background-layers-list {
     position: absolute;
     bottom: 25vh;
     right: 0;

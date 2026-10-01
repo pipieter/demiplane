@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 
 describe("ToolbarView", () => {
   let view: ToolbarView;
-  const tabs = ["draw", "grid", "token", "user"];
+  const tabs = ["draw", "grid", "token", "user"]; // Can't be defined dynamically due to how vitest works.
 
   beforeEach(() => {
     view = new ToolbarView();

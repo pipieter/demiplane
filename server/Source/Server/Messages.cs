@@ -126,24 +126,6 @@ public class GridResponseMessage(Grid grid) : Message
     public Grid grid = grid;
 }
 
-public class BackgroundRequestMessage(string href) : Message
-{
-    [JsonProperty(Required = Required.Always)]
-    public string type = "request_background";
-
-    [JsonProperty(Required = Required.Always)]
-    public string href = href;
-}
-
-public class BackgroundResponseMessage(Background background) : Message
-{
-    [JsonProperty(Required = Required.Always)]
-    public string type = "background";
-
-    [JsonProperty(Required = Required.Always)]
-    public Background background = background;
-}
-
 public record struct Transform(string id, string name, int x, int y, int w, int h, int r)
 {
     [JsonProperty(Required = Required.Always)]
@@ -277,19 +259,25 @@ public class MessageJsonConverter : Json.TypeConverter<Message>
         ["create"] = typeof(CreateResponseMessage),
         ["delete"] = typeof(DeleteResponseMessage),
         ["transform"] = typeof(TransformResponseMessage),
-        ["background"] = typeof(BackgroundResponseMessage),
         ["user_change"] = typeof(UserChangeResponseMessage),
         ["layer_change"] = typeof(LayerResponseMessage),
         ["user_disconnect"] = typeof(UserDisconnectResponseMessage),
+        ["background_add_layer"] = typeof(BackgroundAddLayerResponseMessage),
+        ["background_select_layer"] = typeof(BackgroundSelectLayerResponseMessage),
+        ["background_rename_layer"] = typeof(BackgroundRenameLayerResponseMessage),
+        ["background_delete_layer"] = typeof(BackgroundDeleteLayerResponseMessage),
         ["request_sync"] = typeof(SyncRequestMessage),
         ["request_grid"] = typeof(GridRequestMessage),
         ["request_create"] = typeof(CreateRequestMessage),
         ["request_duplicate"] = typeof(DuplicateRequestMessage),
         ["request_delete"] = typeof(DeleteRequestMessage),
         ["request_transform"] = typeof(TransformRequestMessage),
-        ["request_background"] = typeof(BackgroundRequestMessage),
         ["request_user_change"] = typeof(UserChangeRequestMessage),
         ["request_layer_change"] = typeof(LayerRequestMessage),
         ["request_user_position"] = typeof(UserPositionRequestMessage),
+        ["request_background_add_layer"] = typeof(BackgroundAddLayerRequestMessage),
+        ["request_background_select_layer"] = typeof(BackgroundSelectLayerRequestMessage),
+        ["request_background_rename_layer"] = typeof(BackgroundRenameLayerRequestMessage),
+        ["request_background_delete_layer"] = typeof(BackgroundDeleteLayerRequestMessage),
     };
 }
