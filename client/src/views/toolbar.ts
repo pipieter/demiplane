@@ -47,6 +47,11 @@ class ToolbarView {
 
     this.hideAll();
 
+    if (this.selected === tab) {
+      this.selected = null;
+      return;
+    }
+
     this.selected = tab;
     const active = document.querySelector("#tab-" + tab) as HTMLElement;
 
