@@ -1,4 +1,5 @@
 import BackgroundController from "./controllers/background";
+import BackgroundListController from "./controllers/backgroundlist";
 import GridController from "./controllers/grid";
 import HoverController from "./controllers/hover";
 import SelectionController from "./controllers/selection";
@@ -16,6 +17,7 @@ import server from "./server";
 import State from "./state";
 import Store from "./store";
 import BackgroundView from "./views/background";
+import BackgroundListView from "./views/backgroundlist";
 import GridView from "./views/grid";
 import HoverView from "./views/hover";
 import SelectionView from "./views/selection";
@@ -34,6 +36,7 @@ const store = new Store(server.url);
 
 const tokenView = new TokenMapView();
 const backgroundView = new BackgroundView();
+const backgroundListView = new BackgroundListView();
 const transformView = new TransformView(state.grid);
 const selectionView = new SelectionView();
 const serverStatusView = new ServerStatusView();
@@ -47,6 +50,7 @@ const userCursorView = new UserCursorsView(state.grid);
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
+new BackgroundListController(store, state, backgroundListView);
 new TokenMapController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
@@ -76,8 +80,23 @@ store.listen("message", (event) => {
       state.setGrid(data.grid);
       break;
 
-    case "background": {
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+    case "background_add_layer": {
+      state.addBackgroundLayer(data.layer);
+      break;
+    }
+
+    case "background_delete_layer": {
+      state.deleteBackgroundLayer(data.id);
+      break;
+    }
+
+    case "background_select_layer": {
+      state.selectBackgroundLayer(data.id);
+      break;
+    }
+
+    case "background_rename_layer": {
+      state.renameBackgroundLayer(data.id, data.name);
       break;
     }
 
@@ -97,7 +116,7 @@ store.listen("message", (event) => {
       state.clearTokens();
       state.clearSelected();
       state.setGrid(data.grid);
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.layers, data.background.selected);
       state.createTokens(data.tokens);
       state.setUsers(data.users);
       store.setSecretToken(data.secret);

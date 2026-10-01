@@ -18,7 +18,7 @@ describe("SidebarView", () => {
     });
 
     test("should have a button for every tab", () => {
-      expect(view.tabs.length).toBe(4);
+      expect(view.tabs.length).toBe(5);
       expect(view.tabButtons.length).toBe(view.tabs.length);
     });
 
