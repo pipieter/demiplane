@@ -1,29 +1,15 @@
 #server-status {
-  position: absolute;
-  transition: all 0.1s ease-in-out;
-  top: 0;
-  right: 0;
-  margin: 4px 4px;
-  height: fit-content;
-
-  display: flex;
-  align-items: center;
-  gap: 2px;
-
   mix-blend-mode: lighten;
-
   & > * {
     margin: 0;
   }
 
   &.server-offline {
-    opacity: 0.6;
     color: var(--danger);
     cursor: pointer;
   }
 
   &.server-syncing {
-    opacity: 0.6;
     color: var(--info);
     cursor: wait;
 
@@ -33,13 +19,12 @@
   }
 
   &.server-online {
-    color: var(--dark-tertiary);
-    opacity: 0.3;
+    color: var(--success);
     cursor: pointer;
+  }
 
-    &:hover {
-      opacity: 0.7;
-    }
+  &:hover {
+    background-color: var(--light-primary);
   }
 }
 

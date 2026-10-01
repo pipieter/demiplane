@@ -7,7 +7,6 @@
 export default function AutosizeInput(value: string = "", minWidth: number = 4) {
   const input = document.createElement("input");
   input.value = value;
-  input.style.fontFamily = "'Courier New', monospace";
 
   const width = Math.max(value.length, minWidth);
   input.size = width;
