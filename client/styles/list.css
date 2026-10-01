@@ -90,7 +90,8 @@ ul {
 /* Keep lists at the top on mobile so they stay clear of the bottom toolbar. */
 @media screen and (max-width: 64rem) {
     #token-list,
-    #user-list {
+    #user-list,
+    #background-layers-list {
         position: fixed;
         left: 50%;
         right: auto;
