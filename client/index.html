@@ -67,56 +67,56 @@
       </div>
     </div>
 
-    <div class="toolbar-menu" id="tab-draw" style="display: none;">
+    <div class="toolbar-menu" id="tab-draw" style="display: none">
       <div class="toolbar-menu-content">
-        <label class="toolbar-button">
-          <i class="fa-solid fa-palette" style="color: var(--draw-color);"></i>
-          <input type="color" id="draw-color-input" />
+        <label for="draw-color-input" class="toolbar-button">
+          <i class="fa-solid fa-palette" style="color: var(--draw-color)"></i>
+          <input id="draw-color-input" type="color" />
           <span class="tooltip-text">Select Color</span>
         </label>
 
-        <label class="toolbar-button">
+        <label for="draw-border-number" class="toolbar-button">
           <i class="fa-solid fa-brush"></i>
-          <input type="number" id="draw-border-number" min="1" max="100" step="1" value="4" />
+          <input id="draw-border-number" type="number" min="1" max="100" step="1" value="4" />
           <span class="tooltip-text">Brush Width</span>
         </label>
 
-        <label class="toolbar-button">
+        <label for="draw-border-checkbox" class="toolbar-button">
           <i class="fa-regular fa-square check"></i>
           <i class="fa-solid fa-square uncheck"></i>
-          <input type="checkbox" id="draw-border-checkbox" />
+          <input id="draw-border-checkbox" type="checkbox" />
           <span class="tooltip-text">Border Only</span>
         </label>
       </div>
     </div>
 
-    <div class="toolbar-menu" id="tab-grid" style="display: none;">
+    <div class="toolbar-menu" id="tab-grid" style="display: none">
       <section class="toolbar-menu-content">
-        <label>
+        <label for="grid-global-checkbox">
           <i class="fa-solid fa-lock check"></i>
           <i class="fa-solid fa-unlock uncheck"></i>
-          <input type="checkbox" id="grid-global-checkbox" />
+          <input id="grid-global-checkbox" type="checkbox" />
           <span class="tooltip-text">Default grid-lock</span>
         </label>
-            
+
         <label for="grid-size">
           <i class="fa-solid fa-ruler-combined"></i>
           <span class="tooltip-text">Grid-size</span>
           <input id="grid-size" type="number" name="grid-size" min="16" max="2048" step="1" value="64" />
         </label>
-      
+
         <label for="grid-offset-X">
           <i class="fa-solid fa-x"></i>
           <span class="tooltip-text">X-offset</span>
           <input id="grid-offset-X" type="number" name="grid-offset-X" min="0" step="1" value="0" />
         </label>
-      
+
         <label for="grid-offset-Y">
           <i class="fa-solid fa-y"></i>
           <span class="tooltip-text">Y-offset</span>
           <input id="grid-offset-Y" type="number" name="grid-offset-Y" min="0" step="1" value="0" />
         </label>
-            
+
         <label for="upload-background-button" class="label-button">
           <i class="fa-solid fa-panorama"></i>
           <span class="tooltip-text">Upload Background</span>
@@ -125,38 +125,38 @@
       </section>
     </div>
 
-    <div class="toolbar-menu" id="tab-token" style="display: none;">
+    <div class="toolbar-menu" id="tab-token" style="display: none">
       <section class="toolbar-menu-content">
         <label for="token-edit-x">
           <i class="fa-solid fa-x"></i>
           <span class="tooltip-text">X</span>
           <input id="token-edit-x" type="number" name="token-edit-x" min="0" step="1" value="64" disabled />
         </label>
-        
+
         <label for="token-edit-y">
           <i class="fa-solid fa-y"></i>
           <span class="tooltip-text">Y</span>
           <input id="token-edit-y" type="number" name="token-edit-y" min="0" step="1" value="64" disabled />
         </label>
-        
+
         <label for="token-edit-w">
           <i class="fa-solid fa-ruler-horizontal"></i>
           <span class="tooltip-text">Width</span>
           <input id="token-edit-w" type="number" name="token-edit-w" min="8" step="1" value="64" disabled />
         </label>
-        
+
         <label for="token-edit-h">
           <i class="fa-solid fa-ruler-vertical"></i>
           <span class="tooltip-text">Height</span>
           <input id="token-edit-h" type="number" name="token-edit-h" min="8" step="1" value="64" disabled />
         </label>
-        
+
         <label for="token-edit-r">
           <i class="fa-solid fa-rotate"></i>
           <span class="tooltip-text">Rotation</span>
           <input id="token-edit-r" type="number" name="token-edit-r" min="-180" max="180" step="1" value="0" disabled />
         </label>
-        
+
         <button id="token-edit-delete" disabled>
           <i class="fa-solid fa-trash-can"></i>
           <span class="tooltip-text">Remove token</span>
@@ -166,25 +166,25 @@
           <span class="tooltip-text">Move up</span>
         </button>
         <button id="token-edit-move-down">
-            <i class="fa-solid fa-circle-down"></i>
-            <span class="tooltip-text">Move down</span>
+          <i class="fa-solid fa-circle-down"></i>
+          <span class="tooltip-text">Move down</span>
         </button>
 
         <label for="token-list-checkbox">
           <i class="fa-solid fa-table-list"></i>
           <span class="tooltip-text uncheck">Show token list</span>
           <span class="tooltip-text check">Hide token list</span>
-          <input type="checkbox" id="token-list-checkbox" />
+          <input id="token-list-checkbox" type="checkbox" />
         </label>
-        
+
         <ul id="token-list" style="display: none"></ul>
       </section>
     </div>
 
-    <div class="toolbar-menu" id="tab-user" style="display: none;">
+    <div class="toolbar-menu" id="tab-user" style="display: none">
       <section class="toolbar-menu-content">
         <label for="user-input-color">
-          <i class="fa-solid fa-user" style="color: var(--user-color);"></i>
+          <i class="fa-solid fa-user" style="color: var(--user-color)"></i>
           <input id="user-input-color" type="color" name="user-input-color" />
           <span class="tooltip-text">User Color</span>
         </label>
@@ -253,8 +253,8 @@
               stroke-linecap="round"
             />
 
-            <foreignObject id="whiteboard-drawing-cursor" width="30px" height="30px" style="overflow: visible;">
-                <i class="fa-solid fa-pencil"></i>
+            <foreignObject id="whiteboard-drawing-cursor" width="30px" height="30px" style="overflow: visible">
+              <i class="fa-solid fa-pencil"></i>
             </foreignObject>
           </svg>
 
