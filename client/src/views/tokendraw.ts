@@ -94,6 +94,15 @@ class TokenDrawView extends Listener<TokenDrawViewMap> {
       this.uploadToken(file);
     });
 
+    // If a non-draw button is pressed, draw mode should be stopped.
+    document
+      .querySelectorAll<HTMLButtonElement>('.toolbar-button[data-tab]:not([data-tab="draw"])')
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          if (this.type !== null) this.begin(null);
+        });
+      });
+
     this.colorInput.addEventListener("input", () => this.updateColors());
     this.updateColors();
   }
