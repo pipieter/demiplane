@@ -46,7 +46,7 @@ describe("ServerStatusView", () => {
 
       expect(view.container.className).toBe("server-syncing");
       expect(view.statusSymbol.className).toContain("fa-rotate");
-      expect(view.statusText.textContent).toBe("Syncing");
+      expect(view.statusText.textContent).toBe("Status: Syncing");
       expect(document.body.style.cursor).toBe("progress");
     });
 
@@ -54,7 +54,7 @@ describe("ServerStatusView", () => {
       view.setOnline();
 
       expect(view.container.className).toBe("server-online");
-      expect(view.statusSymbol.className).toContain("fa-check");
+      expect(view.statusSymbol.className).toContain("fa-signal");
       expect(view.statusText.textContent).toContain("Online");
       expect(document.body.style.cursor).toBe("default");
     });
@@ -66,7 +66,7 @@ describe("ServerStatusView", () => {
 
       expect(view.container.className).toBe("server-offline");
       expect(view.statusSymbol.className).toContain("fa-xmark");
-      expect(view.statusText.textContent).toBe("Offline");
+      expect(view.statusText.textContent).toBe("Status: Offline");
       expect(document.body.style.cursor).toBe("default");
     });
   });
