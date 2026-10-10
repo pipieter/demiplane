@@ -1,56 +1,17 @@
 import BackgroundView from "../../src/views/background";
-import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe("BackgroundView", () => {
   let view: BackgroundView;
-  let emitSpy: Mock;
 
   beforeEach(() => {
     view = new BackgroundView();
-    emitSpy = vi.spyOn(view, "emit");
   });
 
   describe("Initialization", () => {
     test("should find all required DOM elements", () => {
-      expect(view.input).toBeDefined();
       expect(view.image).toBeDefined();
-      expect(view.layers.length).toBe(5);
-    });
-  });
-
-  describe("Event Emission", () => {
-    test("should emit background_upload when a file is selected", () => {
-      const file = new File(["content"], "test.png", { type: "image/png" });
-
-      const mockFileList = {
-        0: file,
-        length: 1,
-        item: (index: number) => (index === 0 ? file : null),
-      };
-
-      Object.defineProperty(view.input, "files", {
-        value: mockFileList,
-        writable: false,
-        configurable: true,
-      });
-
-      view.input.dispatchEvent(new Event("change"));
-
-      expect(emitSpy).toHaveBeenCalledWith("background_upload", file);
-    });
-
-    test("should not emit if no file is selected", () => {
-      Object.defineProperty(view.input, "files", {
-        value: {
-          length: 0,
-          item: () => null,
-        },
-        configurable: true,
-      });
-
-      view.input.dispatchEvent(new Event("change"));
-
-      expect(emitSpy).not.toHaveBeenCalled();
+      expect(view.layers.length).toBe(4);
     });
   });
 

@@ -1,8 +1,17 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
-@import url('sidebar.css');
+@import url('draw.css');
 @import url('whiteboard.css');
 @import url('serverstatus.css');
 @import url('usercursors.css');
+@import url('toolbar.css');
+@import url('list.css');
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/Quicksand-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
 
 :root {
   /* Overridden in code. */
@@ -11,22 +20,38 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Quicksand', Arial, sans-serif;
   margin: 0;
+  background-color: var(--dark-primary);
 
-  --sidebar-width: 250px;
+  --media-sm: 40rem;
+  --media-md: 48rem;
+  --media-lg: 64rem;
+  --media-xl: 80rem;
+  --media-2xl: 96rem;
 
-  --dark-primary: #252525;
-  --dark-secondary: #353535;
-  --dark-tertiary: #454545;
-  --light-primary: #a0a0a0;
-  --light-secondary: #808080;
+  --toolbar-btn-size: 4rem;
+  --toolbar-padding: calc((var(--toolbar-btn-size) / 4));
+  --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
 
-  --danger: #ef2727;
-  --info: #0b7b97;
-  --success: #1fd13d;
+  --dark-primary: #252530;
+  --dark-secondary: #353540;
+  --dark-tertiary: #454550;
+  --light-primary: #b5b5ec;
+  --light-secondary: #8080cc;
 
-  --moveable-blue: #4af
+  --danger: #b63164;
+  --info: #4646c2;
+  --success: #1fd19c;
+
+  --moveable-blue: #4af;
+
+  /* NOTE: Can't use --media-xl here, because of technical restrictions */
+  @media screen and (max-width: 80rem) {
+    --toolbar-btn-size: 3rem;
+    --toolbar-padding: calc((var(--toolbar-btn-size) / 4));
+    --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
+  }
 }
 
 * {
@@ -45,119 +70,199 @@ line {
 
 label:has(input[type="checkbox"]),
 label:has(input[type="file"]),
+label:has(input[type="color"]),
+label:has(input[type="number"]),
 button {
-  color: var(--light-primary);
-  background-color: var(--dark-primary);
-  font-weight: bold;
-  transition: all 0.1s ease;
-  cursor: pointer;
+    border-radius: 50%;
+    padding: 0.5rem;
+    background-color: white;
+    color:  var(--light-secondary);
+    border: 3px var(--light-secondary) solid;
 
-  border: 1px solid var(--light-secondary);
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 0.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--toolbar-btn-size);
+    height: var(--toolbar-btn-size);
+    font-size: calc(var(--toolbar-btn-size) / 2);
 
-  box-shadow: 0px -1px 1px var(--light-secondary) inset;
+    box-shadow: 0px 0px 2px var(--dark-primary);
+    position: relative;
+    transition: transform 0.2s ease, scale 0.2s ease, box-shadow 0.2s ease;
 
-  &:hover {
-    background-color: var(--dark-secondary);
-    color: white;
-  }
+    &:hover {
+        scale: 1.1;
+        box-shadow: 0px 4px 8px var(--dark-primary);
+        background-color: var(--light-secondary);
+        color: white;
+        cursor: pointer;
+        box-shadow: none;
+    }
 
-  &:disabled {
-    background-color: var(--light-primary);
-    color: var(--light-secondary);
-  }
+    /* Hide the native input element so only the circular label/button shows */
+    input[type="checkbox"],
+    input[type="file"] {
+        display: none;
+    }
+
+    &:disabled {
+        background-color: var(--light-primary);
+        color: var(--light-secondary);
+        cursor: not-allowed;
+        scale: none !important;
+    }
+    
+    &.selected {
+      border-color: white;
+      background-color: var(--light-primary);
+      color: white;
+      box-shadow: 0 0 2px var(--light-primary);
+    }
+
+    /* TOOLTIP */
+    & > .tooltip-text {
+        display: none;
+        opacity: 0;
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1500;
+        white-space: nowrap;
+        
+        font-size: 0.8rem;
+        font-family: 'Quicksand', Arial, sans-serif;
+        background: color-mix(in srgb, var(--dark-primary) 50%, transparent);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        transition: opacity 0.2s ease;
+    }
+
+    &:hover > .tooltip-text {
+        display: block;
+        opacity: 1;
+    }
+
 }
 
 label {
   display: flex;
   position: relative;
   align-items: center;
-  width: 100%;
-  cursor: pointer;
   box-sizing: border-box;
 
-  & input {
-    width: 66%;
+  /* Hide raw standard inputs if they are embedded */
+  & > input[type="checkbox"],
+  & > input[type="file"] {
+    display: none;
   }
 
-  & span {
-    text-align: start;
-    width: 33%;
-    pointer-events: none;
-    user-select: none;
-  }
+  /* Checkbox state handling */
+  &:has(input[type="checkbox"]) {
+    background-color: white;
 
-  &:has(input[type="color"]) {
-    height: 32px;
-    justify-content: center;
-
-    input {
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-      appearance: none;
-      border: 1px solid var(--light-primary);
-      border-radius: 4px;
-      background-color: var(--light-primary);
-      box-shadow: 0px -1px 1px var(--light-secondary) inset;
-      padding: 0;
+    /* Anything with class "Check" will only show if input is checked
+    Anything with class "Uncheck" will only show if input is unchecked */
+    & > .check {
+      display: none !important;
     }
-
-    span {
-      text-align: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 2px black;
-      white-space: nowrap;
-    }
-  }
-
-  &:has(input[type="checkbox"]){
-    & input {
-      display: none;
-    }
-
-    & span {
-      text-align: center;
-      width: 100%;
-      transform: translateY(-1px);
-
-      &::after {
-        content: "✕";
-        padding-left: 8px;
-        color: var(--danger);
-        font-family: Arial, sans-serif;
-        font-weight: bold;
-      }
+    & > .uncheck {
+      display: inline-block !important;
     }
 
     &:has(input:checked) {
-      background-color: var(--dark-tertiary);
+      background-color: var(--light-secondary);
       color: white;
 
-      & span::after {
-        content: "✓";
-        color: var(--success);
+      & .check {
+        display: inline-block !important;
+      }
+      & .uncheck {
+        display: none !important;
       }
     }
   }
 
-  &:has(input[type="file"]){
+  /* Color picker inside a circular wrapper */
+  &:has(input[type="color"]) {
+    padding: 0;
+
+    & > i {
+      filter: drop-shadow(0px 0px 1px var(--light-secondary));
+    }
+
+    & input[type="color"] {
+      width: 0;
+      height: 0;
+      cursor: pointer;
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: 0;
+    }
+  }
+
+  /* File upload modifier */
+  &:has(input[type="file"]) {
+    & i {
+      font-size: calc(var(--toolbar-btn-size) / 2.5);
+    }
+    & span {
+      display: none; /* Hide file names to keep shape circular */
+    }
+  }
+
+  /* Text edit field */
+  &:has(input[type="text"]) {
+    & input[type="text"] {
+      font-size: var(--toolbar-fontsize-l);
+      padding: var(--toolbar-padding);
+      border-radius: var(--toolbar-btn-size);
+
+      border: 3px var(--light-secondary) solid;
+    }
+  }
+
+  /* Number input */
+  &:has(input[type="number"]) {
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 2px;
+    padding: 0;
 
     & i {
-      font-size: 20px;
+      font-size: calc(var(--toolbar-btn-size) / 3);
+      line-height: 1;
+    }
+
+    & input[type="number"] {
+      background: transparent;
+      border: none;
+      color: inherit;
+      text-align: center;
+      font-size: calc(var(--toolbar-btn-size) / 4);
+      font-weight: bold;
+      outline: none;
+      cursor: pointer;
+      width: 6ch;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+
+    &:has(input[type="number"]:disabled) {
+      background-color: var(--light-primary);
+      color: var(--light-secondary);
+      cursor: not-allowed;
+      scale: none !important;
+
+      & > * {
+        cursor: not-allowed !important;
+      }
     }
   }
 }

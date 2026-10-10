@@ -3,6 +3,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { beforeEach } from "vitest";
 
+if (!HTMLElement.prototype.scrollIntoView) {
+  HTMLElement.prototype.scrollIntoView = () => {};
+}
+
 beforeEach(() => {
   /**
    * When running tests, our document is empty. We need it to match our index.html file.\

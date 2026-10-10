@@ -1,0 +1,11 @@
+#whiteboard-drawing-cursor {
+    pointer-events: none !important;
+    width: calc(var(--toolbar-btn-size) / 2);
+    height: calc(var(--toolbar-btn-size) / 2);
+
+    & > i {
+        font-size: calc(var(--toolbar-btn-size) / 2);
+        transform: translateY(calc(var(--toolbar-btn-size) / -2)) translateX(calc(var(--toolbar-btn-size) / -16));
+        filter: drop-shadow(var(--light-primary) 0px 0px 1px);
+    }
+}

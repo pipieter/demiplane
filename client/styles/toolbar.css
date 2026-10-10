@@ -1,0 +1,157 @@
+.toolbar {
+    background-color: color-mix(in srgb, black 20%, transparent);
+    height: var(--toolbar-btn-size);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: calc(var(--toolbar-btn-size) * 2);
+    padding: var(--toolbar-padding) 0;
+
+    .toolbar-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.toolbar-menu {
+    position: absolute;
+    bottom: calc(var(--toolbar-btn-size) + (var(--toolbar-padding)) *2);
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: var(--toolbar-padding) 0;
+    border-radius: 4px;
+    z-index: 500;
+
+    /* background-color: color-mix(in srgb, var(--dark-primary) 20%, transparent); */
+    color: white;
+    font-size: 1rem;
+
+    & > .toolbar-menu-content {
+        background-color: color-mix(in srgb, black 20%, transparent);
+        padding: var(--toolbar-padding);
+        border-radius: var(--toolbar-btn-size);
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: calc(var(--toolbar-btn-size) / 4);
+
+        & > .button-row  {
+            display: flex;
+            gap: 0.5rem;
+        }
+    }
+
+    & > * > h2 {
+        margin: 0;
+    }
+}
+
+@media screen and (max-width: 40rem) {
+    .toolbar,
+    .toolbar-menu {
+        --toolbar-btn-size: min(2.5rem, calc((100vw - 2rem) / 9.5));
+        --toolbar-padding: calc(var(--toolbar-btn-size) / 4);
+        --toolbar-fontsize-l: calc(var(--toolbar-btn-size) / 3);
+    }
+}
+
+/* Stack side controls and reposition the toolbar groups for easier mobile reach. */
+@media screen and (max-width: 64rem) {
+    .toolbar {
+        position: fixed;
+        inset: 0;
+        height: auto;
+        padding: 0;
+        display: block;
+        background: transparent;
+        pointer-events: none;
+
+        .toolbar-section {
+            position: fixed;
+            z-index: 1001;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: var(--toolbar-padding);
+            border-radius: calc(var(--toolbar-btn-size) * 1.5);
+            background-color: color-mix(in srgb, black 20%, transparent);
+            pointer-events: auto;
+
+            & > button,
+            & > label {
+                box-sizing: border-box;
+                flex: 0 0 var(--toolbar-btn-size);
+                padding: 0.25rem;
+                border-width: 2px;
+            }
+        }
+
+        #toolbar-settings {
+            bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
+            left: env(safe-area-inset-left);
+
+            & .tooltip-text {
+                top: 50%;
+                left: calc(100% + 0.5rem);
+                transform: translateY(-50%);
+            }
+        }
+
+        #toolbar-board {
+            bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
+            right: env(safe-area-inset-right);
+
+            & .tooltip-text {
+                top: 50%;
+                right: calc(100% + 0.5rem);
+                left: auto;
+                transform: translateY(-50%);
+            }
+        }
+
+        #toolbar-draw {
+            flex-direction: row;
+            bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    .toolbar-menu {
+        box-sizing: border-box;
+        max-width: 100%;
+        padding-right: var(--toolbar-padding);
+        padding-left: var(--toolbar-padding);
+        white-space: normal;
+        bottom: calc(
+            var(--toolbar-btn-size) + var(--toolbar-padding) + var(--toolbar-padding) + var(--toolbar-padding) +
+                env(safe-area-inset-bottom)
+        );
+
+        & > .toolbar-menu-content {
+            box-sizing: border-box;
+            max-width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+
+    #tab-token {
+        padding-right: calc(var(--toolbar-btn-size) * 1.75 + env(safe-area-inset-right));
+        padding-left: calc(var(--toolbar-btn-size) * 1.75 + env(safe-area-inset-left));
+    }
+}
