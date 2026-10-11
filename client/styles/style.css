@@ -1,14 +1,14 @@
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-@import url('draw.css');
-@import url('whiteboard.css');
-@import url('serverstatus.css');
-@import url('usercursors.css');
-@import url('toolbar.css');
-@import url('list.css');
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import url("draw.css");
+@import url("whiteboard.css");
+@import url("serverstatus.css");
+@import url("usercursors.css");
+@import url("toolbar.css");
+@import url("list.css");
 
 @font-face {
-  font-family: 'Quicksand';
-  src: url('../assets/Quicksand-VariableFont_wght.ttf') format('truetype');
+  font-family: "Quicksand";
+  src: url("../assets/Quicksand-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: normal;
 }
@@ -20,7 +20,7 @@
 }
 
 body {
-  font-family: 'Quicksand', Arial, sans-serif;
+  font-family: "Quicksand", Arial, sans-serif;
   margin: 0;
   background-color: var(--dark-primary);
 
@@ -73,77 +73,79 @@ label:has(input[type="file"]),
 label:has(input[type="color"]),
 label:has(input[type="number"]),
 button {
-    border-radius: 50%;
-    padding: 0.5rem;
-    background-color: white;
-    color:  var(--light-secondary);
-    border: 3px var(--light-secondary) solid;
+  border-radius: 50%;
+  padding: 0.5rem;
+  background-color: white;
+  color: var(--light-secondary);
+  border: 3px var(--light-secondary) solid;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: var(--toolbar-btn-size);
-    height: var(--toolbar-btn-size);
-    font-size: calc(var(--toolbar-btn-size) / 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--toolbar-btn-size);
+  height: var(--toolbar-btn-size);
+  font-size: calc(var(--toolbar-btn-size) / 2);
 
-    box-shadow: 0px 0px 2px var(--dark-primary);
-    position: relative;
-    transition: transform 0.2s ease, scale 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0px 0px 2px var(--dark-primary);
+  position: relative;
+  transition:
+    transform 0.2s ease,
+    scale 0.2s ease,
+    box-shadow 0.2s ease;
 
-    &:hover {
-        scale: 1.1;
-        box-shadow: 0px 4px 8px var(--dark-primary);
-        background-color: var(--light-secondary);
-        color: white;
-        cursor: pointer;
-        box-shadow: none;
-    }
+  &:hover {
+    scale: 1.1;
+    box-shadow: 0px 4px 8px var(--dark-primary);
+    background-color: var(--light-secondary);
+    color: white;
+    cursor: pointer;
+    box-shadow: none;
+  }
 
-    /* Hide the native input element so only the circular label/button shows */
-    input[type="checkbox"],
-    input[type="file"] {
-        display: none;
-    }
+  /* Hide the native input element so only the circular label/button shows */
+  input[type="checkbox"],
+  input[type="file"] {
+    display: none;
+  }
 
-    &:disabled {
-        background-color: var(--light-primary);
-        color: var(--light-secondary);
-        cursor: not-allowed;
-        scale: none !important;
-    }
-    
-    &.selected {
-      border-color: white;
-      background-color: var(--light-primary);
-      color: white;
-      box-shadow: 0 0 2px var(--light-primary);
-    }
+  &:disabled {
+    background-color: var(--light-primary);
+    color: var(--light-secondary);
+    cursor: not-allowed;
+    scale: none !important;
+  }
 
-    /* TOOLTIP */
-    & > .tooltip-text {
-        display: none;
-        opacity: 0;
-        position: absolute;
-        top: -50%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1500;
-        white-space: nowrap;
-        
-        font-size: 0.8rem;
-        font-family: 'Quicksand', Arial, sans-serif;
-        background: color-mix(in srgb, var(--dark-primary) 50%, transparent);
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 1rem;
-        transition: opacity 0.2s ease;
-    }
+  &.selected {
+    border-color: white;
+    background-color: var(--light-primary);
+    color: white;
+    box-shadow: 0 0 2px var(--light-primary);
+  }
 
-    &:hover > .tooltip-text {
-        display: block;
-        opacity: 1;
-    }
+  /* TOOLTIP */
+  & > .tooltip-text {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1500;
+    white-space: nowrap;
 
+    font-size: 0.8rem;
+    font-family: "Quicksand", Arial, sans-serif;
+    background: color-mix(in srgb, var(--dark-primary) 50%, transparent);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover > .tooltip-text {
+    display: block;
+    opacity: 1;
+  }
 }
 
 label {
