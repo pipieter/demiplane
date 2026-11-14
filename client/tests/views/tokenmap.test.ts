@@ -52,14 +52,17 @@ function assertDOMToken(token: Token) {
       break;
     }
 
-    case "line":
+    case "line": {
       expect(drawn?.tagName).toBe("line");
       expect(drawn?.getAttribute("x1")).toBeCloseTo(token.x);
       expect(drawn?.getAttribute("y1")).toBeCloseTo(token.y);
       expect(drawn?.getAttribute("x2")).toBeCloseTo(token.x + token.w);
       expect(drawn?.getAttribute("y2")).toBeCloseTo(token.y + token.h);
-      expect(drawn?.getAttribute("transform")).toBeNull(); // We don't rotate lines.
+      expect(drawn?.getAttribute("transform")).toBe(
+        `rotate(${token.r} ${token.x + token.w / 2} ${token.y + token.h / 2})`,
+      );
       break;
+    }
 
     case "image":
       expect(drawn?.tagName).toBe("image");

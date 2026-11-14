@@ -63,6 +63,14 @@ describe("TokenListView", () => {
 
       expect(emitSpy).toHaveBeenCalledWith("tokens_select", [tokens[1]]);
     });
+
+    test("should add a token to the selection with Ctrl-click", () => {
+      view.update(tokens, [tokens[0]]);
+      const item = view.list.querySelector(`#token-list-item-${tokens[1].id}`)!;
+      item.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
+
+      expect(emitSpy).toHaveBeenCalledWith("tokens_select", [tokens[0], tokens[1]]);
+    });
   });
 
   describe("Renaming Logic", () => {
