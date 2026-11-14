@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
-import TransformView from "../../src/views/transform";
-import TokenMapView from "../../src/views/tokenmap";
-import { Token } from "../../src/models/token";
-import mocking from "../mocking";
 import Grid from "../../src/models/grid";
+import { Token } from "../../src/models/token";
 import Viewport from "../../src/models/viewport";
+import TokenMapView from "../../src/views/tokenmap";
+import TransformView from "../../src/views/transform";
+import mocking from "../mocking";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("TransformView", () => {
   let view: TransformView;

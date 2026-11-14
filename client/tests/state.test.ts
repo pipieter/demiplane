@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
+import { Transform } from "../src/models/transform";
 import State, { StateListenerMap } from "../src/state";
 import mocking from "./mocking";
-import { Transform } from "../src/models/transform";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("State Class", () => {
   let state: State;

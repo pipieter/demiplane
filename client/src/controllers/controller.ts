@@ -1,4 +1,5 @@
 import type { TokenListener } from "../listeners";
+import type { RequestMessage } from "../messages";
 import type { Token } from "../models/token";
 import type { Transform } from "../models/transform";
 import type State from "../state";
@@ -29,7 +30,9 @@ export abstract class TokenController<View extends TokenListener> extends Contro
 
   protected ontransform(transform: Transform) {
     this.state.transformToken(transform);
-    this.store.send({ type: "request_transform", transform });
+    const message: RequestMessage = { type: "request_transform", transform };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   protected ontransform_intermittent(transform: Transform) {
@@ -38,7 +41,7 @@ export abstract class TokenController<View extends TokenListener> extends Contro
     // time the event is fired. For fluid operations, the local token is still updated
     // instantly.
 
-    const cooldown = 50; // in milliseconds
+    const cooldown = 33; // in milliseconds => 1000 / 33 = ~30fps
     this.state.transformToken(transform);
     this.store.send({ type: "request_transform", transform }, cooldown);
   }
@@ -46,7 +49,9 @@ export abstract class TokenController<View extends TokenListener> extends Contro
   protected ondelete(tokens: Token[]) {
     const ids = tokens.map((token) => token.id);
     this.state.removeTokens(ids);
-    this.store.send({ type: "request_delete", delete: tokens.map((token) => token.id) });
+    const message: RequestMessage = { type: "request_delete", delete: tokens.map((token) => token.id) };
+    this.store.send(message);
+    this.state.actionHistory.add(message);
   }
 
   protected onlayerchange(token: Token, layer: number) {

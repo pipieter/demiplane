@@ -1,5 +1,6 @@
 import { Listener } from "./listener";
-import Background from "./models/background";
+import ActionHistory from "./models/actionhistory";
+import Background, { type BackgroundLayer } from "./models/background";
 import Grid, { type GridData } from "./models/grid";
 import type { Token } from "./models/token";
 import type { Transform } from "./models/transform";
@@ -24,8 +25,10 @@ class State extends Listener<StateListenerMap> {
   private users: Record<string, User>;
   private myId: string;
   private background: Background;
-  public readonly grid: Grid;
   private viewport: Viewport;
+
+  public readonly grid: Grid;
+  public readonly actionHistory: ActionHistory;
 
   constructor() {
     super();
@@ -35,13 +38,41 @@ class State extends Listener<StateListenerMap> {
     this.users = {};
     this.myId = "";
     this.viewport = new Viewport();
-    this.grid = new Grid(this.viewport);
     this.background = new Background();
+    this.grid = new Grid(this.viewport);
+    this.actionHistory = new ActionHistory();
   }
 
-  public setBackground(href: string | null, width: number, height: number) {
-    this.background.set(href, width, height);
+  public setBackground(layers: BackgroundLayer[], selected: string | null) {
+    this.background.set(layers, selected);
     this.emit("background_change", this.background);
+  }
+
+  public addBackgroundLayer(layer: BackgroundLayer) {
+    this.background.layers.push(layer);
+    this.emit("background_change", this.background);
+  }
+
+  public selectBackgroundLayer(id: string | null) {
+    this.background.select(id);
+    this.emit("background_change", this.background);
+  }
+
+  public deleteBackgroundLayer(id: string) {
+    this.background.layers = this.background.layers.filter((layer) => layer.id !== id);
+    this.emit("background_change", this.background);
+  }
+
+  public renameBackgroundLayer(id: string, name: string) {
+    const layer = this.background.layers.find((layer) => layer.id === id);
+    if (layer) {
+      layer.name = name;
+      this.emit("background_change", this.background);
+    }
+  }
+
+  public getCurrentBackgroundLayer() {
+    return this.background.selected;
   }
 
   public createToken(token: Token) {

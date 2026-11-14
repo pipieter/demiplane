@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import UserView from "../../src/views/user";
 import mocking from "../mocking";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("UserView", () => {
   let view: UserView;

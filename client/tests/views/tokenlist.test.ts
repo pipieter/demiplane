@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import TokenListView from "../../src/views/tokenlist";
 import mocking from "../mocking";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("TokenListView", () => {
   let view: TokenListView;

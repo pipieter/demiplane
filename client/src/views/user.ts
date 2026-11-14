@@ -35,14 +35,13 @@ class UserView extends Listener<UserViewMap> {
     return `user-${id}`;
   };
 
-  set(user: User, isMe: boolean = false) {
+  set(user: User, _isMe: boolean = false) {
     const id = this.listItemId(user.id);
     const existingItem = this.userList.querySelector(`#${id}`) as HTMLLIElement | null;
 
     if (existingItem) {
       const nameElement = existingItem.querySelector("p");
       if (nameElement) nameElement.innerText = user.name;
-      if (isMe) existingItem.style.backgroundColor = "var(--dark-secondary)";
 
       existingItem.style.color = user.color;
       return;

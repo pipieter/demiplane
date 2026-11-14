@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prettier": "prettier package.json \"./{src,tests}/**/*.ts\" --write",
+    "prettier": "prettier package.json \"./{src,tests}/**/*.ts\" \"./*/*.css\" index.html --write",
     "lint": "npx eslint ./src --ext .ts,.tsx && npx eslint ./tests --ext .ts,.tsx",
     "test": "vitest run",
     "cspell": "cspell **/*.{cs,md,ts,tsx,css,html}"
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/d3-zoom": "^3.0.8",
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",

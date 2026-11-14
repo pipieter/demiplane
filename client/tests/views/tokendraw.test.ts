@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
-import TokenDrawView from "../../src/views/tokendraw";
 import Grid from "../../src/models/grid";
 import Viewport from "../../src/models/viewport";
-import mocking from "../mocking";
 import { util } from "../../src/util";
+import TokenDrawView from "../../src/views/tokendraw";
+import ToolbarView from "../../src/views/toolbar";
+import mocking from "../mocking";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockCtx = {
   translate: vi.fn(),
@@ -202,6 +203,20 @@ describe("TokenDrawView", () => {
 
         expect(view.circleButton.classList).not.toContain("selected");
         expect(view.layer.style.display).toBe("none");
+      });
+
+      test("should cancel drawing when another toolbar tab is opened", () => {
+        new ToolbarView();
+        view.circleButton.click();
+
+        const gridTabButton = document.querySelector<HTMLButtonElement>('[data-tab="grid"]')!;
+        gridTabButton.click();
+
+        expect(view.circleButton.classList.contains("selected")).toBe(false);
+        expect(view.layer.style.display).toBe("none");
+        expect(view.layer.onmousedown).toBeNull();
+        expect(document.getElementById("viewport")!.style.pointerEvents).toBe("auto");
+        expect(document.getElementById("tab-grid")!.style.display).toBe("");
       });
     });
 

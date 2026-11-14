@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
+import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
 import SelectionView from "../../src/views/selection";
 import TokenMapView from "../../src/views/tokenmap";
 import mocking from "../mocking";
-import { TokenCircle, TokenImage, TokenLine, TokenRectangle } from "../../src/models/token";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("SelectionView", () => {
   let view: SelectionView;

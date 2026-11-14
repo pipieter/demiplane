@@ -7,7 +7,7 @@ interface ServerStatusViewMap {
 class ServerStatusView extends Listener<ServerStatusViewMap> {
   public readonly container: HTMLElement;
   public readonly statusSymbol: HTMLElement;
-  public readonly statusText: HTMLParagraphElement;
+  public readonly statusText: HTMLSpanElement;
   private isSyncing: boolean;
 
   constructor() {
@@ -30,7 +30,7 @@ class ServerStatusView extends Listener<ServerStatusViewMap> {
   setOffline() {
     this.container.classList = "server-offline";
     this.statusSymbol.classList = "fa-solid fa-xmark";
-    this.statusText.textContent = "Offline";
+    this.statusText.textContent = "Status: Offline";
     this.isSyncing = false;
     document.body.style.cursor = "default";
   }
@@ -38,15 +38,15 @@ class ServerStatusView extends Listener<ServerStatusViewMap> {
   setSyncing() {
     this.container.classList = "server-syncing";
     this.statusSymbol.classList = "fa-solid fa-rotate";
-    this.statusText.textContent = "Syncing";
+    this.statusText.textContent = "Status: Syncing";
     this.isSyncing = true;
     document.body.style.cursor = "progress";
   }
 
   setOnline() {
     this.container.classList = "server-online";
-    this.statusSymbol.classList = "fa-solid fa-check";
-    this.statusText.textContent = "Online ";
+    this.statusSymbol.classList = "fa-solid fa-signal";
+    this.statusText.textContent = "Status: Online";
     this.isSyncing = false;
     document.body.style.cursor = "default";
   }

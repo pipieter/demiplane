@@ -1,7 +1,6 @@
 /// The viewport class is handled through d3 and d3zoom. Because d3 has its own method of working and
 /// getting coordinates, only a model is defined without defining a controller or view. The viewport
 /// should be client-side only either way, and thus this is not expected to become an issue.
-
 import * as d3 from "d3-selection";
 import * as d3Zoom from "d3-zoom";
 

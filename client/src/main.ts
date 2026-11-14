@@ -1,32 +1,34 @@
-import server from "./server";
-import BackgroundView from "./views/background";
 import BackgroundController from "./controllers/background";
+import BackgroundListController from "./controllers/backgroundlist";
+import GridController from "./controllers/grid";
+import HoverController from "./controllers/hover";
+import SelectionController from "./controllers/selection";
+import ServerStatusController from "./controllers/serverstatus";
+import TokenDrawController from "./controllers/tokendraw";
+import TokenEditController from "./controllers/tokenedit";
+import TokenListController from "./controllers/tokenlist";
+import TokenMapController from "./controllers/tokenmap";
+import ToolbarController from "./controllers/toolbar";
+import TransformController from "./controllers/transform";
+import UserController from "./controllers/user";
+import UserCursorController from "./controllers/usercursors";
+import type { ResponseMessage } from "./messages";
+import server from "./server";
 import State from "./state";
 import Store from "./store";
-import TokenMapView from "./views/tokenmap";
-import TokenMapController from "./controllers/tokenmap";
-import TransformController from "./controllers/transform";
-import TransformView from "./views/transform";
-import SelectionView from "./views/selection";
-import SelectionController from "./controllers/selection";
-import TokenDrawView from "./views/tokendraw";
-import TokenDrawController from "./controllers/tokendraw";
+import BackgroundView from "./views/background";
+import BackgroundListView from "./views/backgroundlist";
 import GridView from "./views/grid";
-import GridController from "./controllers/grid";
-import SidebarView from "./views/sidebar";
-import SidebarController from "./controllers/sidebar";
-import TokenEditView from "./views/tokenedit";
-import TokenEditController from "./controllers/tokenedit";
-import TokenListView from "./views/tokenlist";
-import TokenListController from "./controllers/tokenlist";
-import UserView from "./views/user";
-import UserController from "./controllers/user";
 import HoverView from "./views/hover";
-import HoverController from "./controllers/hover";
+import SelectionView from "./views/selection";
 import ServerStatusView from "./views/serverstatus";
-import ServerStatusController from "./controllers/serverstatus";
-import type { ResponseMessage } from "./messages";
-import UserCursorController from "./controllers/usercursors";
+import TokenDrawView from "./views/tokendraw";
+import TokenEditView from "./views/tokenedit";
+import TokenListView from "./views/tokenlist";
+import TokenMapView from "./views/tokenmap";
+import ToolbarView from "./views/toolbar";
+import TransformView from "./views/transform";
+import UserView from "./views/user";
 import UserCursorsView from "./views/usercursors";
 
 const state = new State();
@@ -34,12 +36,14 @@ const store = new Store(server.url);
 
 const tokenView = new TokenMapView();
 const backgroundView = new BackgroundView();
+const backgroundListView = new BackgroundListView();
 const transformView = new TransformView(state.grid);
 const selectionView = new SelectionView();
 const serverStatusView = new ServerStatusView();
 const tokenDrawView = new TokenDrawView(state.grid);
 const gridView = new GridView();
-const headerView = new SidebarView();
+// const headerView = new SidebarView();
+const toolbarView = new ToolbarView();
 const tokenEditView = new TokenEditView();
 const tokenListView = new TokenListView();
 const userView = new UserView();
@@ -47,13 +51,15 @@ const userCursorView = new UserCursorsView(state.grid);
 const hoverView = new HoverView();
 
 new BackgroundController(store, state, backgroundView);
+new BackgroundListController(store, state, backgroundListView);
 new TokenMapController(store, state, tokenView);
 new TransformController(store, state, transformView);
 new SelectionController(store, state, selectionView);
 new ServerStatusController(store, state, serverStatusView);
 new TokenDrawController(store, state, tokenDrawView);
 new GridController(store, state, gridView);
-new SidebarController(store, state, headerView);
+// new SidebarController(store, state, headerView);
+new ToolbarController(store, state, toolbarView);
 new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
 new UserController(store, state, userView);
@@ -76,8 +82,23 @@ store.listen("message", (event) => {
       state.setGrid(data.grid);
       break;
 
-    case "background": {
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+    case "background_add_layer": {
+      state.addBackgroundLayer(data.layer);
+      break;
+    }
+
+    case "background_delete_layer": {
+      state.deleteBackgroundLayer(data.id);
+      break;
+    }
+
+    case "background_select_layer": {
+      state.selectBackgroundLayer(data.id);
+      break;
+    }
+
+    case "background_rename_layer": {
+      state.renameBackgroundLayer(data.id, data.name);
       break;
     }
 
@@ -97,7 +118,7 @@ store.listen("message", (event) => {
       state.clearTokens();
       state.clearSelected();
       state.setGrid(data.grid);
-      state.setBackground(data.background.href, data.background.width, data.background.height);
+      state.setBackground(data.background.layers, data.background.selected);
       state.createTokens(data.tokens);
       state.setUsers(data.users);
       store.setSecretToken(data.secret);
