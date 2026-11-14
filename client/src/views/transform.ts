@@ -190,7 +190,7 @@ class TransformView extends TokenListener {
       this.setSelected(newSelected);
 
       if (this.selected.length > 0) {
-        // Pass the event AND the specific element clicked so Moveable 
+        // Pass the event AND the specific element clicked so Moveable
         // can look up the correct child matrix in group mode
         this.moveable.dragStart(event, element);
       }
