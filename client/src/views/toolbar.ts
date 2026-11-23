@@ -1,4 +1,5 @@
 class ToolbarView {
+  private readonly toolbar: HTMLElement;
   private selected: string | null;
   private sections: HTMLElement[];
   private buttons: HTMLButtonElement[];
@@ -9,6 +10,7 @@ class ToolbarView {
   public readonly menus: HTMLElement[];
 
   constructor() {
+    this.toolbar = document.querySelector<HTMLElement>(".toolbar")!;
     this.selected = null;
     this.settingsSection = document.getElementById("toolbar-settings")!;
     this.drawSection = document.getElementById("toolbar-draw")!;
@@ -33,6 +35,9 @@ class ToolbarView {
   }
 
   private hideAll() {
+    this.selected = null;
+    this.toolbar.classList.remove("menu-open");
+
     for (const button of this.buttons) {
       button.classList.remove("selected");
     }
@@ -44,13 +49,11 @@ class ToolbarView {
 
   private select(button: HTMLButtonElement) {
     const tab = button.getAttribute("data-tab");
+    const wasSelected = this.selected === tab;
 
     this.hideAll();
 
-    if (this.selected === tab) {
-      this.selected = null;
-      return;
-    }
+    if (wasSelected) return;
 
     this.selected = tab;
     const active = document.querySelector("#tab-" + tab) as HTMLElement;
@@ -62,6 +65,7 @@ class ToolbarView {
     active.hidden = false;
     active.style.display = "";
     button?.classList.add("selected");
+    this.toolbar.classList.add("menu-open");
   }
 }
 

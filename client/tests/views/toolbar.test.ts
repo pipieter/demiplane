@@ -15,6 +15,7 @@ describe("ToolbarView", () => {
       expect(view.drawSection).toBeDefined();
       expect(view.boardSection).toBeDefined();
       expect(view.menus.length).toBeGreaterThan(1);
+      expect(document.querySelector(".toolbar")?.classList.contains("menu-open")).toBe(false);
     });
 
     test("should start with all menus hidden", () => {
@@ -33,6 +34,7 @@ describe("ToolbarView", () => {
 
       expect(menu.style.display).toBe("");
       expect(button.classList.contains("selected")).toBe(true);
+      expect(document.querySelector(".toolbar")?.classList.contains("menu-open")).toBe(true);
 
       for (const otherMenu of view.menus) {
         if (otherMenu !== menu) {
@@ -58,6 +60,7 @@ describe("ToolbarView", () => {
 
       expect(menu.style.display).toBe("none");
       expect(button.classList.contains("selected")).toBe(false);
+      expect(document.querySelector(".toolbar")?.classList.contains("menu-open")).toBe(false);
     });
 
     test("pressing Escape should hide all menus and clear button selection", () => {
@@ -67,9 +70,13 @@ describe("ToolbarView", () => {
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
 
       expect(button.classList.contains("selected")).toBe(false);
+      expect(document.querySelector(".toolbar")?.classList.contains("menu-open")).toBe(false);
       for (const menu of view.menus) {
         expect(menu.style.display).toBe("none");
       }
+
+      button.click();
+      expect(document.getElementById("tab-token")?.style.display).toBe("");
     });
   });
 });

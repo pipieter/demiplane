@@ -1,7 +1,7 @@
 .toolbar {
   background-color: color-mix(in srgb, black 20%, transparent);
   height: var(--toolbar-btn-size);
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -13,6 +13,22 @@
   flex-wrap: nowrap;
   gap: calc(var(--toolbar-btn-size) * 2);
   padding: var(--toolbar-padding) 0;
+  transform: translateY(calc(100% - var(--toolbar-padding)));
+  opacity: 0;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
+  &:hover:not(.token-dragging),
+  &:focus-within:not(.token-dragging),
+  &.menu-open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &.token-dragging:not(.menu-open) {
+    pointer-events: none;
+  }
 
   .toolbar-section {
     display: flex;
@@ -80,6 +96,8 @@
     display: block;
     background: transparent;
     pointer-events: none;
+    transform: none;
+    opacity: 1;
 
     .toolbar-section {
       position: fixed;
@@ -90,6 +108,12 @@
       border-radius: calc(var(--toolbar-btn-size) * 1.5);
       background-color: color-mix(in srgb, black 20%, transparent);
       pointer-events: auto;
+      transform: var(--toolbar-hidden-transform);
+      opacity: 0;
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+      transition-delay: 0.4s;
 
       & > button,
       & > label {
@@ -100,7 +124,21 @@
       }
     }
 
+    &:has(.toolbar-section:hover) .toolbar-section,
+    &:has(.toolbar-section:focus-within) .toolbar-section,
+    &.menu-open .toolbar-section {
+      transform: var(--toolbar-visible-transform);
+      opacity: 1;
+      transition-delay: 0s;
+    }
+
+    &.token-dragging:not(.menu-open) .toolbar-section {
+      pointer-events: none;
+    }
+
     #toolbar-settings {
+      --toolbar-hidden-transform: translateX(calc(-100% + var(--toolbar-padding) * 2));
+      --toolbar-visible-transform: translateX(0);
       bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
       left: env(safe-area-inset-left);
 
@@ -112,6 +150,8 @@
     }
 
     #toolbar-board {
+      --toolbar-hidden-transform: translateX(calc(100% - var(--toolbar-padding) * 2));
+      --toolbar-visible-transform: translateX(0);
       bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
       right: env(safe-area-inset-right);
 
@@ -127,7 +167,8 @@
       flex-direction: row;
       bottom: calc(var(--toolbar-padding) + env(safe-area-inset-bottom));
       left: 50%;
-      transform: translateX(-50%);
+      --toolbar-hidden-transform: translate(-50%, calc(100% - var(--toolbar-padding) * 2));
+      --toolbar-visible-transform: translateX(-50%);
     }
   }
 
