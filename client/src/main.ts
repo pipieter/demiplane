@@ -12,6 +12,7 @@ import ToolbarController from "./controllers/toolbar";
 import TransformController from "./controllers/transform";
 import UserController from "./controllers/user";
 import UserCursorController from "./controllers/usercursors";
+import { getDiscordDisplayName } from "./discord";
 import type { ResponseMessage } from "./messages";
 import server from "./server";
 import State from "./state";
@@ -62,7 +63,7 @@ new GridController(store, state, gridView);
 new ToolbarController(store, state, toolbarView);
 new TokenEditController(store, state, tokenEditView);
 new TokenListController(store, state, tokenListView);
-new UserController(store, state, userView);
+const userController = new UserController(store, state, userView);
 new UserCursorController(store, state, userCursorView);
 new HoverController(store, state, hoverView);
 
@@ -138,3 +139,12 @@ store.listen("message", (event) => {
       throw `Unknown message type: ${JSON.stringify(data)}`;
   }
 });
+
+void getDiscordDisplayName()
+  .then((name) => {
+    if (name) userController.setDiscordName(name);
+  })
+  .catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : "Unknown error.";
+    alert(`Could not retrieve the Discord username: ${message}`);
+  });

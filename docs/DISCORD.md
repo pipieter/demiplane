@@ -28,3 +28,11 @@ In the [Discord Developer Portal](https://discord.com/developers/applications), 
 ![Activity URL Mappings](images/activities-portal.png)
 
 You can now invite your application to your server, where you play with Demiplane as you see fit! The Discord activity will communicate with the same server as the browser clients will, meaning that both will see the same content.
+
+## Prefilling the user's name
+
+When launched as an Activity, Demiplane can use Discord's Embedded App SDK to prefill the local user's display name. Discord requires the `identify` OAuth scope for this, so users may be asked to authorize the Activity.
+
+Set `VITE_DISCORD_CLIENT_ID` and `DISCORD_CLIENT_ID` to your Discord application's client ID, and `DISCORD_CLIENT_SECRET` to its client secret in the root `.env` file. Keep the client secret private and never commit it. The client ID is public; the secret is used only by the backend to exchange Discord's short-lived authorization code for an access token.
+
+The Activity redirect URI must also be configured in the application's OAuth2 settings as described in Discord's [Activity authentication guide](https://docs.discord.com/developers/activities/building-an-activity#add-a-redirect-uri). The name is only prefilled in Discord Activities; users can still change it, and browser users continue to choose their own name.
