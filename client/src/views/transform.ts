@@ -6,6 +6,7 @@ import type { Transform } from "../models/transform";
 
 class TransformView extends TokenListener {
   private readonly moveable = getMoveable();
+  private readonly toolbar = document.querySelector<HTMLElement>(".toolbar")!;
   private readonly grid: Grid;
   private readonly text: SVGTextElement;
   private readonly textRectangle: SVGRectElement;
@@ -30,7 +31,14 @@ class TransformView extends TokenListener {
   private initMoveableListeners() {
     this.moveable.on("dragStart", ({ target }) => {
       const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
+      if (token) {
+        this.moveableStart = { ...token };
+        this.toolbar.classList.add("token-dragging");
+      }
+    });
+
+    this.moveable.on("dragEnd", () => {
+      this.toolbar.classList.remove("token-dragging");
     });
 
     this.moveable.on("drag", ({ target, beforeTranslate, inputEvent }) => {
