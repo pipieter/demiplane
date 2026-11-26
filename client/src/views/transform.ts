@@ -9,8 +9,11 @@ class TransformView extends TokenListener {
   private readonly grid: Grid;
   private readonly text: SVGTextElement;
   private readonly textRectangle: SVGRectElement;
+  private readonly proxy: SVGRectElement;
   private selected: Token[];
-  private moveableStart: Transform | null = null;
+  private moveableStart: Map<string, Transform> | null = null;
+  private moveableStartBounds: { x: number; y: number; w: number; h: number } | null = null;
+  private updatingSelectionFromPointer = false;
 
   constructor(grid: Grid) {
     super();
@@ -18,6 +21,14 @@ class TransformView extends TokenListener {
     this.grid = grid;
     this.text = document.getElementById("transform-size-text") as unknown as SVGTextElement;
     this.textRectangle = document.getElementById("transform-size-background") as unknown as SVGRectElement;
+    this.proxy = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    this.proxy.id = "moveable-selection-proxy";
+    this.proxy.classList.add("moveable-selection-proxy");
+    this.proxy.setAttribute("fill", "none");
+    this.proxy.setAttribute("stroke", "none");
+    this.proxy.style.pointerEvents = "none";
+    this.proxy.style.opacity = "0";
+    document.getElementById("whiteboard-objects-layer")?.appendChild(this.proxy);
     this.selected = [];
 
     this.initMoveableListeners();
@@ -27,15 +38,145 @@ class TransformView extends TokenListener {
     return this.selected.find((token) => token.id === id) ?? null;
   }
 
-  private initMoveableListeners() {
-    this.moveable.on("dragStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
+  private getStartById(id: string): Transform | null {
+    return this.moveableStart?.get(id) ?? null;
+  }
+
+  private startTransform() {
+    this.moveableStart = new Map(this.selected.map((token) => [token.id, { ...token }]));
+    this.moveableStartBounds = this.getGroupBounds([...this.moveableStart.values()]);
+  }
+
+  private finishTransform() {
+    if (!this.moveableStart) return;
+
+    for (const token of this.selected) {
+      this.emit("token_transform", this.toTransform(token));
+    }
+
+    this.moveableStart = null;
+    this.moveableStartBounds = null;
+    this.update(this.selected);
+  }
+
+  private getGroupBounds(tokens: Array<Pick<Transform, "x" | "y" | "w" | "h" | "r">>) {
+    const points = tokens.flatMap((token) => {
+      const centerX = token.x + token.w / 2;
+      const centerY = token.y + token.h / 2;
+      return [
+        this.rotatePoint(token.x, token.y, centerX, centerY, token.r),
+        this.rotatePoint(token.x + token.w, token.y, centerX, centerY, token.r),
+        this.rotatePoint(token.x, token.y + token.h, centerX, centerY, token.r),
+        this.rotatePoint(token.x + token.w, token.y + token.h, centerX, centerY, token.r),
+      ];
     });
 
+    const left = Math.min(...points.map((point) => point.x));
+    const top = Math.min(...points.map((point) => point.y));
+    const right = Math.max(...points.map((point) => point.x));
+    const bottom = Math.max(...points.map((point) => point.y));
+
+    return {
+      x: left,
+      y: top,
+      w: Math.max(1, right - left),
+      h: Math.max(1, bottom - top),
+      r: 0,
+    };
+  }
+
+  private setProxyBounds(bounds: { x: number; y: number; w: number; h: number }) {
+    this.proxy.setAttribute("x", bounds.x.toString());
+    this.proxy.setAttribute("y", bounds.y.toString());
+    this.proxy.setAttribute("width", bounds.w.toString());
+    this.proxy.setAttribute("height", bounds.h.toString());
+  }
+
+  private transformGroup(scaleX: number, scaleY: number, x: number, y: number, inputEvent: MouseEvent) {
+    const bounds = this.moveableStartBounds;
+    if (!bounds) return;
+
+    const snappedPosition = this.snapPosition(x, y, inputEvent);
+    const offsetX = snappedPosition.x - x;
+    const offsetY = snappedPosition.y - y;
+
+    for (const token of this.selected) {
+      const start = this.getStartById(token.id);
+      if (!start) continue;
+
+      const width = Math.max(1, Math.round(start.w * scaleX));
+      const height = Math.max(1, Math.round(start.h * scaleY));
+      const centerX = x + offsetX + (start.x + start.w / 2 - bounds.x) * scaleX;
+      const centerY = y + offsetY + (start.y + start.h / 2 - bounds.y) * scaleY;
+      this.emit(
+        "token_continuous_transform",
+        this.toTransform(token, {
+          x: Math.round(centerX - width / 2),
+          y: Math.round(centerY - height / 2),
+          w: width,
+          h: height,
+        }),
+      );
+    }
+
+    const updatedBounds = this.getGroupBounds(this.selected);
+    this.setProxyBounds(updatedBounds);
+    this.moveable.updateRect();
+    this.updateTransformSizeText(updatedBounds);
+  }
+
+  private transformGroupResize(
+    width: number,
+    height: number,
+    direction: number[],
+    translateX: number,
+    translateY: number,
+    clientX: number,
+    clientY: number,
+    inputEvent: MouseEvent,
+  ) {
+    const bounds = this.moveableStartBounds;
+    if (!bounds) return;
+
+    let scaleX = width / bounds.w;
+    let scaleY = height / bounds.h;
+    let x = bounds.x + translateX;
+    let y = bounds.y + translateY;
+
+    if (this.grid.shouldGridlock(inputEvent)) {
+      const snapped = this.grid.getResizeSnappedClientCoordinates(clientX, clientY);
+      if (direction[0] > 0) scaleX = (snapped.x - bounds.x) / bounds.w;
+      else if (direction[0] < 0) scaleX = (bounds.x + bounds.w - snapped.x) / bounds.w;
+      if (direction[1] > 0) scaleY = (snapped.y - bounds.y) / bounds.h;
+      else if (direction[1] < 0) scaleY = (bounds.y + bounds.h - snapped.y) / bounds.h;
+      x = direction[0] < 0 ? bounds.x + bounds.w - bounds.w * scaleX : bounds.x;
+      y = direction[1] < 0 ? bounds.y + bounds.h - bounds.h * scaleY : bounds.y;
+    }
+
+    const scale =
+      direction[0] === 0
+        ? scaleY
+        : direction[1] === 0
+          ? scaleX
+          : Math.abs(scaleX - 1) >= Math.abs(scaleY - 1)
+            ? scaleX
+            : scaleY;
+    this.transformGroup(scale, scale, x, y, inputEvent);
+  }
+
+  private initMoveableListeners() {
+    this.moveable.on("dragStart", () => this.startTransform());
+
     this.moveable.on("drag", ({ target, beforeTranslate, inputEvent }) => {
+      if (target === this.proxy) {
+        const bounds = this.moveableStartBounds;
+        if (!bounds) return;
+        this.transformGroup(1, 1, bounds.x + beforeTranslate[0], bounds.y + beforeTranslate[1], inputEvent);
+        return;
+      }
+
       const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
+      const start = this.getStartById(target.id);
       if (!token || !start) return;
 
       const [translateX, translateY] = beforeTranslate;
@@ -48,16 +189,28 @@ class TransformView extends TokenListener {
           y: Math.round(position.y),
         }),
       );
+      this.updateTransformSizeText(token);
     });
 
-    this.moveable.on("resizeStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
-    });
+    this.moveable.on("resizeStart", () => this.startTransform());
 
-    this.moveable.on("resize", ({ target, width, height, direction, clientX, clientY, inputEvent }) => {
+    this.moveable.on("resize", ({ target, width, height, direction, clientX, clientY, drag, inputEvent }) => {
+      if (target === this.proxy) {
+        this.transformGroupResize(
+          width,
+          height,
+          direction,
+          drag.beforeTranslate[0],
+          drag.beforeTranslate[1],
+          clientX,
+          clientY,
+          inputEvent,
+        );
+        return;
+      }
+
       const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
+      const start = this.getStartById(target.id);
       if (!token || !start) return;
 
       let w = width;
@@ -90,16 +243,28 @@ class TransformView extends TokenListener {
           h: Math.max(1, Math.round(position.h)),
         }),
       );
+      this.updateTransformSizeText(token);
     });
 
-    this.moveable.on("scaleStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
-    });
+    this.moveable.on("scaleStart", () => this.startTransform());
 
     this.moveable.on("scale", ({ target, scale, drag, inputEvent }) => {
+      if (target === this.proxy) {
+        const bounds = this.moveableStartBounds;
+        if (!bounds) return;
+        const scaleFactor = Math.abs(scale[0] - 1) >= Math.abs(scale[1] - 1) ? scale[0] : scale[1];
+        this.transformGroup(
+          scaleFactor,
+          scaleFactor,
+          bounds.x + drag.beforeTranslate[0],
+          bounds.y + drag.beforeTranslate[1],
+          inputEvent,
+        );
+        return;
+      }
+
       const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
+      const start = this.getStartById(target.id);
       if (!token || !start) return;
 
       const [translateX, translateY] = drag.beforeTranslate;
@@ -115,16 +280,16 @@ class TransformView extends TokenListener {
           h: Math.max(1, Math.round(start.h * scaleY)),
         }),
       );
+      this.updateTransformSizeText(token);
     });
 
-    this.moveable.on("rotateStart", ({ target }) => {
-      const token = this.getSelectedById(target.id);
-      if (token) this.moveableStart = { ...token };
-    });
+    this.moveable.on("rotateStart", () => this.startTransform());
 
     this.moveable.on("rotate", ({ target, beforeRotate, inputEvent }) => {
+      if (target === this.proxy) return;
+
       const token = this.getSelectedById(target.id);
-      const start = this.moveableStart;
+      const start = this.getStartById(target.id);
       if (!token || !start) return;
 
       const rotation = start.r + beforeRotate;
@@ -140,6 +305,7 @@ class TransformView extends TokenListener {
           r,
         }),
       );
+      this.updateTransformSizeText(token);
     });
 
     this.moveable.on("render", ({ target }) => {
@@ -147,28 +313,49 @@ class TransformView extends TokenListener {
       target.style.transform = "";
     });
 
-    this.moveable.on("renderEnd", () => {
-      const token = this.selected[0];
-      if (token) {
-        this.emit("token_transform", this.toTransform(token));
-      }
-      this.moveableStart = null;
-    });
+    this.moveable.on("dragEnd", () => this.finishTransform());
+    this.moveable.on("resizeEnd", () => this.finishTransform());
+    this.moveable.on("scaleEnd", () => this.finishTransform());
+    this.moveable.on("rotateEnd", () => this.finishTransform());
   }
 
   public makeDraggable(token: Token) {
     const element = document.getElementById(token.id) as unknown as SVGElement;
     element.onmousedown = (event) => {
-      this.selected = [token];
-      if (this.update(this.selected)) {
-        this.moveable.dragStart(event, element);
-        this.emit("tokens_select", [token]);
+      const isModifierClick = event.ctrlKey || event.metaKey;
+      const wasSelected = this.selected.some((selected) => selected.id === token.id);
+      const next = isModifierClick
+        ? wasSelected
+          ? this.selected.filter((selected) => selected.id !== token.id)
+          : [...this.selected, token]
+        : wasSelected
+          ? this.selected
+          : [token];
+
+      this.selected = [...next];
+      const shouldDrag = !(isModifierClick && wasSelected);
+      const targetChange = this.update(this.selected);
+      this.updatingSelectionFromPointer = true;
+      try {
+        this.emit("tokens_select", this.selected);
+      } finally {
+        this.updatingSelectionFromPointer = false;
+      }
+
+      if (shouldDrag && this.selected.length > 0) {
+        const dragTarget = this.selected.length > 1 ? this.proxy : element;
+        if (targetChange) {
+          targetChange.then(() => this.moveable.dragStart(event, dragTarget));
+        } else {
+          this.moveable.dragStart(event, dragTarget);
+        }
       }
     };
   }
 
   public setSelected(tokens: Token[]) {
     this.selected = [...tokens];
+    if (this.updatingSelectionFromPointer || (this.moveableStart && this.selected.length > 1)) return;
     this.update(this.selected);
   }
 
@@ -228,28 +415,60 @@ class TransformView extends TokenListener {
     };
   }
 
-  private update(tokens: Token[]): boolean {
-    // Only handle one token for now
-    const token = tokens[0];
-    if (!token) {
-      this.moveable.target = null;
+  private update(tokens: Token[]): Promise<void> | null {
+    if (tokens.length === 0) {
+      this.moveable.setState({ target: null, keepRatio: false, rotatable: false });
       this.text.style.display = "none";
       this.textRectangle.style.display = "none";
-      return false;
+      return null;
     }
 
-    const nonRotatableTokenTypes = ["line"];
-    const target = document.getElementById(tokens[0].id) as unknown as SVGElement;
-    this.moveable.target = target;
-    this.moveable.rotatable = !nonRotatableTokenTypes.includes(token.type);
+    let target: HTMLElement | SVGElement;
+    if (tokens.length > 1) {
+      const bounds = this.getGroupBounds(tokens);
+      this.setProxyBounds(bounds);
+      target = this.proxy;
+    } else {
+      const element = document.getElementById(tokens[0].id);
+      if (!element) {
+        this.moveable.setState({ target: null, keepRatio: false, rotatable: false });
+        this.text.style.display = "none";
+        this.textRectangle.style.display = "none";
+        return null;
+      }
+      target = element;
+    }
 
-    this.moveable.updateRect();
-    this.updateTransformSizeText(token);
+    const currentTargets = this.moveable.getTargets();
+    const hasTargetChanged = currentTargets.length !== 1 || currentTargets[0] !== target;
+    const size = tokens.length === 1 ? tokens[0] : this.getGroupBounds(tokens);
+    if (!hasTargetChanged) {
+      this.moveable.updateRect();
+      this.updateTransformSizeText(size);
+      return null;
+    }
 
-    return true;
+    const targetChange = this.moveable.waitToChangeTarget();
+
+    this.moveable.setState(
+      { target, keepRatio: tokens.length > 1, rotatable: tokens.length === 1 && tokens[0].type !== "line" },
+      () => {
+        const updateRect = () => {
+          this.moveable.updateRect();
+          this.updateTransformSizeText(size);
+        };
+
+        if (targetChange) {
+          targetChange.then(updateRect);
+        } else {
+          updateRect();
+        }
+      },
+    );
+    return targetChange;
   }
 
-  private updateTransformSizeText(token: Token) {
+  private updateTransformSizeText(token: Pick<Transform, "x" | "y" | "w" | "h" | "r">) {
     if (!this.moveable.target) {
       return;
     }

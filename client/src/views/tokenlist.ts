@@ -4,12 +4,14 @@ import type { Token } from "../models/token";
 class TokenListView extends TokenListener {
   public readonly list: HTMLUListElement;
   public readonly checkbox: HTMLInputElement;
+  private selected: Token[];
 
   constructor() {
     super();
 
     this.list = document.getElementById("token-list") as HTMLUListElement;
     this.checkbox = document.getElementById("token-list-checkbox") as HTMLInputElement;
+    this.selected = [];
 
     this.checkbox.addEventListener("change", () => this.updateVisibility());
     this.updateVisibility();
@@ -24,6 +26,7 @@ class TokenListView extends TokenListener {
   }
 
   public update(tokens: Token[], selected: Token[]) {
+    this.selected = [...selected];
     this.list.replaceChildren();
 
     // Reverse the array, so the top-most tokens are at the top of the list
@@ -44,7 +47,7 @@ class TokenListView extends TokenListener {
   private createListEntry(token: Token, selected: boolean) {
     const li = document.createElement("li");
     li.id = `token-list-item-${token.id}`;
-    li.addEventListener("click", () => this.onselect(token));
+    li.addEventListener("click", (event) => this.onselect(token, event));
 
     if (selected) {
       li.classList.add("selected");
@@ -86,8 +89,16 @@ class TokenListView extends TokenListener {
     return li;
   }
 
-  private onselect(token: Token) {
-    this.emit("tokens_select", [token]);
+  private onselect(token: Token, event: MouseEvent) {
+    const isModifierClick = event.ctrlKey || event.metaKey;
+    const isSelected = this.selected.some((selected) => selected.id === token.id);
+    const selected = isModifierClick
+      ? isSelected
+        ? this.selected.filter((selected) => selected.id !== token.id)
+        : [...this.selected, token]
+      : [token];
+
+    this.emit("tokens_select", selected);
   }
 
   private onRename(token: Token, input: HTMLInputElement) {

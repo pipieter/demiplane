@@ -62,7 +62,7 @@ class TokenMapView {
         element.setAttribute("cy", cy.toString());
         element.setAttribute("rx", rx.toString());
         element.setAttribute("ry", ry.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `rotate(${token.r} ${cx} ${cy})`);
         break;
       }
 
@@ -89,7 +89,7 @@ class TokenMapView {
         element.setAttribute("y", y.toString());
         element.setAttribute("width", w.toString());
         element.setAttribute("height", h.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `rotate(${token.r} ${token.x + token.w / 2} ${token.y + token.h / 2})`);
         break;
       }
 
@@ -104,7 +104,7 @@ class TokenMapView {
         element.setAttribute("y2", y2.toString());
         element.setAttribute("stroke-width", `${token.stroke}px`);
         element.setAttribute("stroke", token.color);
-        // Line currently does not rotate.
+        element.setAttribute("transform", `rotate(${token.r} ${token.x + token.w / 2} ${token.y + token.h / 2})`);
         break;
       }
 
@@ -114,21 +114,23 @@ class TokenMapView {
         element.setAttribute("y", token.y.toString());
         element.setAttribute("width", token.w.toString());
         element.setAttribute("height", token.h.toString());
-        element.setAttribute("transform", `rotate(${token.r} 0 0)`);
+        element.setAttribute("transform", `rotate(${token.r} ${token.x + token.w / 2} ${token.y + token.h / 2})`);
     }
   }
 
   public setlayer(token: Token, layer: number) {
     const children = [...this.layer.children];
+    const overlays = children.filter((child) => child.classList.contains("moveable-selection-proxy"));
+    const tokenElements = children.filter((child) => !child.classList.contains("moveable-selection-proxy"));
     const element = document.getElementById(token.id) as Element;
-    const index = children.indexOf(element);
+    const index = tokenElements.indexOf(element);
 
     if (index < 0) return;
 
-    children.splice(index, 1);
-    children.splice(layer, 0, element);
+    tokenElements.splice(index, 1);
+    tokenElements.splice(layer, 0, element);
 
-    this.layer.replaceChildren(...children);
+    this.layer.replaceChildren(...tokenElements, ...overlays);
   }
 }
 
